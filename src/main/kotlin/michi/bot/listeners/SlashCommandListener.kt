@@ -7,6 +7,10 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import michi.bot.util.Emoji
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.User
+import java.io.BufferedReader
+import java.io.FileReader
 
 /**
  * Called whenever there's a SlashCommandInteractionEvent
@@ -21,7 +25,8 @@ class SlashCommandListener: ListenerAdapter() {
         val guild = event.guild
         val blackList = BufferedReader(FileReader("BlackList.txt")).readLines()
 
-        if (!event.isFromGuild) return
+        // guard clauses
+        if (guild == null) return
 
         if (blackList.contains(sender.id) || blackList.contains(guild.id)) {
             event.reply("You can't use my commands anymore ${Emoji.michiTroll}")
@@ -49,7 +54,7 @@ class SlashCommandListener: ListenerAdapter() {
                 val subjects = mutableListOf<Member>()
 
                 for (subject in event.options) {
-                    if(subject.type.name != "USER" || subject.type.name == "STRING") continue
+                    if(subject.type.name != "USER") continue
 
                     var hadError = false
 
