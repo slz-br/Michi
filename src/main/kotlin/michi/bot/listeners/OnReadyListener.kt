@@ -15,8 +15,7 @@ class OnReadyListener: ListenerAdapter() {
         commandData.add(Commands.slash("math", "gives you a basic math problem."))
 
         // ban
-        commandData.add(Commands.slash(
-            "ban", "bans the mentioned users")
+        commandData.add(Commands.slash("ban", "bans the mentioned users")
             .addOption(OptionType.USER,"user1","the 1st user to ban", true)
             .addOption(OptionType.USER,"user2","the 2nd user to ban", false)
             .addOption(OptionType.USER,"user3","the 3rd user to ban", false)
@@ -25,8 +24,6 @@ class OnReadyListener: ListenerAdapter() {
             .addOption(OptionType.STRING,"reason","the reason for the ban", false)
         )
 
-        // refresh the commands
-        event.guild.updateCommands().queue()
         event.guild.updateCommands().addCommands(commandData).queue()
     }
 }
