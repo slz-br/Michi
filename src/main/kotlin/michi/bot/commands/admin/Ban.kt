@@ -39,7 +39,7 @@ private fun isPossible(context: SlashCommandInteractionEvent, subjects: Set<Memb
     val botTopRole = context.guild!!.getMember(context.jda.selfUser)!!.roles.sortedDescending()[0].position
 
     // checks if the agent has the permission to ban
-    if (!agent.hasPermission(Permission.BAN_MEMBERS) || !agent.hasPermission(Permission.ADMINISTRATOR)) {
+    if (!agent.hasPermission(Permission.BAN_MEMBERS) && !agent.hasPermission(Permission.ADMINISTRATOR)) {
         context.reply("You don't have the permissions to use this command.")
             .setEphemeral(true)
             .queue()
