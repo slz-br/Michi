@@ -56,22 +56,11 @@ class SlashCommandListener: ListenerAdapter() {
                 for (subject in event.options) {
                     if(subject.type.name != "USER") continue
 
-                    var hadError = false
-
-                    event.guild!!.retrieveMember(subject.asUser).queue(
-                        // success
-                        {subjects.add(subject.asMember!!)},
-                        // failure
-                        {
-                            hadError = true
-                            event.reply("couldn't ban ${subject.asUser.name} (User isn't in the server?) ${Emoji.michiThink}")
-                                .setEphemeral(true)
-                                .queue()
-                        }
-                    )
-
-                    if(hadError) return
-
+                    if (!locateUserInGuild(guild, subject.asUser)) {
+                        event.reply("${subject.asUser.name} not found(User isn't in the server? ${Emoji.michiThink}")
+                            .setEphemeral(true)
+                            .queue()
+                    }
                     subjects.add(subject.asMember!!)
 
                 }
@@ -82,5 +71,14 @@ class SlashCommandListener: ListenerAdapter() {
 
         }
 
+    }
+    private fun locateUserInGuild(guild: Guild, user: User): Boolean {
+
+        var userNotFound = false
+
+        guild.retrieveMember(user).queue(null) { userNotFound = true }
+        if (userNotFound) return false
+
+        return true
     }
 }
