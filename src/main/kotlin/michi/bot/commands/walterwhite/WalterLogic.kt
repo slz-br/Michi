@@ -15,7 +15,7 @@ import java.util.Random
     fun sendRandomWalterWhiteImage(context: MessageReceivedEvent) {
 
         val rng = Random()
-        val options = BufferedReader(FileReader("walter.txt")).readLines()
+        val options = BufferedReader(FileReader("other\\txt\\walter.txt")).readLines()
         val imageURL = options[rng.nextInt(options.size)]
 
         //sending the image
