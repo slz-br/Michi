@@ -18,9 +18,19 @@ class SlashCommandListener: ListenerAdapter() {
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         val name = event.name
         val sender = event.user
+        val guild = event.guild
+        val blackList = BufferedReader(FileReader("BlackList.txt")).readLines()
 
         if (!event.isFromGuild) return
 
+        if (blackList.contains(sender.id) || blackList.contains(guild.id)) {
+            event.reply("You can't use my commands anymore ${Emoji.michiTroll}")
+                .setEphemeral(true)
+                .queue()
+            return
+        }
+
+        // if everything is right
         when (name) {
             "math" -> {
                 MathLogic.instances.forEach {
