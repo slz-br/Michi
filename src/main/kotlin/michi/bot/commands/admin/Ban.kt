@@ -21,7 +21,7 @@ fun ban(context: SlashCommandInteractionEvent, reason: String?, vararg subjects:
 
     for (subject in subjects.toSet()) {
         subject.ban(5, TimeUnit.MINUTES).queue()
-        embed.addField("Successfully banned ${subject.user.name}", "", false)
+        embed.addField("Banned ${subject.user.name}", "", false)
     }
 
     if (reason != null) {
