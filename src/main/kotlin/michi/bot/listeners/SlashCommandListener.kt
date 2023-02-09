@@ -1,6 +1,7 @@
 package michi.bot.listeners
 
 import michi.bot.commands.admin.ban
+import michi.bot.commands.admin.unban
 import michi.bot.commands.math.MathLogic
 import michi.bot.commands.math.MathProblem
 import net.dv8tion.jda.api.entities.Member
@@ -66,6 +67,29 @@ class SlashCommandListener: ListenerAdapter() {
                 }
 
                 ban(event, event.getOption("reason")?.asString, *subjects.toTypedArray())
+
+            }
+
+            "unban" -> {
+
+                val usersToUnban = mutableListOf<User>()
+
+
+
+                for (subject in event.options) {
+
+                    if(subject.type.name != "USER") continue
+
+                    if (!locateUserInGuild(guild, subject.asUser)) {
+                        event.reply("${subject.asUser.name} not found(User isn't in the server? ${Emoji.michiThink}")
+                            .setEphemeral(true)
+                            .queue()
+                    }
+
+                    usersToUnban.add(subject.asUser)
+                }
+
+                unban(event, *usersToUnban.toTypedArray())
 
             }
 
