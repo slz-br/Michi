@@ -20,7 +20,7 @@ fun ban(context: SlashCommandInteractionEvent, reason: String?, vararg subjects:
     setTitle("**Ban!** " + Emoji.michiExcite)
 
     for (subject in subjects.toSet()) {
-        subject.ban(5, TimeUnit.MINUTES).queue()
+        subject.ban(1, TimeUnit.HOURS).queue()
         embed.addField("Banned ${subject.user.name}", "", false)
     }
 
