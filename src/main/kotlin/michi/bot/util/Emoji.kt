@@ -14,7 +14,6 @@ object Emoji {
         const val michiThink = "<:michiThink:1072444573206450256>"
         const val michiGlare = "<:michiGlare:1072451435427549245>"
         const val michiHappy = "<:michiHappy:1072927274527096992>"
-        const val michiSus = "<:michiSus:1072932534276603986>"
         const val michiTroll = "<:michiTroll:1072944747188060240>"
 
 }

@@ -28,11 +28,11 @@ fun unban(context: SlashCommandInteractionEvent, vararg subjects: User) {
     }
 
     if (subjects.size > 1) {
-        embed.setFooter("It's better that this user don't cause any trouble again ${Emoji.michiSus}")
+        embed.setFooter("It's better that this user don't cause any trouble again")
         context.replyEmbeds(embed.build())
     }
     else {
-        embed.setFooter("It's better that they don't cause any trouble again ${Emoji.michiSus}")
+        embed.setFooter("It's better that they don't cause any trouble again")
     }
 
     context.replyEmbeds(embed.build()).queue()
