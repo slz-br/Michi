@@ -12,13 +12,34 @@ val config: Dotenv = Dotenv.configure().load()
  * Function that wakes up Michi
  * @author Slz
  */
-    fun main() {
+fun main() {
+   Michi()
+}
+
+class Michi {
+
+    init {
 
         val token = config.get("TOKEN")
         val michi = DefaultShardManagerBuilder.createDefault(token)
 
+        // activity
         michi.setActivity(Activity.watching("Brand New Animal"))
-            .addEventListeners(MessageListener(), SlashCommandListener(), OnReadyListener())
-            .enableIntents(GatewayIntent.MESSAGE_CONTENT)
-            .build()
+
+        // event listeners
+        .addEventListeners(
+            MessageListener(),
+            OnReadyListener(),
+            SlashCommandListener()
+        )
+
+        // gateway intents
+        .enableIntents(
+            GatewayIntent.MESSAGE_CONTENT,
+            GatewayIntent.GUILD_VOICE_STATES
+        )
+
+        // build
+        .build()
     }
+}

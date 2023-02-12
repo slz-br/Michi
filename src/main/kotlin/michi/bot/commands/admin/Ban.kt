@@ -9,6 +9,10 @@ import michi.bot.util.Emoji
 import java.awt.Color
 import java.util.concurrent.TimeUnit
 
+/**
+ * Bans the mentioned member(s) if possible
+ * @author Slz
+ */
 fun ban(context: SlashCommandInteractionEvent, reason: String?, vararg subjects: Member) {
 
     // guard clause
