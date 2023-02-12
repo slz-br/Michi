@@ -7,6 +7,10 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import java.awt.Color
 
+/**
+ * Unbans the mentioned user(s) if possible
+ * @author Slz
+ */
 fun unban(context: SlashCommandInteractionEvent, vararg subjects: User) {
 
     // this is asserted because in the SlashCommandListener it's tested if the command
@@ -27,7 +31,7 @@ fun unban(context: SlashCommandInteractionEvent, vararg subjects: User) {
         embed.addField("Unbanned ${subject.name}","", false)
     }
 
-    if (subjects.size > 1) {
+    if (subjects.size == 1) {
         embed.setFooter("It's better that this user don't cause any trouble again")
         context.replyEmbeds(embed.build())
     }
