@@ -1,15 +1,10 @@
 package michi.bot.listeners
 
-import michi.bot.commands.admin.ban
-import michi.bot.commands.admin.unban
-import michi.bot.commands.math.MathLogic
-import michi.bot.commands.math.MathProblem
-import net.dv8tion.jda.api.entities.Member
+
+import michi.bot.util.CheckPossibility
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import michi.bot.util.Emoji
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.User
 import java.io.BufferedReader
 import java.io.FileReader
 
@@ -38,71 +33,11 @@ class SlashCommandListener: ListenerAdapter() {
 
         // if everything is right
         when (name) {
-            "math" -> {
-                MathLogic.instances.forEach {
-                    if(sender == it.problemInstance.user) {
-                        event.reply("Solve one problem before calling another ${Emoji.smolMichiAngry}")
-                            .setEphemeral(true)
-                            .queue()
-                        return
-                    }
-                }
-                MathLogic.instances.add(MathLogic(MathProblem(sender), event))
-            }
-
-            // it can only ban people that are in the server.
-            "ban" -> {
-                val subjects = mutableListOf<Member>()
-
-                for (subject in event.options) {
-                    if(subject.type.name != "USER") continue
-
-                    if (!locateUserInGuild(guild, subject.asUser)) {
-                        event.reply("${subject.asUser.name} not found(User isn't in the server? ${Emoji.michiThink}")
-                            .setEphemeral(true)
-                            .queue()
-                    }
-                    subjects.add(subject.asMember!!)
-
-                }
-
-                ban(event, event.getOption("reason")?.asString, *subjects.toTypedArray())
-
-            }
-
-            "unban" -> {
-
-                val usersToUnban = mutableListOf<User>()
-
-
-
-                for (subject in event.options) {
-
-                    if(subject.type.name != "USER") continue
-
-                    if (!locateUserInGuild(guild, subject.asUser)) {
-                        event.reply("${subject.asUser.name} not found(User isn't in the server? ${Emoji.michiThink}")
-                            .setEphemeral(true)
-                            .queue()
-                    }
-
-                    usersToUnban.add(subject.asUser)
-                }
-
-                unban(event, *usersToUnban.toTypedArray())
-
-            }
-
+            "math" -> CheckPossibility.checkMath(event)
+            "ban" -> CheckPossibility.checkBan(event) // it can only ban people that are in the server.
+            "unban" -> CheckPossibility.checkUnban(event)
         }
 
     }
-    private fun locateUserInGuild(guild: Guild, user: User): Boolean {
 
-        var userNotFound = false
-
-        guild.retrieveMember(user).queue(null) { userNotFound = true }
-        if (userNotFound) return false
-
-        return true
-    }
 }
