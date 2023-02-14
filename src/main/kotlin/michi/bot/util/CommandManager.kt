@@ -1,17 +1,22 @@
 package michi.bot.util
 
-import michi.bot.commands.admin.ban
-import michi.bot.commands.admin.unban
-import michi.bot.commands.math.MathLogic
-import michi.bot.commands.math.MathProblem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import michi.bot.commands.admin.*
+import michi.bot.commands.math.*
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 
-abstract class CheckPossibility {
+private const val DELAY = 7500L
+
+abstract class CommandManager {
 
     companion object {
+        private val coolDown = mutableListOf<User>()
 
         fun checkMath(context: SlashCommandInteractionEvent) {
             val sender = context.user
@@ -23,11 +28,13 @@ abstract class CheckPossibility {
                         .queue()
                     return
                 }
+                if(checkCooldown(sender, context)) return
             }
             MathLogic.instances.add(MathLogic(MathProblem(sender), context))
         }
 
         fun checkBan(context: SlashCommandInteractionEvent) {
+            val sender = context.user
             val options = context.options
             val guild = context.guild!!
             val subjects = mutableListOf<Member>()
@@ -41,12 +48,15 @@ abstract class CheckPossibility {
                         .queue()
                     return
                 }
+                CoroutineScope(Dispatchers.IO).launch { coolDownManager(sender) }
+                if (checkCooldown(sender, context))
                 subjects.add(subject.asMember!!)
             }
             ban(context, context.getOption("reason")?.asString, *subjects.toTypedArray())
         }
 
         fun checkUnban(context: SlashCommandInteractionEvent) {
+            val sender = context.user
             val options = context.options
             val guild = context.guild!!
             val usersToUnban = mutableListOf<User>()
@@ -61,6 +71,8 @@ abstract class CheckPossibility {
                         .queue()
                     return
                 }
+                CoroutineScope(Dispatchers.IO).launch { coolDownManager(sender) }
+                if (checkCooldown(sender, context))
 
                 usersToUnban.add(subject.asUser)
             }
@@ -69,7 +81,6 @@ abstract class CheckPossibility {
         }
 
         private fun locateUserInGuild(guild: Guild, user: User): Boolean {
-
             var userNotFound = false
 
             guild.retrieveMember(user).queue(null) { userNotFound = true }
@@ -77,5 +88,22 @@ abstract class CheckPossibility {
             return true
         }
 
+        private suspend fun coolDownManager(user: User) {
+            coolDown.add(user)
+            delay(DELAY)
+            coolDown.remove(user)
+        }
+
+        private fun checkCooldown(sender: User, context: SlashCommandInteractionEvent): Boolean {
+            if (coolDown.contains(sender)) {
+                context.reply("you are in cooldown, wait a bit")
+                    .setEphemeral(true)
+                    .queue()
+                return true
+            }
+            return false
+        }
+
     }
+
 }
