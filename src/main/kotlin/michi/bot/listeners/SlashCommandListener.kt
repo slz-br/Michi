@@ -1,7 +1,6 @@
 package michi.bot.listeners
 
-
-import michi.bot.util.CheckPossibility
+import michi.bot.util.CommandManager
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import michi.bot.util.Emoji
@@ -33,9 +32,9 @@ class SlashCommandListener: ListenerAdapter() {
 
         // if everything is right
         when (name) {
-            "math" -> CheckPossibility.checkMath(event)
-            "ban" -> CheckPossibility.checkBan(event) // it can only ban people that are in the server.
-            "unban" -> CheckPossibility.checkUnban(event)
+            "math" -> CommandManager.checkMath(event)
+            "ban" -> CommandManager.checkBan(event) // it can only ban people that are in the server.
+            "unban" -> CommandManager.checkUnban(event)
         }
 
     }
