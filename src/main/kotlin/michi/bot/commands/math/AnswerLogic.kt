@@ -10,7 +10,7 @@ import michi.bot.util.Emoji
      fun checkAnswer(event: MessageReceivedEvent, mathLogicInstance: MathLogic) {
 
         val context: MessageReceivedEvent = event
-         val msg: Int = context.message.contentRaw.toInt()
+        val msg: Int = context.message.contentRaw.toInt()
 
         // guard clause
         if (mathLogicInstance.problemInstance.isAnswered || mathLogicInstance.timeEndedUp) return
