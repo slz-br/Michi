@@ -15,6 +15,7 @@ import java.io.FileReader
 class SlashCommandListener: ListenerAdapter() {
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
+        val blackList = BufferedReader(FileReader("BlackList.txt")).readLines()
         val name = event.name
         val sender = event.user
         val guild = event.guild ?: return
