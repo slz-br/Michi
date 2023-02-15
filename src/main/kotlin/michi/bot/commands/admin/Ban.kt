@@ -51,7 +51,7 @@ private fun isPossible(context: SlashCommandInteractionEvent, subjects: Set<Memb
     }
 
     // checks if the agent is devil and is trying to ban michi >:(
-    if (subjects.any { it.id == config.get("ID")}) {
+    if (subjects.any { it.id == config.get("BOT_ID")}) {
         context.reply("You can't ban me, idiot ${Emoji.michiUnimpressed}")
             .setEphemeral(true)
             .queue()
