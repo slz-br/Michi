@@ -17,11 +17,7 @@ class SlashCommandListener: ListenerAdapter() {
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         val name = event.name
         val sender = event.user
-        val guild = event.guild
-        val blackList = BufferedReader(FileReader("BlackList.txt")).readLines()
-
-        // guard clauses
-        if (guild == null) return
+        val guild = event.guild ?: return
 
         if (blackList.contains(sender.id) || blackList.contains(guild.id)) {
             event.reply("You can't use my commands anymore ${Emoji.michiTroll}")
