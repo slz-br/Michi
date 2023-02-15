@@ -50,14 +50,6 @@ private fun isPossible(context: SlashCommandInteractionEvent, subjects: Set<Memb
         return false
     }
 
-    // checks if the agent is trying to ban more than 5 people
-    if (subjects.size > 5) {
-        context.reply("You can't ban more than 5 people at the same time with this command.")
-            .setEphemeral(true)
-            .queue()
-        return false
-    }
-
     // checks if the agent is devil and is trying to ban michi >:(
     if (subjects.any { it.id == config.get("ID")}) {
         context.reply("You can't ban me, idiot ${Emoji.michiUnimpressed}")
