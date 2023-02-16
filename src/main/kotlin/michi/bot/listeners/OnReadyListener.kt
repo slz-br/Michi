@@ -24,6 +24,7 @@ class OnReadyListener: ListenerAdapter() {
             .addOption(OptionType.STRING,"reason","the reason for the ban", false)
         )
 
+        // unban
         commandData.add(Commands.slash("unban", "bans the mentioned users")
             .addOption(OptionType.USER,"user1","the 1st user to ban", true)
             .addOption(OptionType.USER,"user2","the 2nd user to ban", false)
@@ -31,6 +32,9 @@ class OnReadyListener: ListenerAdapter() {
             .addOption(OptionType.USER,"user4","the 4th user to ban", false)
             .addOption(OptionType.USER,"user5","the 5th user to ban", false)
         )
+
+        // join
+        commandData.add(Commands.slash("join", "joins your current voice channel if possible"))
 
         event.guild.updateCommands().addCommands(commandData).queue()
     }

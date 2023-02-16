@@ -32,6 +32,7 @@ class SlashCommandListener: ListenerAdapter() {
             "math" -> CommandManager.checkMath(event)
             "ban" -> CommandManager.checkBan(event) // it can only ban people that are in the server.
             "unban" -> CommandManager.checkUnban(event)
+            "join" -> if (CommandManager.canConnect(event)) MusicCommands.join(event)
         }
 
     }
