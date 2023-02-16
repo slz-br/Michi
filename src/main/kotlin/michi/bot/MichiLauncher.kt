@@ -39,6 +39,11 @@ class Michi {
             GatewayIntent.GUILD_VOICE_STATES
         )
 
+        // enable cache
+        .enableCache(
+            CacheFlag.VOICE_STATE
+        )
+
         // build
         .build()
     }
