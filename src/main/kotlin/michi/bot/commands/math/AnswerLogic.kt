@@ -10,19 +10,20 @@ import michi.bot.util.Emoji
 
         val context: MessageReceivedEvent = event
         val msg: Int = context.message.contentRaw.toInt()
+        val userName = context.author.name
 
         // guard clause
         if (mathLogicInstance.problemInstance.isAnswered || mathLogicInstance.timeEndedUp) return
 
         if (msg == mathLogicInstance.problemInstance.result) {
             val finalTime = (System.currentTimeMillis() - mathLogicInstance.initialTime) / 1000
-            context.channel.sendMessage("**Correct** ${Emoji.michiYesCushion}\nTime: ${finalTime}s")
+            context.channel.sendMessage("**Correct** $userName ${Emoji.michiYesCushion}\nTime: ${finalTime}s")
                 .queue()
             mathLogicInstance.problemInstance.isAnswered = true
         }
 
         else {
-            context.channel.sendMessage("**Wrong** ${Emoji.michiGlare}\nAnswer: ${mathLogicInstance.problemInstance.result}")
+            context.channel.sendMessage("**Wrong** $userName ${Emoji.michiGlare}\nAnswer: ${mathLogicInstance.problemInstance.result}")
                 .queue()
             mathLogicInstance.problemInstance.isAnswered = true
         }
