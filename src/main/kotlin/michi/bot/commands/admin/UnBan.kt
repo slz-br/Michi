@@ -19,7 +19,7 @@ fun unban(context: SlashCommandInteractionEvent, vararg subjects: User) {
 
     // guard clauses
     if (!isPossible(context, subjects.toSet())) return
-    if (guild == null) return
+    guild ?: return
 
     // if everything is right
     val embed = EmbedBuilder()
