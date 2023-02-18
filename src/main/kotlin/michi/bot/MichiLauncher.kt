@@ -5,13 +5,19 @@ import michi.bot.listeners.*
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
+import net.dv8tion.jda.api.utils.cache.CacheFlag
+import okhttp3.internal.http2.Http2Connection
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 val config: Dotenv = Dotenv.configure().load()
+val logger: Logger = LoggerFactory.getLogger(Http2Connection.Listener::class.java)
 
 /**
  * Function that wakes up Michi
  * @author Slz
  */
+
 fun main() {
    Michi()
 }
@@ -46,5 +52,8 @@ class Michi {
 
         // build
         .build()
+
+        // logger message
+        logger.info("Michi is ready!")
     }
 }
