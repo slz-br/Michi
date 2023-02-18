@@ -36,6 +36,23 @@ class OnReadyListener: ListenerAdapter() {
         // join
         commandData.add(Commands.slash("join", "joins your current voice channel if possible"))
 
+        // play
+        commandData.add(Commands.slash("play", "plays the selected youtube song")
+            .addOption(OptionType.STRING, "song", "link or name of a youtube video", true)
+        )
+
+        // stop
+        commandData.add(Commands.slash("stop", "stops the music and clear the queue"))
+
+        // skip
+        commandData.add(Commands.slash("skip", "starts to play the next music on the queue"))
+
+        // wiki
+        commandData.add(Commands.slash("wiki", "gives you a random wikipedia article"))
+
+        // help
+        commandData.add(Commands.slash("help", "relevant info about michi"))
+
         event.guild.updateCommands().addCommands(commandData).queue()
     }
 }
