@@ -45,7 +45,7 @@ class MathLogic(problem: MathProblem, event: SlashCommandInteractionEvent) {
     }
 
     private suspend fun checkDelay(problem: MathProblem, channel: TextChannel) {
-        delay(30000L)
+        delay(45000L)
         if (!problemInstance.isAnswered) {
             channel.sendMessage("${problem.user.name} couldn't solve the problem in time.").queue()
             if (instances.contains(this)) {
