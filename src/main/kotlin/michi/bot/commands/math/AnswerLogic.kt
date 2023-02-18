@@ -5,7 +5,6 @@ import michi.bot.util.Emoji
 
 /**
  * Checks if the answer that the user gave matches the user's problem instance result.
- * @param
  */
      fun checkAnswer(event: MessageReceivedEvent, mathLogicInstance: MathLogic) {
 
