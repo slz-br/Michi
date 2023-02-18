@@ -1,6 +1,8 @@
 package michi.bot.listeners
 
-import michi.bot.util.CommandManager
+import michi.bot.commands.CommandManager
+import michi.bot.commands.music.MusicCommands
+import michi.bot.commands.util.help
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import michi.bot.util.Emoji
@@ -33,6 +35,11 @@ class SlashCommandListener: ListenerAdapter() {
             "ban" -> CommandManager.checkBan(event) // it can only ban people that are in the server.
             "unban" -> CommandManager.checkUnban(event)
             "join" -> if (CommandManager.canConnect(event)) MusicCommands.join(event)
+            "play" -> CommandManager.checkPlay(event)
+            "stop" -> CommandManager.checkStop(event)
+            "wiki" -> CommandManager.checkWiki(event)
+            "skip" -> CommandManager.checkSkip(event)
+            "help" -> help(event)
         }
 
     }
