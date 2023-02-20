@@ -60,7 +60,7 @@ abstract class MusicCommands: AudioEventAdapter() {
             val guild = context.guild!!
             val musicManager = PlayerManager.instance!!.getMusicManager(guild)
             musicManager.scheduler.nextTrack()
-            context.reply("skiped").queue()
+            context.reply("skipped").queue()
         }
 
         /**
