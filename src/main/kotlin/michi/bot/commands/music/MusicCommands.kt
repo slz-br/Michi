@@ -7,10 +7,21 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import java.awt.Color
 
+/**
+ * Contains all music related commands.
+ * @author Slz
+ */
+
 abstract class MusicCommands: AudioEventAdapter() {
 
     companion object {
 
+        /**
+         * Function to make Michi join the member current channel.
+         * @param context The SlashCommandInteractionEvent that called this function.
+         * @author Slz
+         * @see play
+         */
         fun join(context: SlashCommandInteractionEvent) {
             val guild = context.guild!!
             val audioManager = guild.audioManager
@@ -28,10 +39,23 @@ abstract class MusicCommands: AudioEventAdapter() {
             audioManager.openAudioConnection(channelToJoin)
         }
 
+        /**
+         * Function to make Michi play(or queue) a track.
+         * @param context The SlashCommandInteractionEvent that called this function.
+         * @author Slz
+         * @see skip
+         * @see stop
+         */
         fun play(context: SlashCommandInteractionEvent, url: String) {
            PlayerManager.instance!!.loadAndPlay(context, url)
         }
 
+        /**
+         * Function to skip to the next track on the queue
+         * @param context The SlashCommandInteractionEvent that called this function.
+         * @author Slz
+         * @see stop
+         */
         fun skip(context: SlashCommandInteractionEvent) {
             val guild = context.guild!!
             val musicManager = PlayerManager.instance!!.getMusicManager(guild)
@@ -39,6 +63,12 @@ abstract class MusicCommands: AudioEventAdapter() {
             context.reply("skiped").queue()
         }
 
+        /**
+         * Function to stop the current playing track and clear the queue.
+         * @param context The SlashCommandInteractionEvent that called this function.
+         * @author Slz
+         * @see skip
+         */
         fun stop(context: SlashCommandInteractionEvent) {
             val embed = EmbedBuilder()
             val musicManager = PlayerManager.instance!!.getMusicManager(context.guild!!)

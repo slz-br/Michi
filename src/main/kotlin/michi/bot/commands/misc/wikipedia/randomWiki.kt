@@ -6,6 +6,12 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import org.jsoup.Jsoup
 import java.awt.Color
 
+/**
+ * Searchs a random wikipedia article and sends it to the user
+ * @param context The SlashCommandInteractionEvent that called this function.
+ * @author Slz
+ */
+
 fun randomWiki(context: SlashCommandInteractionEvent) {
     val article = Jsoup.connect("https://en.wikipedia.org//wiki/Special:Random").get()
     val articleTitle = article.getElementsByTag("h1").first().text()

@@ -6,6 +6,13 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
 import java.util.concurrent.LinkedBlockingQueue
 
+/**
+ * A listener for players that check whenever a track ends or whenever the queue is updated.
+ * @param audioPlayer The AudioPlayer instance to listen events from.
+ * @author Slz
+ * @see GuildMusicManager
+ */
+
 class Scheduler(audioPlayer: AudioPlayer): AudioEventAdapter() {
 
     val queue = LinkedBlockingQueue<AudioTrack>()

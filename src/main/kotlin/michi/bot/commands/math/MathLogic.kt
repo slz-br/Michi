@@ -11,6 +11,8 @@ import java.util.LinkedList
  * Gives the user a math problem to the user solve when the user uses the "math" SlashCommand, it also
  * counts the time that it took to the user solve the problem and cancels itself if the user takes longer than
  * 30 seconds to answer.
+ * @param problem The math problem to manage.
+ * @param event The slashCommandInteraction that called the math command.
  * @author Slz
  */
 

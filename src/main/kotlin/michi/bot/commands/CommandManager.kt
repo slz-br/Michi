@@ -22,7 +22,7 @@ import java.net.URISyntaxException
 private const val DELAY = 10000L
 
 /**
- * Checks if it's possible to execute a command and manages the users in cooldown
+ * Checks if it is possible to execute a command and manages the users in cooldown
  * @author Slz
  */
 
@@ -30,6 +30,11 @@ abstract class CommandManager {
     companion object {
         private val coolDown = mutableListOf<User>()
 
+        /**
+         * Checks if the user that sent the slashCommand already has an active mathProblem to solve.
+         * @param context The SlashCommandInteractionEvent that called the math function
+         * @author Slz
+         */
         fun checkMath(context: SlashCommandInteractionEvent) {
             val sender = context.user
 
@@ -45,6 +50,12 @@ abstract class CommandManager {
             MathLogic.instances.add(MathLogic(MathProblem(sender), context))
         }
 
+        /**
+         * Checks if all users to ban are in the guild.
+         * @param context the slashCommandInteractionEvent that called the ban command.
+         * @see checkUnban
+         * @author Slz
+         */
         fun checkBan(context: SlashCommandInteractionEvent) {
             val sender = context.user
             val options = context.options
@@ -72,6 +83,12 @@ abstract class CommandManager {
 
         }
 
+        /**
+         * Checks if the users to unban are actually banned.
+         * @param context The slashCommandInteractionEvent that called the unban command
+         * @author Slz
+         * @see checkBan
+         */
         fun checkUnban(context: SlashCommandInteractionEvent) {
             val sender = context.user
             val options = context.options
@@ -98,6 +115,11 @@ abstract class CommandManager {
             unban(context, *usersToUnban.toTypedArray())
         }
 
+        /**
+         * Checks if the bot can connect to a voice channel.
+         * @param context The SlashCommandInteraction that called the join or play command.
+         * @author Slz
+         */
         fun canConnect(context: SlashCommandInteractionEvent): Boolean {
             val bot = context.guild!!.selfMember
             val botVoiceState = bot.voiceState!!
@@ -129,6 +151,12 @@ abstract class CommandManager {
             return true
         }
 
+        /**
+         * Checks if it is possible to play a track.
+         * @param context The SlashCommandInteractionEvent that called the play command
+         * @author Slz
+         * @see canConnect
+         */
         fun checkPlay(context: SlashCommandInteractionEvent) {
             val bot = context.guild!!.selfMember
             val botVoicestate = bot.voiceState!!
