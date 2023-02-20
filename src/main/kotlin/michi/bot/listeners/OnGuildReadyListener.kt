@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 
-class OnReadyListener: ListenerAdapter() {
+class OnGuildReadyListener: ListenerAdapter() {
 
     override fun onGuildReady(event: GuildReadyEvent) {
         val commandData: MutableList<CommandData> = ArrayList()
@@ -52,6 +52,12 @@ class OnReadyListener: ListenerAdapter() {
 
         // help
         commandData.add(Commands.slash("help", "relevant info about michi"))
+
+        // mail
+        commandData.add(Commands.slash("mail", "send an anonymous message to an user")
+            .addOption(OptionType.USER, "receiver", "the user that you want to send the mail", true)
+            .addOption(OptionType.STRING, "message", "the message that you want to send", true)
+        )
 
         event.guild.updateCommands().addCommands(commandData).queue()
     }

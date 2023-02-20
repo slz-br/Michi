@@ -35,7 +35,7 @@ class Michi {
         // event listeners
         .addEventListeners(
             MessageListener(),
-            OnReadyListener(),
+            OnGuildReadyListener(),
             SlashCommandListener()
         )
 
