@@ -15,7 +15,8 @@ import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler
 import michi.bot.util.Emoji
 
 /**
- * Gets the guild Music Manager
+ * Gets the guild Music Manager and manages its player
+ * @author Slz
  */
 
 class PlayerManager {

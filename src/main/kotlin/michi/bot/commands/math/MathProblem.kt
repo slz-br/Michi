@@ -6,6 +6,7 @@ import java.util.Random
 /**
  * Creates a math problem with a random operation and numbers
  * operations: sum(+), subtraction(-), multiplication(*)
+ * @param sender The user that will need to solve this math problem.
  * @author Slz
  */
 
@@ -37,14 +38,29 @@ class MathProblem(sender: User) {
         }
     }
 
+    /**
+     * Function to get the result of a sum math problem.
+     * @return The result of x + y
+     * @author Slz
+     */
     private fun sum(x: Int, y: Int): Int {
         return x + y
     }
 
+    /**
+     * Function to get the result of a subtraction math problem.
+     * @return The result of x - y
+     * @author Slz
+     */
     private fun subtract(x: Int, y: Int): Int {
         return x - y
     }
 
+    /**
+     * Function to het the result of a multiplication math problem.
+     * @return The result of x * y
+     * @author Slz
+     */
     private fun multiply(x: Int, y: Int): Int {
         return x * y
     }

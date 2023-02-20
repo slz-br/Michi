@@ -11,6 +11,8 @@ import java.util.LinkedList
  * Gives the user a math problem to the user solve when the user uses the "math" SlashCommand, it also
  * counts the time that it took to the user solve the problem and cancels itself if the user takes longer than
  * 30 seconds to answer.
+ * @param problem The math problem to manage.
+ * @param event The slashCommandInteraction that called the math command.
  * @author Slz
  */
 
@@ -44,6 +46,12 @@ class MathLogic(problem: MathProblem, event: SlashCommandInteractionEvent) {
 
     }
 
+    /**
+     * Checks if the math problem was solved after the delay.
+     * @param problem The math problem to check
+     * @param channel The channel to send the message if the problem wasn't answered in time.
+     * @author Slz
+     */
     private suspend fun checkDelay(problem: MathProblem, channel: TextChannel) {
         delay(45000L)
         if (!problemInstance.isAnswered) {
