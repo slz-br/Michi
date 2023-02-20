@@ -34,9 +34,7 @@ class Scheduler(audioPlayer: AudioPlayer): AudioEventAdapter() {
     }
 
     fun updateQueue(track: AudioTrack) {
-        if (!player.startTrack(track, true)) {
-            queue.offer(track)
-        }
+        if (!player.startTrack(track, true)) queue.offer(track)
     }
 
 }
