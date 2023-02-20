@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
+import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
 
 /**
@@ -15,11 +16,12 @@ import java.util.concurrent.LinkedBlockingQueue
 
 class Scheduler(audioPlayer: AudioPlayer): AudioEventAdapter() {
 
-    val queue = LinkedBlockingQueue<AudioTrack>()
+    val queue: BlockingQueue<AudioTrack>
     val player: AudioPlayer
 
     init {
         player = audioPlayer
+        queue = LinkedBlockingQueue()
     }
 
     override fun onTrackEnd(player: AudioPlayer?, track: AudioTrack?, endReason: AudioTrackEndReason?) {
