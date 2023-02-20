@@ -6,13 +6,15 @@ import net.dv8tion.jda.api.audio.AudioSendHandler
 import java.nio.ByteBuffer
 
 class PlayerSoundHandler(audioPlayer: AudioPlayer): AudioSendHandler {
-    private val player: AudioPlayer                         // lavaplayer AudioPlayer
-    private val buffer = ByteBuffer.allocate(1024) // bytes sent to discord every 20ms
-    private val frame = MutableAudioFrame()                // where the bytes are being stored
+    private val player: AudioPlayer         // lavaplayer AudioPlayer
+    private val buffer: ByteBuffer         // bytes to send to discord
+    private val frame: MutableAudioFrame  // where the bytes are being stored
 
     init {
-        player = audioPlayer     // initializing the player
-        frame.setBuffer(buffer) // sending the bytes to the buffer that after will provide to discord
+        player = audioPlayer                         // initializing the player
+        buffer = ByteBuffer.allocate(1024)          // bytes sent to discord every 20ms
+        frame = MutableAudioFrame()                // frame that will send bytes to the buffer
+        frame.setBuffer(buffer)                   // sending the bytes to the buffer that after will provide to discord
     }
 
     // provides the frame to the player, so the player will write in the frame
