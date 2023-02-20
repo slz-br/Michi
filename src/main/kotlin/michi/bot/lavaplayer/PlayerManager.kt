@@ -79,11 +79,12 @@ class PlayerManager {
                         .queue()
                     return
                 }
+                val embed = EmbedBuilder()
                 val tracks = playlist.tracks
+
                 if (playlist.isSearchResult) {
                     val track = tracks[0]
                     musicManager.scheduler.updateQueue(track)
-                    val embed = EmbedBuilder()
                     embed.setColor(Color.BLUE)
                         .setTitle("Added to the queue!")
                         .addField(track.info.title, "by: ${track.info.author}", false)
@@ -93,7 +94,6 @@ class PlayerManager {
                     return
                 }
 
-                val embed = EmbedBuilder()
                 embed.setColor(Color.BLUE)
                     .setTitle("Added to the queue!")
                     .addField(playlist.name, "${tracks.size} added to the queue", false)
