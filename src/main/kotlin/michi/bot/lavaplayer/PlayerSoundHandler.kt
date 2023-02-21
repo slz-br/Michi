@@ -12,12 +12,12 @@ class PlayerSoundHandler(audioPlayer: AudioPlayer): AudioSendHandler {
 
     init {
         player = audioPlayer                         // initializing the player
-        buffer = ByteBuffer.allocate(1024)          // bytes sent to discord every 20ms
+        buffer = ByteBuffer.allocate(1024)  // bytes sent to discord every 20ms
         frame = MutableAudioFrame()                // frame that will send bytes to the buffer
         frame.setBuffer(buffer)                   // sending the bytes to the buffer that after will provide to discord
     }
 
-    // provides the frame to the player, so the player will write in the frame
+     // provides the frame to the player, so the player will write in the frame
     // and the frame content will be sent to discord
     override fun canProvide(): Boolean = player.provide(frame)
 
