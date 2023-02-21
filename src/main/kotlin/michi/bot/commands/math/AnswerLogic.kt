@@ -9,7 +9,7 @@ import michi.bot.util.Emoji
  * @param mathLogicInstance the user's math problem instance.
  * @author Slz
  */
- fun checkAnswer(event: MessageReceivedEvent, mathLogicInstance: MathLogic) {
+ fun checkAnswer(event: MessageReceivedEvent, mathLogicInstance: MathProblemManager) {
 
     val context: MessageReceivedEvent = event
     val msg: Int = context.message.contentRaw.toInt()
@@ -30,5 +30,5 @@ import michi.bot.util.Emoji
             .queue()
         mathLogicInstance.problemInstance.isAnswered = true
     }
-    if(MathLogic.instances.contains(mathLogicInstance)) MathLogic.instances.remove(mathLogicInstance)
+    if(MathProblemManager.instances.contains(mathLogicInstance)) MathProblemManager.instances.remove(mathLogicInstance)
 }

@@ -17,7 +17,7 @@ class MessageListener: ListenerAdapter() {
         val sender = event.author
 
         // math
-        for (instance in MathLogic.instances) {
+        for (instance in MathProblemManager.instances) {
 
             if (sender == instance.problemInstance.user && !sender.isBot && event.channel == instance.context.channel) {
                 try {

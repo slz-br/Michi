@@ -6,7 +6,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import michi.bot.commands.admin.ban
 import michi.bot.commands.admin.unban
-import michi.bot.commands.math.MathLogic
+import michi.bot.commands.math.MathProblemManager
 import michi.bot.commands.math.MathProblem
 import michi.bot.commands.misc.wikipedia.randomWiki
 import michi.bot.commands.music.MusicCommands
@@ -38,7 +38,7 @@ abstract class CommandManager {
         fun checkMath(context: SlashCommandInteractionEvent) {
             val sender = context.user
 
-            MathLogic.instances.forEach {
+            MathProblemManager.instances.forEach {
                 if (sender == it.problemInstance.user) {
                     context.reply("Solve one problem before calling another ${Emoji.smolMichiAngry}")
                         .setEphemeral(true)
@@ -47,7 +47,7 @@ abstract class CommandManager {
                 }
                 if(checkCooldown(sender, context)) return
             }
-            MathLogic.instances.add(MathLogic(MathProblem(sender), context))
+            MathProblemManager.instances.add(MathProblemManager(MathProblem(sender), context))
         }
 
         /**
