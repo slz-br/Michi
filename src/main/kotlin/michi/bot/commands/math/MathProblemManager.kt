@@ -16,14 +16,14 @@ import java.util.LinkedList
  * @author Slz
  */
 
-class MathLogic(problem: MathProblem, event: SlashCommandInteractionEvent) {
+class MathProblemManager(problem: MathProblem, event: SlashCommandInteractionEvent) {
 
     val initialTime: Long
     val problemInstance = problem
     var timeEndedUp: Boolean = false
     val context = event
     companion object {
-        val instances = LinkedList<MathLogic>()
+        val instances = LinkedList<MathProblemManager>()
     }
 
     init {
