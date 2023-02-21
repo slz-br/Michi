@@ -24,7 +24,7 @@ class PlayerManager {
         var instance: PlayerManager? = null
             get() {
                 if (field == null) {
-                    return PlayerManager()
+                    instance = PlayerManager()
                 }
                 return field
             }
