@@ -198,6 +198,12 @@ abstract class CommandManager {
             randomWiki(context)
         }
 
+        /**
+         * Checks if a user meets the requirements to use the skip command.
+         * @param context The SlashCommandInteraction that called the skip function.
+         * @author Slz
+         * @see checkStop
+         */
         fun checkSkip(context: SlashCommandInteractionEvent) {
             val sender = context.member!!
 
@@ -245,6 +251,13 @@ abstract class CommandManager {
 
         }
 
+        /**
+         * Tries to retrieve a User from a guild.
+         * @param guild The guild to look for the user;
+         * @param user The user to search on the guild.
+         * @return True if the user was found in the guild, false if not.
+         * @author Slz
+         */
         private fun locateUserInGuild(guild: Guild, user: User): Boolean {
             var userNotFound = false
 
@@ -253,12 +266,25 @@ abstract class CommandManager {
             return true
         }
 
+        /**
+         * Puts the user in the cooldown list and remove him from the list after
+         * the delay.
+         * @param user the user to put in cooldown
+         * @author Slz
+         */
         private suspend fun coolDownManager(user: User) {
             coolDown.add(user)
             delay(DELAY)
             coolDown.remove(user)
         }
 
+        /**
+         * Checks if a user is in cooldown.
+         * @param sender The user that sent the command.
+         * @param context The slashCommandInteractionEvent that called a function.
+         * @return True if the user is in cooldown, false if not.
+         * @author Slz
+         */
         private fun checkCooldown(sender: User, context: SlashCommandInteractionEvent): Boolean {
             if (coolDown.contains(sender)) {
                 context.reply("You are in cooldown, wait a bit")

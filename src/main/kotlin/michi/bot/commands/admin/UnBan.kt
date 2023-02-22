@@ -9,6 +9,8 @@ import java.awt.Color
 
 /**
  * Unbans the mentioned user(s) if possible
+ * @param context The SlashCommandInteractionEvent that called this function.
+ * @param subjects The members to unban.
  * @author Slz
  */
 fun unban(context: SlashCommandInteractionEvent, vararg subjects: User) {
@@ -42,6 +44,14 @@ fun unban(context: SlashCommandInteractionEvent, vararg subjects: User) {
     context.replyEmbeds(embed.build()).queue()
 
 }
+
+/**
+ * Checks if it is possible to unban the subjects.
+ * @param context The SlashCommandInteractionEvent that called the unban command.
+ * @param subjects The members to check if they can be unbanned
+ * @return True if all members can be unbanned, false if not.
+ * @author Slz
+ */
 
 private fun isPossible(context: SlashCommandInteractionEvent, subjects: Set<User>): Boolean {
     val agent = context.member!!

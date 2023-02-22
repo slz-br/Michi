@@ -35,6 +35,11 @@ class Scheduler(audioPlayer: AudioPlayer): AudioEventAdapter() {
         player.startTrack(queue.poll(), false)
     }
 
+    /**
+     * Function to update the scheduler queue.
+     * @param track track to play or append to the queue.
+     * @author Slz
+     */
     fun updateQueue(track: AudioTrack) {
         if (!player.startTrack(track, true)) queue.offer(track)
     }

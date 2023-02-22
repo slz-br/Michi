@@ -11,8 +11,12 @@ import java.util.concurrent.TimeUnit
 
 /**
  * Bans the mentioned member(s) if possible
+ * @param context The SlashCommandInteractionEvent that called this function
+ * @param reason The reason of the ban.
+ * @param subjects The members to ban.
  * @author Slz
  */
+
 fun ban(context: SlashCommandInteractionEvent, reason: String?, vararg subjects: Member) {
 
     // guard clause
@@ -35,6 +39,14 @@ fun ban(context: SlashCommandInteractionEvent, reason: String?, vararg subjects:
     context.replyEmbeds(embed.build())
         .queue()
 }
+
+/**
+ * Checks if it is possible to ban the subjects
+ * @param context The SlashCommandInteraction that called the ban function
+ * @param subjects Members to check if they can be banned.
+ * @return True if all members can be banned, false if not.
+ * @author Slz
+ */
 
 private fun isPossible(context: SlashCommandInteractionEvent, subjects: Set<Member>): Boolean {
 
