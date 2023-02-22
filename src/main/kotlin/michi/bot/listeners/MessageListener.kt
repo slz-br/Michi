@@ -1,6 +1,6 @@
 package michi.bot.listeners
 
-import michi.bot.commands.math.MathLogic
+import michi.bot.commands.math.MathProblemManager
 import michi.bot.commands.math.checkAnswer
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
