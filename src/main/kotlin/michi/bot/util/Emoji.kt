@@ -25,6 +25,7 @@ object Emoji {
         const val michiTired = "<:michiTired:1077706713274257562>"
 
         // animated emojis
-        const val michiNodders = "<a:MichiNodders:1073854963555516416>"
+        const val michiNodders = "<a:michiNodders:1073854963555516416>"
+        const val michiSaddened = "<a:michiSaddened:1078247891216367626>"
 
 }
