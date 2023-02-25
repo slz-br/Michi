@@ -8,6 +8,7 @@ import michi.bot.commands.admin.ban
 import michi.bot.commands.admin.unban
 import michi.bot.commands.math.MathProblemManager
 import michi.bot.commands.math.MathProblem
+import michi.bot.commands.misc.raccoon.randomRaccoon
 import michi.bot.commands.misc.wikipedia.randomWiki
 import michi.bot.commands.music.MusicCommands
 import michi.bot.util.Emoji
@@ -205,14 +206,33 @@ abstract class CommandManager {
          * @see checkStop
          */
         fun checkSkip(context: SlashCommandInteractionEvent) {
-            val sender = context.member!!
+            val sender = context.user
+            val senderVoiceState = context.member!!.voiceState!!
+            val botVoiceState = context.guild!!.selfMember.voiceState!!
 
-            if (!sender.hasPermission(Permission.ADMINISTRATOR)) {
-                context.reply("You don't have permission to use this command")
+            if (!botVoiceState.inAudioChannel()) {
+                context.reply("I need to be in a voice channel.")
                     .setEphemeral(true)
                     .queue()
                 return
             }
+
+            if (!senderVoiceState.inAudioChannel()) {
+                context.reply("You need to be in a voice channel to use this command.")
+                    .setEphemeral(true)
+                    .queue()
+                return
+            }
+
+            if (senderVoiceState.channel != botVoiceState.channel) {
+                context.reply("You need to be in the same voice channel as me to use this command.")
+                    .setEphemeral(true)
+                    .queue()
+                return
+            }
+
+            if(checkCooldown(sender, context)) return
+
             MusicCommands.skip(context)
         }
 
@@ -222,6 +242,14 @@ abstract class CommandManager {
             val botVoiceState = bot.voiceState!!
 
             val senderVoiceState = context.member!!.voiceState!!
+
+            if(!botVoiceState.inAudioChannel()) {
+                context.reply("I need to be in a voice channel.")
+                    .setEphemeral(true)
+                    .queue()
+                return
+            }
+
             if (!senderVoiceState.inAudioChannel()) {
                 context.reply("You need to be in a channel to use this command, silly you ${Emoji.michiBlep}")
                     .setEphemeral(true)
