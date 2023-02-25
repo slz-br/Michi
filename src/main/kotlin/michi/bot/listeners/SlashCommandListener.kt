@@ -1,7 +1,6 @@
 package michi.bot.listeners
 
 import michi.bot.commands.CommandManager
-import michi.bot.commands.misc.raccoon.randomRaccoon
 import michi.bot.commands.music.MusicCommands
 import michi.bot.commands.util.help
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -44,7 +43,7 @@ class SlashCommandListener: ListenerAdapter() {
             "queue"   -> CommandManager.checkQueue(event)
             "np"      -> MusicCommands.nowPlaying(event)
             "jump"    -> MusicCommands.jump(event)
-            "raccoon" -> randomRaccoon(event)
+            "raccoon" -> CommandManager.checkRaccoon(event)
         }
 
     }

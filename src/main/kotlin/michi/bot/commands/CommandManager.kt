@@ -199,6 +199,16 @@ abstract class CommandManager {
             randomWiki(context)
         }
 
+        fun checkRaccoon(context: SlashCommandInteractionEvent) {
+            val sender = context.user
+
+            if (checkCooldown(sender, context)) return
+            CoroutineScope(Dispatchers.IO).launch {
+                coolDownManager(sender)
+            }
+            randomRaccoon(context)
+        }
+
         /**
          * Checks if a user meets the requirements to use the skip command.
          * @param context The SlashCommandInteraction that called the skip function.
