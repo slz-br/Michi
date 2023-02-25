@@ -64,10 +64,23 @@ class PlayerManager {
                 musicManager.scheduler.updateQueue(track)
 
                 val embed = EmbedBuilder()
-                embed.setColor(Color.BLUE)
-                    .setTitle("Added to the queue!")
-                    .addField(track.info.title, "by: ${track.info.author}", false)
-                    .setFooter("link: ${track.info.uri}")
+                val element = track.info
+                val queue = musicManager.scheduler.queue
+                val reply = embed.setColor(Color.BLUE)
+                    if(element.title == "NIGHT RUNNING" && element.author == "Shin Sakiura") {
+                        reply.addField(
+                            "Added ${element.title} to the queue ${Emoji.nightRunning}",
+                            "by: ${element.author} | position: ${queue.size + 1}",
+                            false
+                        )
+                    }
+                    else {
+                        reply.addField(
+                            "Added ${element.title} to the queue",
+                            "by: ${element.author} | position: ${queue.size + 1}",
+                            false
+                        )
+                    }
                 context.replyEmbeds(embed.build())
                     .queue()
             }
@@ -85,10 +98,23 @@ class PlayerManager {
                 if (playlist.isSearchResult) {
                     val track = tracks[0]
                     musicManager.scheduler.updateQueue(track)
-                    embed.setColor(Color.BLUE)
-                        .setTitle("Added to the queue!")
-                        .addField(track.info.title, "by: ${track.info.author}", false)
-                        .setFooter("link: ${track.info.uri}")
+                    val queue = musicManager.scheduler.queue
+                    val element = track.info
+                    val reply = embed.setColor(Color.BLUE)
+                    if(element.title == "NIGHT RUNNING" && element.author == "Shin Sakiura") {
+                        reply.addField(
+                            "Added ${element.title} to the queue ${Emoji.nightRunning}",
+                            "by: ${element.author} | position: ${queue.size + 1}",
+                            false
+                        )
+                    }
+                    else {
+                        reply.addField(
+                            "Added ${element.title} to the queue",
+                            "by: ${element.author} | position: #${queue.size + 1}",
+                            false
+                        )
+                    }
                     context.replyEmbeds(embed.build())
                         .queue()
                     return
