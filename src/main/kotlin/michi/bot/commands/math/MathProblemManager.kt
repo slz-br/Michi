@@ -56,9 +56,7 @@ class MathProblemManager(problem: MathProblem, event: SlashCommandInteractionEve
         delay(45000L)
         if (!problemInstance.isAnswered) {
             channel.sendMessage("${problem.user.name} couldn't solve the problem in time.").queue()
-            if (instances.contains(this)) {
-                instances.remove(this)
-            }
+            if (instances.contains(this)) instances.remove(this)
         }
 
     }
