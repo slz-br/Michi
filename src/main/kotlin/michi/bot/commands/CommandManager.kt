@@ -222,6 +222,14 @@ abstract class CommandManager {
             val botVoiceState = bot.voiceState!!
 
             val senderVoiceState = context.member!!.voiceState!!
+
+            if(!botVoiceState.inAudioChannel()) {
+                context.reply("I need to be in a voice channel.")
+                    .setEphemeral(true)
+                    .queue()
+                return
+            }
+
             if (!senderVoiceState.inAudioChannel()) {
                 context.reply("You need to be in a channel to use this command, silly you ${Emoji.michiBlep}")
                     .setEphemeral(true)
