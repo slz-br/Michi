@@ -1,6 +1,7 @@
 package michi.bot.listeners
 
 import michi.bot.commands.CommandManager
+import michi.bot.commands.misc.raccoon.randomRaccoon
 import michi.bot.commands.music.MusicCommands
 import michi.bot.commands.util.help
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -31,15 +32,19 @@ class SlashCommandListener: ListenerAdapter() {
 
         // if everything is right
         when (name) {
-            "math" -> CommandManager.checkMath(event)
-            "ban" -> CommandManager.checkBan(event) // it can only ban people that are in the server.
-            "unban" -> CommandManager.checkUnban(event)
-            "join" -> if (CommandManager.canConnect(event)) MusicCommands.join(event)
-            "play" -> CommandManager.checkPlay(event)
-            "stop" -> CommandManager.checkStop(event)
-            "wiki" -> CommandManager.checkWiki(event)
-            "skip" -> CommandManager.checkSkip(event)
-            "help" -> help(event)
+            "math"    -> CommandManager.checkMath(event)
+            "ban"     -> CommandManager.checkBan(event) // it can only ban people that are in the server.
+            "unban"   -> CommandManager.checkUnban(event)
+            "join"    -> if (CommandManager.canConnect(event)) MusicCommands.join(event)
+            "play"    -> CommandManager.checkPlay(event)
+            "stop"    -> CommandManager.checkStop(event)
+            "wiki"    -> CommandManager.checkWiki(event)
+            "skip"    -> CommandManager.checkSkip(event)
+            "help"    -> help(event)
+            "queue"   -> CommandManager.checkQueue(event)
+            "np"      -> MusicCommands.nowPlaying(event)
+            "jump"    -> MusicCommands.jump(event)
+            "raccoon" -> randomRaccoon(event)
         }
 
     }

@@ -59,6 +59,22 @@ class OnGuildReadyListener: ListenerAdapter() {
             .addOption(OptionType.STRING, "message", "the message that you want to send", true)
         )
 
+        // queue
+        commandData.add(Commands.slash("queue", "gets the queue")
+            .addOption(OptionType.INTEGER, "page", "the page of the queue", true)
+        )
+
+        // np
+        commandData.add(Commands.slash("np", "gets the current playing track"))
+
+        // jumpTo
+        commandData.add(Commands.slash("jump", "plays a determined track of the queue")
+            .addOption(OptionType.INTEGER, "position", "the position in the queue of the track", true)
+        )
+
+        // raccoon
+        commandData.add(Commands.slash("raccoon", "gives you a raccoon pic or gif"))
+
         event.guild.updateCommands().addCommands(commandData).queue()
     }
 }
