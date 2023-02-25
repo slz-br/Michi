@@ -246,6 +246,39 @@ abstract class CommandManager {
             MusicCommands.skip(context)
         }
 
+        fun checkQueue(context: SlashCommandInteractionEvent) {
+            val sender = context.user
+            val senderVoiceState = context.member!!.voiceState!!
+            val botVoiceState = context.guild!!.selfMember.voiceState!!
+
+            if (!botVoiceState.inAudioChannel()) {
+                context.reply("I need to be in a voice channel.")
+                    .setEphemeral(true)
+                    .queue()
+                return
+            }
+
+            if (!senderVoiceState.inAudioChannel()) {
+                context.reply("You need to be in a voice channel to use this command.")
+                    .setEphemeral(true)
+                    .queue()
+                return
+            }
+
+            if (senderVoiceState.channel != botVoiceState.channel) {
+                context.reply("You need to be in the same voice channel as me to use this command.")
+                    .setEphemeral(true)
+                    .queue()
+                return
+            }
+
+            if (checkCooldown(sender, context)) return
+            CoroutineScope(Dispatchers.IO).launch {
+                coolDownManager(sender)
+            }
+            MusicCommands.queue(context)
+        }
+
         fun checkStop(context: SlashCommandInteractionEvent) {
             val sender = context.member!!
             val bot = context.guild!!.selfMember
