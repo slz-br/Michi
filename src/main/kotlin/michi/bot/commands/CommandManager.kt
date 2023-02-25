@@ -22,7 +22,7 @@ import java.net.URISyntaxException
 private const val DELAY = 10000L
 
 /**
- * Checks if it is possible to execute a command and manages the users in cooldown
+ * Checks if it is possible to execute a command and manages the users in cooldown.
  * @author Slz
  */
 
@@ -32,7 +32,7 @@ abstract class CommandManager {
 
         /**
          * Checks if the user that sent the slashCommand already has an active mathProblem to solve.
-         * @param context The SlashCommandInteractionEvent that called the math function
+         * @param context The SlashCommandInteractionEvent that called the math function.
          * @author Slz
          */
         fun checkMath(context: SlashCommandInteractionEvent) {
@@ -85,7 +85,7 @@ abstract class CommandManager {
 
         /**
          * Checks if the users to unban are actually banned.
-         * @param context The slashCommandInteractionEvent that called the unban command
+         * @param context The slashCommandInteractionEvent that called the unban command.
          * @author Slz
          * @see checkBan
          */
@@ -153,7 +153,7 @@ abstract class CommandManager {
 
         /**
          * Checks if it is possible to play a track.
-         * @param context The SlashCommandInteractionEvent that called the play command
+         * @param context The SlashCommandInteractionEvent that called the play command.
          * @author Slz
          * @see canConnect
          */
@@ -184,8 +184,8 @@ abstract class CommandManager {
         }
 
         /**
-         * Checks if the user is in cooldown to use the randomWiki function
-         * @param context The SlashCommandInteractionEvent that called the wiki function
+         * Checks if the user is in cooldown to use the randomWiki function.
+         * @param context The SlashCommandInteractionEvent that called the wiki function.
          * @author Slz
          */
         fun checkWiki(context: SlashCommandInteractionEvent) {
@@ -295,9 +295,15 @@ abstract class CommandManager {
             return false
         }
 
-        private fun isUrl(url: String): Boolean {
+        /**
+         * Checks if a string is an Url.
+         * @param possibleUrl The string to test if it is an Url.
+         * @return True if it is an Url, false if not.
+         * @author Slz
+         */
+        private fun isUrl(possibleUrl: String): Boolean {
             return try {
-                URI(url.trim())
+                URI(possibleUrl.trim())
                 true
             } catch (e: URISyntaxException) {
                 false
