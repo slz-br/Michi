@@ -52,9 +52,9 @@ abstract class SlashCommandManager {
     /**
      * Checks whether a user is or isn't in cooldown. If the user isn't in cooldown, then this
      * function calls the cooldownManager function.
-     * @param context The SlashCommandInteractionEvent to reply to.
-     * @param user The user to check if it is in cooldown.
-     * @return true if the user is in cooldown, false otherwise.
+     * @param context The SlashCommandInteractionEvent to reply to
+     * @param user The User to check if it is in cooldown.
+     * @return True if the user is in cooldown, false otherwise.
      * @author Slz
      * @see coolDownManager
      */
@@ -63,11 +63,11 @@ abstract class SlashCommandManager {
             context.reply("You're in cooldown, wait a bit ${Emoji.michiSip}").setEphemeral(true).queue()
             return true
         }
+
         CoroutineScope(Dispatchers.IO).launch {
             coolDownManager(user)
         }
         return false
     }
-
 
 }
