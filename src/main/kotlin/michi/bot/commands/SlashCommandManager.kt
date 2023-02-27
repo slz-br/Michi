@@ -45,7 +45,9 @@ abstract class SlashCommandManager {
      * @see check
      * @see checkUserCooldown
      */
-    protected abstract fun execute(context: SlashCommandInteractionEvent)
+    open fun execute(context: SlashCommandInteractionEvent) {
+        if (check(context)) return
+    }
 
     /**
      * Checks weather a user is or isn't in cooldown. If the user isn't in cooldown, then this
