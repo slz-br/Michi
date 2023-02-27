@@ -23,7 +23,7 @@ private const val DELAY = 5500L
  * Checks if it is possible to execute a command and manages the users in cooldown.
  * @author Slz
  */
-
+@Deprecated("This class will be replaced by the SlashCommandManager in the future", level = DeprecationLevel.WARNING)
 abstract class CommandManager {
     companion object {
         private val coolDown = mutableListOf<User>()
