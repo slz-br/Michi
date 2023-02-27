@@ -27,26 +27,7 @@ abstract class SlashCommandManager {
             delay(DELAY)
             cooldownList.remove(user)
         }
-    }
 
-    /**
-     * Function to check if it is possible to perform a command.
-     * @param context The slashCommandInteractionEvent to check.
-     * @return true if it's possible to execute the command, false otherwise.
-     * @author Slz
-     * @see execute
-     */
-    abstract fun check(context: SlashCommandInteractionEvent): Boolean
-
-    /**
-     * Function to execute the command.
-     * @param context The SlashCommandInteractionEvent to reply to.
-     * @author Slz
-     * @see check
-     * @see checkUserCooldown
-     */
-    open fun execute(context: SlashCommandInteractionEvent) {
-        if (check(context)) return
     }
 
     /**
