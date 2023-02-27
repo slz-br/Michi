@@ -50,7 +50,7 @@ abstract class SlashCommandManager {
     }
 
     /**
-     * Checks weather a user is or isn't in cooldown. If the user isn't in cooldown, then this
+     * Checks whether a user is or isn't in cooldown. If the user isn't in cooldown, then this
      * function calls the cooldownManager function.
      * @param context The SlashCommandInteractionEvent to reply to.
      * @param user The user to check if it is in cooldown.
