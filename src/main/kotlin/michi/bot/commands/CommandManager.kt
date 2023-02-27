@@ -1,9 +1,6 @@
 package michi.bot.commands
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import michi.bot.commands.admin.ban
 import michi.bot.commands.admin.unban
 import michi.bot.commands.math.MathProblemManager
@@ -106,7 +103,6 @@ abstract class CommandManager {
                         .queue()
                     return
                 }
-
                 usersToUnban.add(subject.asUser)
             }
             if (checkCooldown(sender, context)) return
@@ -174,7 +170,7 @@ abstract class CommandManager {
 
             var url = option[0].asString
             if (!isUrl(url)) {
-                url = "ytsearch: $url"
+                url = "ytsearch:$url"
             }
 
             if (checkCooldown(sender, context)) return
