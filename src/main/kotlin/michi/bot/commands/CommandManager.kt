@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import java.net.URI
 import java.net.URISyntaxException
 
-private const val DELAY = 10000L
+private const val DELAY = 5500L
 
 /**
  * Checks if it is possible to execute a command and manages the users in cooldown.
