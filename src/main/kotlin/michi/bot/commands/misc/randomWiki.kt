@@ -1,4 +1,4 @@
-package michi.bot.commands.misc.wikipedia
+package michi.bot.commands.misc
 
 import michi.bot.util.Emoji
 import net.dv8tion.jda.api.EmbedBuilder

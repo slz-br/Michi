@@ -1,4 +1,4 @@
-package michi.bot.commands.misc.raccoon
+package michi.bot.commands.misc
 
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
