@@ -33,20 +33,6 @@ class OnGuildReadyListener: ListenerAdapter() {
             .addOption(OptionType.USER,"user5","the 5th user to ban", false)
         )
 
-        // join
-        commandData.add(Commands.slash("join", "joins your current voice channel if possible"))
-
-        // play
-        commandData.add(Commands.slash("play", "plays the selected youtube song")
-            .addOption(OptionType.STRING, "song", "link or name of a youtube video", true)
-        )
-
-        // stop
-        commandData.add(Commands.slash("stop", "stops the music and clear the queue"))
-
-        // skip
-        commandData.add(Commands.slash("skip", "starts to play the next music on the queue"))
-
         // wiki
         commandData.add(Commands.slash("wiki", "gives you a random wikipedia article"))
 
@@ -57,19 +43,6 @@ class OnGuildReadyListener: ListenerAdapter() {
         commandData.add(Commands.slash("mail", "send an anonymous message to an user")
             .addOption(OptionType.USER, "receiver", "the user that you want to send the mail", true)
             .addOption(OptionType.STRING, "message", "the message that you want to send", true)
-        )
-
-        // queue
-        commandData.add(Commands.slash("queue", "gets the queue")
-            .addOption(OptionType.INTEGER, "page", "the page of the queue", true)
-        )
-
-        // np
-        commandData.add(Commands.slash("np", "gets the current playing track"))
-
-        // jumpTo
-        commandData.add(Commands.slash("jump", "plays a determined track of the queue")
-            .addOption(OptionType.INTEGER, "position", "the position in the queue of the track", true)
         )
 
         // raccoon
