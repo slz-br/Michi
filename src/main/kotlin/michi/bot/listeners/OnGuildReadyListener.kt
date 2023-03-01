@@ -6,6 +6,10 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 
+/**
+ * Called whenever a guild is loaded.
+ * @author Slz
+ */
 class OnGuildReadyListener: ListenerAdapter() {
 
     override fun onGuildReady(event: GuildReadyEvent) {

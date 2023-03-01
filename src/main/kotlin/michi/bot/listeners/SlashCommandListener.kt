@@ -11,7 +11,7 @@ import java.io.BufferedReader
 import java.io.FileReader
 
 /**
- * Called whenever there's a SlashCommandInteractionEvent
+ * Called whenever a slashCommand is used.
  * @author Slz
  */
 
