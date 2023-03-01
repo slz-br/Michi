@@ -32,10 +32,9 @@ class SlashCommandListener: ListenerAdapter() {
         val sender = event.user
         val guild = event.guild ?: return
 
+        // Checks if the user or guild is blacklisted
         if (blackList.contains(sender.id) || blackList.contains(guild.id)) {
-            event.reply("You can't use my commands anymore ${Emoji.michiTroll}")
-                .setEphemeral(true)
-                .queue()
+            event.reply("You can't use my commands anymore ${Emoji.michiTroll}").setEphemeral(true).queue()
             return
         }
 
