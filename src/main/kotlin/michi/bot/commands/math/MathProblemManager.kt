@@ -1,9 +1,11 @@
 package michi.bot.commands.math
 
 import kotlinx.coroutines.*
+import michi.bot.util.Emoji
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.awt.Color
 import java.util.LinkedList
 
@@ -14,6 +16,7 @@ import java.util.LinkedList
  * @param problem The math problem to manage.
  * @param event The slashCommandInteraction that called the math command.
  * @author Slz
+ * @see MathProblem
  */
 
 class MathProblemManager(problem: MathProblem, event: SlashCommandInteractionEvent) {

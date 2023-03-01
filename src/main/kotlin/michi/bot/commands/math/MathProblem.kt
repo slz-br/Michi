@@ -1,6 +1,8 @@
 package michi.bot.commands.math
 
+import michi.bot.util.Emoji
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import java.util.Random
 
 /**
