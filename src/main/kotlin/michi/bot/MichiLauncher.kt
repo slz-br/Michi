@@ -27,33 +27,36 @@ class Michi {
     init {
 
         val token = config.get("TOKEN")
+
+        // Initializing JDA
         val michi = DefaultShardManagerBuilder.createDefault(token)
 
-        // activity
+        // Activity
         michi.setActivity(Activity.watching("Brand New Animal"))
 
-        // event listeners
+        // Event listeners
         .addEventListeners(
             MessageListener(),
             OnGuildReadyListener(),
             SlashCommandListener()
         )
 
-        // gateway intents
+        // Gateway intents
         .enableIntents(
             GatewayIntent.MESSAGE_CONTENT,
             GatewayIntent.GUILD_VOICE_STATES
         )
 
-        // enable cache
+        // Enable cache
         .enableCache(
             CacheFlag.VOICE_STATE
         )
 
-        // build
+        // Build
         .build()
 
-        // logger message
+        // Logger message
         logger.info("Michi is ready!")
     }
+
 }
