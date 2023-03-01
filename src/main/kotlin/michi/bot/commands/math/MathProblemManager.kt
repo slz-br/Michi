@@ -18,9 +18,9 @@ import java.util.LinkedList
 
 class MathProblemManager(problem: MathProblem, event: SlashCommandInteractionEvent) {
 
-    val initialTime: Long
+    private val initialTime: Long
     val problemInstance = problem
-    var timeEndedUp: Boolean = false
+    private var timeEndedUp: Boolean = false
     val context = event
     companion object {
         val instances = LinkedList<MathProblemManager>()
@@ -59,6 +59,36 @@ class MathProblemManager(problem: MathProblem, event: SlashCommandInteractionEve
             if (instances.contains(this)) instances.remove(this)
         }
 
+    }
+
+    /**
+     * Checks if the answer that the user gave matches the user's problem instance result.
+     * @param event the message event from the user.
+     * @param mathLogicInstance the user's math problem instance.
+     * @author Slz
+     */
+    fun checkAnswer(event: MessageReceivedEvent, mathLogicInstance: MathProblemManager) {
+
+        val context: MessageReceivedEvent = event
+        val msg: Int = context.message.contentRaw.toInt()
+        val user = context.author.asMention
+
+        // guard clause
+        if (this.problemInstance.isAnswered || this.timeEndedUp) return
+
+        if (msg == this.problemInstance.result) {
+            val finalTime = (System.currentTimeMillis() - mathLogicInstance.initialTime) / 1000
+            context.channel.sendMessage("**Correct** $user ${Emoji.michiYesCushion}\nTime: ${finalTime}s")
+                .queue()
+            this.problemInstance.isAnswered = true
+        }
+
+        else {
+            context.channel.sendMessage("**Wrong** $user ${Emoji.michiGlare}\nAnswer: ${this.problemInstance.result}")
+                .queue()
+            mathLogicInstance.problemInstance.isAnswered = true
+        }
+        if(instances.contains(mathLogicInstance)) instances.remove(mathLogicInstance)
     }
 
 }
