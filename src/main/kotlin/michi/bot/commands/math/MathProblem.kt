@@ -16,6 +16,29 @@ class MathProblem(sender: User) {
     var isAnswered = false
     val user: User
 
+    companion object {
+
+        /**
+         * Checks if the user that sent the slashCommand already has an active mathProblem to solve.
+         * @param context The SlashCommandInteractionEvent that called the math function.
+         * @author Slz
+         */
+        fun tryToExecute(context: SlashCommandInteractionEvent) {
+            val sender = context.user
+
+            MathProblemManager.instances.forEach {
+                if (sender == it.problemInstance.user) {
+                    context.reply("Solve one problem before calling another ${Emoji.smolMichiAngry}")
+                        .setEphemeral(true)
+                        .queue()
+                    return
+                }
+            }
+            MathProblemManager.instances.add(MathProblemManager(MathProblem(sender), context))
+        }
+
+    }
+
     init {
         user = sender
         val rng = Random()
