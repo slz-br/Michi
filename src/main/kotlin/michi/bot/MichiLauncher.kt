@@ -22,6 +22,10 @@ fun main() {
    Michi()
 }
 
+/**
+ * Main class, initialize Michi
+ * @author Slz
+ */
 class Michi {
 
     init {
