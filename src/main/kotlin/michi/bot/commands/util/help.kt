@@ -6,13 +6,22 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import java.awt.Color
 
 fun help(context: SlashCommandInteractionEvent) {
+    val sender = context.user.asMention
+
     val embed = EmbedBuilder()
     embed.setColor(Color.MAGENTA)
-        .setTitle("I'm here to help!")
-        .addField("About Michi:", "Hey! I'm Michi, i'm here to bring some fun to this dreary place ${Emoji.michiSmug}\n" +
-                "I can do lots of things and I'm constantly improving to do even more cool things. Some things that i can do is" +
-                "play music, ban bad people and be awesome as always.", false)
-    context.replyEmbeds(embed.build())
-        .setEphemeral(true)
-        .queue()
+        .setTitle("I'm here to help, $sender! ${Emoji.michiSmug}")
+        .addField(
+            "Commands Prefix: \"/\"",
+            "All my commands are slashCommands, it means that if you type \"/\", you can see" +
+                    "my commands, a description of what they do and what they need work.",
+            false
+        )
+        .addField(
+            "Terms Of Service:",
+            "You need to follow some rules, so you can use my commands, at the moment, there aren't any rule, but if it" +
+                    "changes, i'll let you know.",
+            false
+        )
+    context.replyEmbeds(embed.build()).setEphemeral(true).queue()
 }
