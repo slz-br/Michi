@@ -10,6 +10,14 @@ import net.dv8tion.jda.api.entities.User
 import java.io.BufferedReader
 import java.io.FileReader
 
+import michi.bot.commands.admin.*
+import michi.bot.commands.math.MathProblem
+import michi.bot.commands.misc.*
+import michi.bot.commands.util.*
+import michi.bot.util.Emoji
+
+private const val DELAY = (1000 * 5.5).toLong()
+
 /**
  * Called whenever a slashCommand is used.
  * @author Slz
