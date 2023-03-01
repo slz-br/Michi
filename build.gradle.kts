@@ -32,7 +32,6 @@ dependencies {
     api("com.fasterxml.jackson.core:jackson-databind:2.5.2")
     api("com.fasterxml.jackson.core:jackson-annotations:2.5.2")
     api("org.apache.maven.plugins:maven-failsafe-plugin:3.0.0-M8")
-    api("com.sedmelluq:lavaplayer:1.3.77") // api for playing music on discord
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.20")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.5.0") // get access to kotlin coroutines
     api("net.dv8tion:JDA:5.0.0-alpha.21") // wrapper for discord api
