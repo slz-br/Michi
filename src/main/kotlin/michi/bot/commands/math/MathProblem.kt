@@ -68,26 +68,20 @@ class MathProblem(sender: User) {
      * @return The result of x + y
      * @author Slz
      */
-    private fun sum(x: Int, y: Int): Int {
-        return x + y
-    }
+    private fun sum(x: Int, y: Int): Int = x + y
 
     /**
      * Function to get the result of a subtraction math problem.
      * @return The result of x - y
      * @author Slz
      */
-    private fun subtract(x: Int, y: Int): Int {
-        return x - y
-    }
+    private fun subtract(x: Int, y: Int): Int = x - y
 
     /**
      * Function to het the result of a multiplication math problem.
      * @return The result of x * y
      * @author Slz
      */
-    private fun multiply(x: Int, y: Int): Int {
-        return x * y
-    }
+    private fun multiply(x: Int, y: Int): Int = x * y
 
 }
