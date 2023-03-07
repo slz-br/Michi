@@ -7,7 +7,7 @@ import org.jsoup.Jsoup
 import java.awt.Color
 
 /**
- * Searchs a random wikipedia article and sends it to the user
+ * Searches a random wikipedia article and sends it to the user
  * @param context The SlashCommandInteractionEvent that called this function.
  * @author Slz
  */

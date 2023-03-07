@@ -1,7 +1,7 @@
 package michi.bot.util
 
 /**
- * This stores the string references to external emojis, so you can use them in messages, replys and other places.
+ * This stores the string references to external emojis, so you can use them in messages, replies and other places.
  * @author Slz
  */
 object Emoji {

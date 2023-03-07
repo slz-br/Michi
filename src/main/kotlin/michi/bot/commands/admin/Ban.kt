@@ -132,7 +132,7 @@ object Ban {
     }
 
     /**
-     * Searchs for a member in the guild.
+     * Searches for a member in the guild.
      * @param guild The guild to look for the user;
      * @param user The user to search on the guild.
      * @return True if the user was found in the guild, false if not.
