@@ -12,7 +12,7 @@ Since the bot is pretty much is her early stages and I'm a beginner programmer, 
 If I release it, I will paste the link here.
 
 ## 📝 Commands
-You can find Michi's commands [here](https://github.com/slz-br/Michi/blob/main/Commands.md)
+You can find Michi's commands [here](https://github.com/slz-br/Michi/blob/main/Commands.md#commands)
 
 ## 📘 TOS
 If you want to use Michi's commands, you will need to follow a couple of rules. <br>
