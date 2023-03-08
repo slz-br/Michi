@@ -1,5 +1,5 @@
 # Commands
-<p> The list of Michi's commands </p>
+The list of Michi's commands
 
 ## Math
 ``/Math`` Sends you a basic math problem to solve. Solve it as quickly as you can. <br>
@@ -26,4 +26,5 @@
 ``/help`` or alternatively pinging Michi provides you with useful information about Michi. <br>
 ![help.png](https://media.discordapp.net/attachments/1073385676210454630/1083134256114565180/image.png)
 > note 1: This maybe outdated by the time you are reading this, for example, the TOS(Termos of Service) may already exist.
+
 > note 2: The help message is up to changes.
