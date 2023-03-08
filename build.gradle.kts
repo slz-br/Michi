@@ -36,7 +36,7 @@ dependencies {
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.5.0") // get access to kotlin coroutines
     api("net.dv8tion:JDA:5.0.0-alpha.21") // wrapper for discord api
     api("io.github.cdimascio:dotenv-java:2.3.1") // api to get configs
-    implementation("ch.qos.logback:logback-classic:1.4.5") // api to embelish logs
+    implementation("ch.qos.logback:logback-classic:1.4.5") // implementation to embellish logs
     implementation("org.jsoup:jsoup:1.7.2") // api for web scraping
     testImplementation("org.apache.maven.plugins:maven-surefire-plugin:2.22.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:1.7.20")
