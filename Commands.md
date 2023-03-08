@@ -18,7 +18,7 @@
 ![ban.png](https://media.discordapp.net/attachments/1073385676210454630/1083131210517192714/image.png)
 
 ## Unban
-``/unban`` Lets you unban up to 5 banned users at once. 
+``/unban`` Lets you unban up to 5 banned users at once. <br>
 ![unban.png](https://media.discordapp.net/attachments/1073385676210454630/1083132000623415346/image.png) <br>
  >note: In this image I am unbanning mylself, something that is impossible, this image is just for a preview of the unban message
 
