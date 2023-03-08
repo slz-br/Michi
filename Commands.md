@@ -6,11 +6,11 @@
 ![math.png](https://media.discordapp.net/attachments/1073385676210454630/1083123375599271986/image.png)
 
 ## Wiki
-``/wiki`` Gives you the title and first paragraph of a random wikipedia article.
+``/wiki`` Gives you the title and first paragraph of a random wikipedia article. <br>
 ![wiki.png](https://media.discordapp.net/attachments/1073385676210454630/1083125024577298472/image.png)
 
 ## Raccoon
-``/raccoon`` Gives you a random image or gif of a raccoon. Isn't it awesome?.
+``/raccoon`` Gives you a random image or gif of a raccoon. Isn't it awesome? <br>
 ![raccoon.png](https://media.discordapp.net/attachments/1073385676210454630/1083127717022675034/image.png)
 
 ## Ban
