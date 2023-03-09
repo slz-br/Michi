@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import java.awt.Color
 
 fun help(context: SlashCommandInteractionEvent) {
-    val sender = context.user.asMention
+    val sender = context.user.name
 
     val embed = EmbedBuilder()
     embed.setColor(Color.MAGENTA)
@@ -19,7 +19,7 @@ fun help(context: SlashCommandInteractionEvent) {
         )
         .addField(
             "Terms Of Service:",
-            "You need to follow some rules, so you can use my commands, at the moment, there aren't any rule, but if it" +
+            "You need to follow some rules, so you can use my commands, at the moment, there aren't any rule, but if it " +
                     "changes, i'll let you know.",
             false
         )
