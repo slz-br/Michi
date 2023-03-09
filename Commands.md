@@ -20,7 +20,7 @@ The list of Michi's commands
 ## Unban
 ``/unban`` Lets you unban up to 5 banned users at once. <br>
 ![unban.png](https://media.discordapp.net/attachments/1073385676210454630/1083132000623415346/image.png) <br>
- >note: In this image I am unbanning mylself, something that is impossible, this image is just for a preview of the unban message
+>note: In this image I'm unbanning myself, something that isn't possible, this image is just for a preview of the unban message
 
 ## Help
 ``/help`` or alternatively pinging Michi provides you with useful information about Michi. <br>
