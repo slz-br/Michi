@@ -6,8 +6,9 @@ package michi.bot.util
  */
 object Emoji {
 
-        // all the emojis are from the BNA server:
+        // All the emojis are from these BNA servers:
         // https://discord.gg/bna
+        // https://discord.gg/zGUJwG3
 
         const val michiUnimpressed = "<:michiUnimpressed:1071852149283225690>"
         const val smolMichiAngry = "<:smolMichiAngry:1071851332606107658>"
@@ -24,6 +25,8 @@ object Emoji {
         const val michiSmug = "<:michiSmug:1076637043888758895>"
         const val michiTired = "<:michiTired:1077706713274257562>"
         const val michiSip = "<:michiSip:1079562183131807794>"
+        const val michiOpsie = "<:michiOpsie:1083321811036540988>"
+        const val michiShrug = "<:michiShrug:1083994089537683537>"
 
         // animated emojis
         const val michiNodders = "<a:michiNodders:1073854963555516416>"
