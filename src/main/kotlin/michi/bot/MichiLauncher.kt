@@ -36,7 +36,7 @@ class Michi {
         val michi = DefaultShardManagerBuilder.createDefault(token)
 
         // Activity
-        michi.setActivity(Activity.watching("Brand New Animal"))
+        michi.setActivity(Activity.watching("Brand New Animal!"))
 
         // Event listeners
         .addEventListeners(
