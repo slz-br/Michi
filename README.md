@@ -8,7 +8,7 @@ Let the tanuki girl into your server and have fun with her commands, such as ``/
 
 ## ❓ Can I add her to my server?
 Sadly, you can't yet. <br>
-Since the bot is pretty much is her early stages and I'm a beginner programmer, it will take some time before I release it. <br>
+Since the bot is pretty much in her early stages and I'm a beginner programmer, it will take some time before I release it. <br>
 If I release it, I will paste the link here.
 
 ## 📝 Commands
