@@ -43,10 +43,9 @@ class OnGuildReadyListener: ListenerAdapter() {
         // help
         commandData.add(Commands.slash("help", "Relevant info about michi"))
 
-        // mail
-        commandData.add(Commands.slash("mail", "Send an anonymous message to an user")
-            .addOption(OptionType.USER, "receiver", "The user that you want to send the mail", true)
-            .addOption(OptionType.STRING, "message", "The message that you want to send", true)
+        // slowMode
+        commandData.add(Commands.slash("slowmode", "Sets the channel slowmode.)")
+            .addOption(OptionType.INTEGER, "time", "the slowmode time in seconds", true)
         )
 
         // raccoon

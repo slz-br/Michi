@@ -59,12 +59,13 @@ class SlashCommandListener: ListenerAdapter() {
 
         // if everything is right, try to execute the command
         when (name) {
-            "math"    -> MathProblem.tryToExecute(event)
-            "ban"     -> Ban.tryToExecute(event)
-            "unban"   -> UnBan.tryToExecute(event)
-            "wiki"    -> randomWiki(event)
-            "help"    -> help(event)
-            "raccoon" -> randomRaccoon(event)
+            "math"     -> MathProblem.tryToExecute(event)
+            "ban"      -> Ban.tryToExecute(event)
+            "unban"    -> UnBan.tryToExecute(event)
+            "wiki"     -> randomWiki(event)
+            "help"     -> help(event)
+            "raccoon"  -> randomRaccoon(event)
+            "slowmode" -> SlowMode.tryToExecute(event)
         }
 
     }
