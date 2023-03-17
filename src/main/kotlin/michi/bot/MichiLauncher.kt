@@ -30,7 +30,7 @@ class Michi {
 
     init {
 
-        val token = config.get("TOKEN")
+        val token = config["TOKEN"]
 
         // Initializing JDA
         val michi = DefaultShardManagerBuilder.createDefault(token)
@@ -46,15 +46,7 @@ class Michi {
         )
 
         // Gateway intents
-        .enableIntents(
-            GatewayIntent.MESSAGE_CONTENT,
-            GatewayIntent.GUILD_VOICE_STATES
-        )
-
-        // Enable cache
-        .enableCache(
-            CacheFlag.VOICE_STATE
-        )
+        .enableIntents(GatewayIntent.MESSAGE_CONTENT)
 
         // Build
         .build()
