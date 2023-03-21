@@ -45,11 +45,10 @@ object UnBan {
 
         // this is asserted because in the SlashCommandListener it's tested if the command
         // comes or not from a guild
-        val guild = context.guild
+        val guild = context.guild!!
 
         // guard clauses
-        if (!isPossible(context, subjects.toSet())) return
-        guild ?: return
+        if (!isPossible(context)) return
 
         // if everything is right
         val embed = EmbedBuilder()
@@ -60,12 +59,8 @@ object UnBan {
             embed.addField("Unbanned ${subject.name}", "", false)
         }
 
-        if (subjects.size == 1) {
-            embed.setFooter("It's better that this user don't cause any trouble again")
-            context.replyEmbeds(embed.build())
-        } else {
-            embed.setFooter("It's better that they don't cause any trouble again")
-        }
+        if (subjects.size == 1) embed.setFooter("It's better that this user don't cause any trouble again")
+        else embed.setFooter("It's better that they don't cause any trouble again")
 
         context.replyEmbeds(embed.build()).queue()
 
@@ -74,42 +69,20 @@ object UnBan {
     /**
      * Checks if it is possible to unban the subjects.
      * @param context The SlashCommandInteractionEvent that called the unban command.
-     * @param subjects The members to check if they can be unbanned
      * @return True if all members can be unbanned, false if not.
      * @author Slz
      */
 
-    private fun isPossible(context: SlashCommandInteractionEvent, subjects: Set<User>): Boolean {
+    private fun isPossible(context: SlashCommandInteractionEvent): Boolean {
         val agent = context.member!!
-        val guild = context.guild!!
-        var userNotBanned = false
+        val canAgentPerformUnban = agent.hasPermission(Permission.BAN_MEMBERS) || agent.hasPermission(Permission.ADMINISTRATOR)
 
-        if (subjects.size > 5) {
-            context.reply("You can't unban more than 5 people at the same time with this command.")
+        // check if the agent has the permissions to use the command
+        if (!canAgentPerformUnban) {
+            context.reply("You don't have the permissions to use this command, silly you ${Emoji.michiBlep}")
                 .setEphemeral(true)
                 .queue()
             return false
-        }
-
-        for (subject in subjects) {
-
-            // check if the agent has the permissions to use the command
-            if (!agent.hasPermission(Permission.BAN_MEMBERS) && !agent.hasPermission(Permission.ADMINISTRATOR)) {
-                context.reply("You don't have the permissions to use this command.")
-                    .setEphemeral(true)
-                    .queue()
-                return false
-            }
-
-            // checks if the subject is already banned
-            guild.retrieveBan(subject).queue(null) { userNotBanned = true }
-            if (userNotBanned) {
-                context.reply("A user isn't banned")
-                    .setEphemeral(true)
-                    .queue()
-                return false
-            }
-
         }
 
         return true
