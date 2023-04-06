@@ -1,8 +1,6 @@
 package michi.bot.commands.math
 
-import michi.bot.util.Emoji
 import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import java.util.Random
 
 /**
@@ -17,29 +15,6 @@ class MathProblem(sender: User) {
     val result: Int
     var isAnswered = false
     val user: User
-
-    companion object {
-
-        /**
-         * Checks if the user that sent the slashCommand already has an active mathProblem to solve.
-         * @param context The SlashCommandInteractionEvent that called the math function.
-         * @author Slz
-         */
-        fun tryToExecute(context: SlashCommandInteractionEvent) {
-            val sender = context.user
-
-            MathProblemManager.instances.forEach {
-                if (sender == it.problemInstance.user) {
-                    context.reply("Solve one problem before calling another ${Emoji.smolMichiAngry}")
-                        .setEphemeral(true)
-                        .queue()
-                    return
-                }
-            }
-            MathProblemManager.instances.add(MathProblemManager(MathProblem(sender), context))
-        }
-
-    }
 
     init {
         user = sender
