@@ -42,11 +42,15 @@ class Michi {
         .addEventListeners(
             MessageListener(),
             OnGuildReadyListener(),
-            SlashCommandListener()
+            SlashCommandListener(),
+            ModalInteractionListener(),
+            ButtonListener()
         )
 
         // Gateway intents
-        .enableIntents(GatewayIntent.MESSAGE_CONTENT)
+        .enableIntents(
+            GatewayIntent.MESSAGE_CONTENT,
+        )
 
         // Build
         .build()

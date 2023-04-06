@@ -1,5 +1,7 @@
 package michi.bot.listeners
 
+import michi.bot.Michi
+import michi.bot.commands.CommandScope
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.OptionType
@@ -15,41 +17,53 @@ class OnGuildReadyListener: ListenerAdapter() {
     override fun onGuildReady(event: GuildReadyEvent) {
         val commandData: MutableList<CommandData> = ArrayList()
 
-        // math
-        commandData.add(Commands.slash("math", "Gives you a basic math problem."))
-
-        // ban
-        commandData.add(Commands.slash("ban", "Bans the mentioned users")
-            .addOption(OptionType.USER,"user1","The 1st user to ban", true)
-            .addOption(OptionType.USER,"user2","The 2nd user to ban", false)
-            .addOption(OptionType.USER,"user3","The 3rd user to ban", false)
-            .addOption(OptionType.USER,"user4","The 4th user to ban", false)
-            .addOption(OptionType.USER,"user5","The 5th user to ban", false)
-            .addOption(OptionType.STRING,"reason","The reason for the ban", false)
-        )
-
-        // unban
-        commandData.add(Commands.slash("unban", "Bans the mentioned users")
-            .addOption(OptionType.USER,"user1","The 1st user to unban", true)
-            .addOption(OptionType.USER,"user2","The 2nd user to unban", false)
-            .addOption(OptionType.USER,"user3","The 3rd user to unban", false)
-            .addOption(OptionType.USER,"user4","The 4th user to unban", false)
-            .addOption(OptionType.USER,"user5","The 5th user to unban", false)
-        )
-
-        // wiki
-        commandData.add(Commands.slash("wiki", "Gives you a random wikipedia article"))
-
         // help
-        commandData.add(Commands.slash("help", "Relevant info about michi"))
+        commandData.add(Commands.slash("help", "Relevant info about michi."))
 
-        // slowMode
-        commandData.add(Commands.slash("slowmode", "Sets the channel slowmode.)")
-            .addOption(OptionType.INTEGER, "time", "the slowmode time in seconds", true)
+        // mail
+        commandData.add(Commands.slash("mail", "Send an anonymous message to an user.")
+            .addOption(OptionType.STRING, "title", "What's the mail about?", true)
+            .addOption(OptionType.STRING, "message", "The content/body of the mail.", true)
+            .addOption(OptionType.USER, "receiver", "Who are you sending this mail to?", true)
         )
 
-        // raccoon
-        commandData.add(Commands.slash("raccoon", "Gives you a raccoon pic or gif"))
+        // mail-window
+        commandData.add(Commands.slash("mail-window", "Send an anonymous message to an user but using a window."))
+
+        // inbox
+        commandData.add(Commands.slash("inbox", "Check the mails you received.")
+            .addOption(OptionType.INTEGER, "page", "The inbox page you want to see.", true)
+        )
+
+        // read
+        commandData.add(Commands.slash("read", "Read an mail from your inbox.")
+            .addOption(OptionType.INTEGER, "position", "The position of the email you want to read in your inbox.", true)
+        )
+
+        // remove
+        commandData.add(Commands.slash("remove", "Remove an email from your inbox.")
+            .addOption(OptionType.INTEGER, "position", "The position of the mail you want to remove in your inbox.", true)
+        )
+
+        Michi.commandList.forEach { cmd ->
+
+            if (cmd.scope != CommandScope.GUILD_SCOPE) return
+
+            val command = Commands.slash(cmd.name, cmd.description)
+            for(arg in cmd.arguments) {
+                command.addOption(arg.type, arg.name, arg.description, arg.isRequired)
+            }
+            commandData.add(command)
+
+        }
+
+        // report
+        commandData.add(Commands.slash("report-mail", "Reports a mail that was sent to you.")
+            .addOption(OptionType.INTEGER, "mail-position", "The position of the mail in your inbox.")
+        )
+
+        // clearInbox
+        commandData.add(Commands.slash("clear-inbox", "Clears your mails inbox."))
 
         event.guild.updateCommands().addCommands(commandData).queue()
     }
