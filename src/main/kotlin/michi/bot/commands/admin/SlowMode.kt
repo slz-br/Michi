@@ -1,35 +1,37 @@
 package michi.bot.commands.admin
 
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import michi.bot.commands.CommandScope
+import michi.bot.commands.MichiArgument
+import michi.bot.commands.MichiCommand
+import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.OptionType
 
-object SlowMode {
+object SlowMode: MichiCommand("slowmode", "Sets the channel slowmode.", CommandScope.GUILD_SCOPE) {
 
-    /**
-     * Checks if the user that sent the command has "administrator" or "manage_channels" permission
-     * @param context The interaction to check
-     * @author Slz
-     */
-    fun tryToExecute(context: SlashCommandInteractionEvent) {
-        val sender = context.member!!
-
-        if (!sender.hasPermission(Permission.ADMINISTRATOR) || !sender.hasPermission(Permission.MANAGE_CHANNEL)) {
-            context.reply("You don't have the permissions to use this command, silly you ${Emoji.michiBlep}")
-                .setEphemeral(true)
-                .queue()
-            return
-        }
-
-        slowMode(context)
-    }
+    override val userPermissions: List<Permission>
+        get() = listOf(Permission.ADMINISTRATOR, Permission.MANAGE_CHANNEL)
+    override val botPermisions: List<Permission>
+        get() = listOf(Permission.ADMINISTRATOR, Permission.MANAGE_CHANNEL, Permission.MESSAGE_SEND)
+    override val usage: String
+        get() = "/slowmode <time in seconds(between 0 and 21600)>"
+    override val arguments: List<MichiArgument>
+        get() = listOf(
+            MichiArgument("time", "the slowmode time in seconds.", OptionType.INTEGER, true)
+        )
 
     /**
      * Applies slowMode to the channel that the command was sent in.
      * @param context The interaction to reply to.
      * @author Slz
      */
-    private fun slowMode(context: SlashCommandInteractionEvent) {
+    @OptIn(DelicateCoroutinesApi::class)
+    override fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.member!!
         val channel = context.channel.asTextChannel()
         val slowTime = context.options[0].asInt
@@ -41,14 +43,39 @@ object SlowMode {
             return
         }
 
-        channel.manager.setSlowmode(slowTime).queue {
-            context.reply("SlowMode successfully applied to ${channel.asMention}")
+        if (slowTime == 0 && channel.slowmode == 0) {
+            context.reply("The channel already isn't slowmoded.")
                 .setEphemeral(true)
                 .queue()
-            if (slowTime == 0) channel.sendMessage("${sender.asMention} removed the slowmode from this channel ${Emoji.michiJoy}")
-                .queue()
-            else channel.sendMessage("${sender.asMention} slowmoded this channel").queue()
+            return
         }
+
+        channel.manager.setSlowmode(slowTime).queue {
+            context.reply("SlowMode successfully applied to ${channel.asMention}").setEphemeral(true).queue()
+
+            if (channel.slowmode == 0) channel.sendMessage("${sender.asMention} removed the slowmode from this channel ${Emoji.michiJoy}").queue()
+            else channel.sendMessage("${sender.asMention} slowmoded this channel.").queue()
+
+            // puts the user that sent the command in cooldown
+            GlobalScope.launch { SlashCommandListener.cooldownManager(sender.user) }
+        }
+    }
+
+    override fun canHandle(context: SlashCommandInteractionEvent): Boolean {
+        val sender = context.member!!
+        val bot = context.guild!!.selfMember
+
+        if (!sender.permissions.any { permission -> userPermissions.contains(permission) }) {
+            context.reply("You don't have the permissions to use this command, silly you ${Emoji.michiBlep}").setEphemeral(true).queue()
+            return false
+        }
+
+        if (!bot.permissions.any{ permission -> Clear.botPermisions.contains(permission) }) {
+            context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}").setEphemeral(true).queue()
+            return false
+        }
+
+        return true
     }
 
 }
