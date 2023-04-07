@@ -13,6 +13,8 @@ plugins {
 
 repositories {
     mavenLocal()
+    mavenCentral()
+
     maven {
         url = uri("https://repo1.maven.org/maven2/")
     }
@@ -24,6 +26,11 @@ repositories {
     maven {
         url = uri("https://repo.maven.apache.org/maven2/")
     }
+
+    maven {
+        url = uri("https://jitpack.io")
+    }
+
 }
 
 dependencies {
