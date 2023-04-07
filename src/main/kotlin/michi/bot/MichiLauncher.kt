@@ -17,13 +17,13 @@ import michi.bot.listeners.*
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
-import net.dv8tion.jda.api.utils.cache.CacheFlag
 import okhttp3.internal.http2.Http2Connection
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 val config: Dotenv = Dotenv.configure().load()
 val logger: Logger = LoggerFactory.getLogger(Http2Connection.Listener::class.java)
+val perspectiveAPI: PerspectiveAPI = PerspectiveAPI.create(config["PERSPECTIVE_API_TOKEN"])
 
 /**
  * Function that wakes up Michi
