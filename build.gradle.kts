@@ -28,6 +28,10 @@ repositories {
     }
 
     maven {
+        url = uri("https://m2.dv8tion.net/releases")
+    }
+
+    maven {
         url = uri("https://jitpack.io")
     }
 
@@ -44,6 +48,7 @@ dependencies {
     api("net.dv8tion:JDA:5.0.0-beta.2") // wrapper for discord api
     api("io.github.cdimascio:dotenv-java:2.3.1") // api to get configs
     api("com.github.origma:Google-PerspectiveAPI-Java-Client:0.0.5")
+    api("com.sedmelluq:lavaplayer:1.3.78")
     implementation("org.yaml:snakeyaml:2.0")
     implementation("ch.qos.logback:logback-classic:1.4.6") // implementation to embellish logs
     implementation("org.jsoup:jsoup:1.15.4") // api for web scraping
