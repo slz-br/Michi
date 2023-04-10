@@ -34,17 +34,8 @@ object Wiki: MichiCommand("wiki", "Gives you a random wikipedia article.", Comma
     @OptIn(DelicateCoroutinesApi::class)
     override fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.user
-        val guild = context.guild
 
         if (!canHandle(context)) return
-
-        if (guild != null) {
-            val bot = guild.selfMember
-            if (!bot.permissions.any { permission -> Ban.botPermisions.contains(permission) }) {
-                context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}").setEphemeral(true).queue()
-                return
-            }
-        }
 
         val article = Jsoup.connect("https://en.wikipedia.org//wiki/Special:Random").get()
         val articleTitle = article.getElementsByTag("h1").first()?.text()
@@ -72,5 +63,19 @@ object Wiki: MichiCommand("wiki", "Gives you a random wikipedia article.", Comma
         GlobalScope.launch { SlashCommandListener.cooldownManager(sender) }
     }
 
-    override fun canHandle(context: SlashCommandInteractionEvent): Boolean = true
+    override fun canHandle(context: SlashCommandInteractionEvent): Boolean {
+        val guild = context.guild
+
+        if (guild != null) {
+            val bot = guild.selfMember
+
+            if (!bot.permissions.any { permission -> Clear.botPermisions.contains(permission) }) {
+                context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}").setEphemeral(true).queue()
+                return false
+            }
+
+        }
+
+        return true
+    }
 }
