@@ -3,10 +3,10 @@ package michi.bot.commands
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 abstract class MichiCommand(val name: String, val description: String, val scope: CommandScope) {
-    open val userPermissions = listOf<Permission>()
-    open val botPermisions = listOf<Permission>()
-    open val ownerOnly = false
-    open val usage = ""
+    protected open val userPermissions = listOf<Permission>()
+    protected open val botPermisions = listOf<Permission>()
+    protected open val ownerOnly = false
+    protected open val usage = ""
     open val arguments = listOf<MichiArgument>()
 
     /**
