@@ -24,6 +24,6 @@ abstract class MichiCommand(val name: String, val description: String, val scope
      * @author Slz
      * @see execute
      */
-    abstract fun canHandle(context: SlashCommandInteractionEvent): Boolean
+    protected abstract fun canHandle(context: SlashCommandInteractionEvent): Boolean
 
 }
