@@ -72,7 +72,7 @@ object SlowMode: MichiCommand("slowmode", "Sets the channel slowmode.", CommandS
             return false
         }
 
-        if (!bot.permissions.any { permission -> Clear.botPermisions.contains(permission) }) {
+        if (!bot.permissions.any { permission -> botPermisions.contains(permission) }) {
             context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}").setEphemeral(true).queue()
             return false
         }
