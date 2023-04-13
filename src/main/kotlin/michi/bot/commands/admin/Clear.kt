@@ -14,10 +14,18 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 
 object Clear: MichiCommand("clear", "Deletes a certain amount of messages from this chat.", CommandScope.GUILD_SCOPE) {
     override val userPermissions: List<Permission>
-        get() = listOf(Permission.ADMINISTRATOR, Permission.MESSAGE_MANAGE)
+        get() = listOf(
+            Permission.ADMINISTRATOR,
+            Permission.MESSAGE_MANAGE
+        )
 
     override val botPermisions: List<Permission>
-        get() = listOf(Permission.ADMINISTRATOR, Permission.MESSAGE_MANAGE, Permission.MESSAGE_SEND)
+        get() = listOf(
+            Permission.ADMINISTRATOR,
+            Permission.MESSAGE_MANAGE,
+            Permission.MESSAGE_SEND,
+            Permission.MESSAGE_EXT_EMOJI
+        )
 
     override val arguments: List<MichiArgument>
         get() = listOf(

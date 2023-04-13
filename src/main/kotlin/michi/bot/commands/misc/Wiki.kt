@@ -23,7 +23,10 @@ object Wiki: MichiCommand("wiki", "Gives you a random wikipedia article.", Comma
         get() = "/wiki"
 
     override val botPermisions: List<Permission>
-        get() = listOf(Permission.MESSAGE_SEND)
+        get() = listOf(
+            Permission.MESSAGE_SEND,
+            Permission.MESSAGE_EXT_EMOJI
+        )
 
     /**
      * Searches a random wikipedia article and sends it to the user

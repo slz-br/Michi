@@ -21,10 +21,18 @@ import java.util.concurrent.TimeUnit
 
 object Ban: MichiCommand("ban", "Bans the mentioned users.", CommandScope.GUILD_SCOPE) {
     override val userPermissions: List<Permission>
-        get() = listOf(Permission.ADMINISTRATOR, Permission.BAN_MEMBERS)
+        get() = listOf(
+            Permission.ADMINISTRATOR,
+            Permission.BAN_MEMBERS
+        )
 
     override val botPermisions: List<Permission>
-        get() = listOf(Permission.ADMINISTRATOR, Permission.BAN_MEMBERS, Permission.MESSAGE_SEND)
+        get() = listOf(
+            Permission.ADMINISTRATOR,
+            Permission.BAN_MEMBERS,
+            Permission.MESSAGE_SEND,
+            Permission.MESSAGE_EXT_EMOJI
+        )
 
     override val usage: String
         get() = "/ban <user1> <user2(optional)> <user3(optional)> <reason(optional)>"

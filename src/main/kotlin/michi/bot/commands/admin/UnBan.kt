@@ -17,10 +17,21 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.awt.Color
 
 object UnBan: MichiCommand("unban", "Unbans the mentioned users.", CommandScope.GUILD_SCOPE) {
+
     override val userPermissions: List<Permission>
-        get() = listOf(Permission.ADMINISTRATOR, Permission.BAN_MEMBERS)
+        get() = listOf(
+            Permission.ADMINISTRATOR,
+            Permission.BAN_MEMBERS
+        )
+
     override val botPermisions: List<Permission>
-        get() = listOf(Permission.ADMINISTRATOR, Permission.BAN_MEMBERS, Permission.MESSAGE_SEND)
+        get() = listOf(
+            Permission.ADMINISTRATOR,
+            Permission.BAN_MEMBERS,
+            Permission.MESSAGE_SEND,
+            Permission.MESSAGE_EXT_EMOJI
+        )
+
     override val usage: String
         get() = "/ban <1st user> <2nd user(optional) <3rd user(optional) <reason(optional)>"
     override val arguments: List<MichiArgument>
