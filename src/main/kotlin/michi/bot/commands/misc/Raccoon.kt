@@ -72,12 +72,15 @@ object Raccoon: MichiCommand("raccoon", "Sends you a random raccoon pic or gif",
 
     override fun canHandle(context: SlashCommandInteractionEvent): Boolean {
         val guild = context.guild
-        if (guild != null) {
+
+        guild?.let {
             val bot = guild.selfMember
-            if (!bot.permissions.any { permission -> botPermisions.contains(permission) }) {
+
+            if (!bot.permissions.containsAll(botPermisions)) {
                 context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}").setEphemeral(true).queue()
                 return false
             }
+
         }
 
         return true

@@ -5,7 +5,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import michi.bot.commands.CommandScope
 import michi.bot.commands.MichiCommand
-import michi.bot.commands.admin.Ban
 import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
 import net.dv8tion.jda.api.EmbedBuilder
@@ -66,10 +65,10 @@ object Wiki: MichiCommand("wiki", "Gives you a random wikipedia article.", Comma
     override fun canHandle(context: SlashCommandInteractionEvent): Boolean {
         val guild = context.guild
 
-        if (guild != null) {
+        guild?.let {
             val bot = guild.selfMember
 
-            if (!bot.permissions.any { permission -> Clear.botPermisions.contains(permission) }) {
+            if (!bot.permissions.containsAll(botPermisions)) {
                 context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}").setEphemeral(true).queue()
                 return false
             }

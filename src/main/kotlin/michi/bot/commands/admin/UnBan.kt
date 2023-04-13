@@ -88,7 +88,7 @@ object UnBan: MichiCommand("unban", "Unbans the mentioned users.", CommandScope.
                 return false
             }
 
-            if (!bot.permissions.any { permission -> botPermisions.contains(permission) }) {
+            if (!bot.permissions.containsAll(botPermisions)) {
                 context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}").setEphemeral(true).queue()
                 return false
             }

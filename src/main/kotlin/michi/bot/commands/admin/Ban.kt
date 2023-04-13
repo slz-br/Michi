@@ -130,7 +130,7 @@ object Ban: MichiCommand("ban", "Bans the mentioned users.", CommandScope.GUILD_
             return false
         }
 
-        if (!bot.permissions.any { permission -> botPermisions.contains(permission) }) {
+        if (!bot.permissions.containsAll(botPermisions)) {
             context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}").setEphemeral(true).queue()
             return false
         }

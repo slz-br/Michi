@@ -55,7 +55,7 @@ object Math: MichiCommand("math", "Gives you a basic math problem.", CommandScop
         guild?.let {
             val bot = guild.selfMember
 
-            if (!bot.permissions.any { permission -> botPermisions.contains(permission) }) {
+            if (!bot.permissions.containsAll(botPermisions)) {
                 context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}").setEphemeral(true).queue()
                 return false
             }
