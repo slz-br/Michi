@@ -34,11 +34,12 @@ object UnBan: MichiCommand("unban", "Unbans the mentioned users.", CommandScope.
 
     override val usage: String
         get() = "/ban <1st user> <2nd user(optional) <3rd user(optional) <reason(optional)>"
+
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("user1", "the 1st user to ban", OptionType.USER, true),
-            MichiArgument("user2", "the 2nd user to ban", OptionType.USER, false),
-            MichiArgument("user3", "the 3rd user to ban", OptionType.USER, false)
+            MichiArgument("user1", "the 1st user to ban", OptionType.USER, isRequired = true, hasAutoCompletion = false),
+            MichiArgument("user2", "the 2nd user to ban", OptionType.USER, isRequired = false, hasAutoCompletion = false),
+            MichiArgument("user3", "the 3rd user to ban", OptionType.USER, isRequired = false, hasAutoCompletion = false)
         )
 
     /**

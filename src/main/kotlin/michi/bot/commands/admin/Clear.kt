@@ -29,12 +29,18 @@ object Clear: MichiCommand("clear", "Deletes a certain amount of messages from t
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("amount", "the amount of messages to delete", OptionType.INTEGER, true)
+            MichiArgument("amount", "the amount of messages to delete", OptionType.INTEGER, isRequired = true, hasAutoCompletion = false)
         )
 
     override val usage: String
         get() = "/clear <amount of messages(between 1 and 100)>"
 
+    /**
+     * Clears the specified amount of messages if possible.
+     * @param context The interaction to retrieve info and reply.
+     * @author Slz
+     * @see canHandle
+     */
     @OptIn(DelicateCoroutinesApi::class)
     override fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.member!!
@@ -52,6 +58,13 @@ object Clear: MichiCommand("clear", "Deletes a certain amount of messages from t
         GlobalScope.launch { SlashCommandListener.cooldownManager(sender.user) }
     }
 
+    /**
+     * Checks if it's possible to clear the specified amount of messages.
+     * @param context The interaction to retrieve info, check and reply.
+     * @return true if it's possible to delete the specified amount of messages, false otherwise.
+     * @author Slz
+     * @see execute
+     */
     override fun canHandle(context: SlashCommandInteractionEvent): Boolean {
         val sender = context.member!!
         val amountOfMessages = context.options[0].asInt
@@ -62,7 +75,7 @@ object Clear: MichiCommand("clear", "Deletes a certain amount of messages from t
             return false
         }
 
-        if (!sender.permissions.any{ permission -> userPermissions.contains(permission) }) {
+        if (!sender.permissions.any { permission -> userPermissions.contains(permission) }) {
             context.reply("You don't have the permissions to use this command, silly you ${Emoji.michiBlep}").setEphemeral(true).queue()
             return false
         }

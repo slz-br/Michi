@@ -19,6 +19,11 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.awt.Color
 import java.util.concurrent.TimeUnit
 
+/**
+ * Object for the "ban" command, a command that bans mentioned users from
+ * the server if possible(case the sender and the bot have permission to ban)
+ * @author Slz
+ */
 object Ban: MichiCommand("ban", "Bans the mentioned users.", CommandScope.GUILD_SCOPE) {
     override val userPermissions: List<Permission>
         get() = listOf(
@@ -39,10 +44,10 @@ object Ban: MichiCommand("ban", "Bans the mentioned users.", CommandScope.GUILD_
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("user1", "the 1st user to ban", OptionType.USER, true),
-            MichiArgument("user2", "the 2nd user to ban", OptionType.USER, false),
-            MichiArgument("user3", "the 3rd user to ban", OptionType.USER, false),
-            MichiArgument("reason", "The reason for the ban.", OptionType.STRING, false)
+            MichiArgument("user1", "the 1st user to ban", OptionType.USER, isRequired = true, hasAutoCompletion = false),
+            MichiArgument("user2", "the 2nd user to ban", OptionType.USER, isRequired = false, hasAutoCompletion = false),
+            MichiArgument("user3", "the 3rd user to ban", OptionType.USER, isRequired = false, hasAutoCompletion = false),
+            MichiArgument("reason", "The reason for the ban.", OptionType.STRING, isRequired = false, hasAutoCompletion = false)
         )
 
     /**
@@ -98,7 +103,7 @@ object Ban: MichiCommand("ban", "Bans the mentioned users.", CommandScope.GUILD_
 
     /**
      * Checks if it's possible to ban the mentioned users.
-     * @param context The interaction to retrieve info from.
+     * @param context The interaction to retrieve info, check and reply.
      * @author Slz
      * @see execute
      */

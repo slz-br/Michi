@@ -32,7 +32,7 @@ object SlowMode: MichiCommand("slowmode", "Sets the channel slowmode.", CommandS
         get() = "/slowmode <time in seconds(between 0 and 21600)>"
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("time", "the slowmode time in seconds.", OptionType.INTEGER, true)
+            MichiArgument("time", "the slowmode time in seconds.", OptionType.INTEGER, isRequired = true, hasAutoCompletion = false)
         )
 
     /**
