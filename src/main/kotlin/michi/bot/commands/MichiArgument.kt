@@ -6,5 +6,6 @@ data class MichiArgument(
     val name: String,
     val description: String,
     val type: OptionType,
-    val isRequired: Boolean
+    val isRequired: Boolean,
+    val hasAutoCompletion: Boolean
 )
