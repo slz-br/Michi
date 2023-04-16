@@ -13,7 +13,6 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import java.awt.Color
 import java.io.BufferedReader
 import java.io.FileReader
-import kotlin.random.Random
 
 /**
  * Object for the "raccoon" command, a command that sends you a random image or gif of a raccoon.
@@ -42,29 +41,21 @@ object Raccoon: MichiCommand("raccoon", "Sends you a random raccoon pic or gif",
     override fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.user
         val raccoonImages = BufferedReader(FileReader(".\\txts\\raccoons.txt")).readLines()
-        val imageUrl = raccoonImages[Random.nextInt(raccoonImages.size)]
-        val guild = context.guild
+        val imageUrl = raccoonImages.random()
 
         if (!canHandle(context)) return
-        if (guild != null) {
-            val bot = guild.selfMember
-            if (!bot.permissions.any { permission -> botPermisions.contains(permission) }) {
-                context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}").setEphemeral(true).queue()
-                return
-            }
-        }
 
+        // building the embed message
         val embed = EmbedBuilder()
         embed.setColor(Color.MAGENTA)
-        if (imageUrl.contains("gif")) {
-            embed.setTitle("Raccoon Gif")
-        } else {
-            embed.setTitle("Raccoon Pic")
-        }
-            .setImage(imageUrl)
-        context.replyEmbeds(embed.build())
-            .setEphemeral(true)
-            .queue()
+
+        if (imageUrl.contains("gif")) embed.setTitle("Raccoon Gif")
+        else embed.setTitle("Raccoon Pic")
+
+        embed.setImage(imageUrl)
+
+        // sending the embed message
+        context.replyEmbeds(embed.build()).setEphemeral(true).queue()
 
         // puts the user that sent the command in cooldown
         GlobalScope.launch { SlashCommandListener.cooldownManager(sender) }
@@ -82,6 +73,7 @@ object Raccoon: MichiCommand("raccoon", "Sends you a random raccoon pic or gif",
             }
 
         }
+        if (guild == null) return false
 
         return true
     }
