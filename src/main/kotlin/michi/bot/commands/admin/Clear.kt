@@ -21,7 +21,6 @@ object Clear: MichiCommand("clear", "Deletes a certain amount of messages from t
 
     override val botPermisions: List<Permission>
         get() = listOf(
-            Permission.ADMINISTRATOR,
             Permission.MESSAGE_MANAGE,
             Permission.MESSAGE_SEND,
             Permission.MESSAGE_EXT_EMOJI
