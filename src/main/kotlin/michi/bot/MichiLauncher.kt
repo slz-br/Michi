@@ -50,6 +50,7 @@ class Michi {
         commandList.add(Ban)
         commandList.add(UnBan)
         commandList.add(Clear)
+        commandList.add(Mute)
         commandList.add(SlowMode)
         commandList.add(Raccoon)
         commandList.add(Wiki)
