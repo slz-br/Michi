@@ -51,31 +51,34 @@ class SlashCommandListener: ListenerAdapter() {
         }
 
         // if everything is right, try to execute the command
-        when (name) {
+        GlobalScope.launch {
+            when (name) {
 
-            /* Admin Commands */
-            "ban" ->      Ban.execute(event)
-            "unban" ->    UnBan.execute(event)
-            "clear" ->    Clear.execute(event)
-            "slowmode" -> SlowMode.execute(event)
+                /* Admin Commands */
+                "ban" ->      Ban.execute(event)
+                "mute" ->     Mute.execute(event)
+                "unban" ->    UnBan.execute(event)
+                "clear" ->    Clear.execute(event)
+                "slowmode" -> SlowMode.execute(event)
 
-            /* Mail Commands */
-            "mail" ->        Mail.sendMail(event)
-            "mail-window" -> Mail.writeMail(event)
-            "inbox" ->       Mail.inbox(event)
-            "read" ->        Mail.read(event)
-            "remove" ->      Mail.remove(event)
-            "clear-inbox" -> Mail.clearInbox(event)
-            "report-mail" -> Mail.report(event)
+                /* Mail Commands */
+                "mail" ->        Mail.sendMail(event)
+                "mail-window" -> Mail.writeMail(event)
+                "inbox" ->       Mail.inbox(event)
+                "read" ->        Mail.read(event)
+                "remove" ->      Mail.remove(event)
+                "clear-inbox" -> Mail.clearInbox(event)
+                "report-mail" -> Mail.report(event)
 
+                /* Misc Commands*/
+                "wiki" ->    Wiki.execute(event)
+                "raccoon" -> Raccoon.execute(event)
+                "math" ->    Math.execute(event)
 
-            /* Misc Commands*/
-            "wiki" ->    Wiki.execute(event)
-            "raccoon" -> Raccoon.execute(event)
-            "math" ->    Math.execute(event)
+                /* Util */
+                "help" -> help(event)
 
-            /* Util */
-            "help" -> help(event)
+            }
 
         }
 

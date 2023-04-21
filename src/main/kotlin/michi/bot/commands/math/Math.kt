@@ -25,7 +25,7 @@ object Math: MichiCommand("math", "Gives you a basic math problem.", CommandScop
      * @see canHandle
      */
     @OptIn(DelicateCoroutinesApi::class)
-    override fun execute(context: SlashCommandInteractionEvent) {
+    override suspend fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.user
         if (!canHandle(context)) return
 
@@ -41,7 +41,7 @@ object Math: MichiCommand("math", "Gives you a basic math problem.", CommandScop
      * @author Slz
      * @see execute
      */
-    override fun canHandle(context: SlashCommandInteractionEvent): Boolean {
+    override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
         val sender = context.user
         val guild = context.guild
 

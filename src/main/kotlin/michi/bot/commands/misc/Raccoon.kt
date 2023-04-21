@@ -36,9 +36,10 @@ object Raccoon: MichiCommand("raccoon", "Sends you a random raccoon pic or gif",
      * Sends a random picture or gif of a raccoon.
      * @param context The interaction to reply to.
      * @author Slz
+     * @see canHandle
      */
     @OptIn(DelicateCoroutinesApi::class)
-    override fun execute(context: SlashCommandInteractionEvent) {
+    override suspend fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.user
         val raccoonImages = BufferedReader(FileReader(".\\txts\\raccoons.txt")).readLines()
         val imageUrl = raccoonImages.random()
@@ -61,7 +62,14 @@ object Raccoon: MichiCommand("raccoon", "Sends you a random raccoon pic or gif",
         GlobalScope.launch { SlashCommandListener.cooldownManager(sender) }
     }
 
-    override fun canHandle(context: SlashCommandInteractionEvent): Boolean {
+    /**
+     * Checks if the command comes from a guild, if so, check if the bot has permission to execute the command
+     * @param context The interaction to check and reply to.
+     * @return true if it's possible to handle the command, false otherwise.
+     * @author Slz
+     * @see execute
+     */
+    override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
         val guild = context.guild
 
         guild?.let {
