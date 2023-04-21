@@ -6,12 +6,8 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import michi.bot.commands.*
-import michi.bot.commands.admin.Ban
-import michi.bot.commands.admin.Clear
-import michi.bot.commands.admin.SlowMode
-import michi.bot.commands.admin.UnBan
-import michi.bot.commands.math.Math
+import michi.bot.commands.admin.*
+import michi.bot.commands.math.*
 import michi.bot.commands.misc.*
 import michi.bot.listeners.*
 import net.dv8tion.jda.api.entities.Activity
@@ -65,11 +61,13 @@ class Michi {
 
         // Event listeners
         .addEventListeners(
-            MessageListener(),
-            OnGuildReadyListener(),
-            SlashCommandListener(),
-            ModalInteractionListener(),
-            ButtonListener()
+            MessageListener,
+            OnGuildReadyListener,
+            SlashCommandListener,
+            ModalInteractionListener,
+            ButtonListener,
+            CommandAutoCompletionListener,
+            OnReadyListener
         )
 
         // Gateway intents

@@ -19,7 +19,7 @@ private const val DELAY = (1000 * 7).toLong()
  * Called whenever a message is sent.
  * @author Slz
  */
-class MessageListener: ListenerAdapter() {
+object MessageListener: ListenerAdapter() {
 
     private val cooldownList = mutableSetOf<User>()
     suspend fun cooldownManager(user: User) {

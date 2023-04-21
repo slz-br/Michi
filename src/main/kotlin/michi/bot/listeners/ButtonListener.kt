@@ -6,7 +6,7 @@ import michi.bot.util.Emoji
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 
-class ButtonListener: ListenerAdapter() {
+object ButtonListener: ListenerAdapter() {
 
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
         val message = event.message

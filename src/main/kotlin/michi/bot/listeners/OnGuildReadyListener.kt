@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands
  * Called whenever a guild is loaded.
  * @author Slz
  */
-class OnGuildReadyListener: ListenerAdapter() {
+object OnGuildReadyListener: ListenerAdapter() {
 
     override fun onGuildReady(event: GuildReadyEvent) {
         val commandData: MutableList<CommandData> = ArrayList()
