@@ -55,6 +55,7 @@ class Michi {
         commandList.add(Raccoon)
         commandList.add(Wiki)
         commandList.add(Math)
+        commandList.add(Ping)
 
         // Initializing JDA
         val michi = DefaultShardManagerBuilder.createDefault(token)

@@ -20,8 +20,7 @@ private const val DELAY = (1000 * 5.25).toLong()
  * Called whenever a slashCommand is used.
  * @author Slz
  */
-class SlashCommandListener: ListenerAdapter() {
-    companion object {
+object SlashCommandListener: ListenerAdapter() {
 
     private val cooldownList = mutableSetOf<User>()
     suspend fun cooldownManager(user: User) {
@@ -76,6 +75,7 @@ class SlashCommandListener: ListenerAdapter() {
 
                 /* Util */
                 "help" -> help(event)
+                "ping" -> Ping.execute(event)
 
             }
 
