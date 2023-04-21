@@ -2,7 +2,9 @@ package michi.bot.lavaplayer
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
+import com.sedmelluq.discord.lavaplayer.player.FunctionalResultHandler
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers
+import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
@@ -12,22 +14,24 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import java.awt.Color
 import java.util.concurrent.TimeUnit
+
 object PlayerManager {
 
     private val musicManagers: MutableMap<Long, GuildMusicManager>
-    private val audioPlayerManager: DefaultAudioPlayerManager
+    private val playerManager: DefaultAudioPlayerManager
 
     init {
         musicManagers = HashMap()
-        audioPlayerManager = DefaultAudioPlayerManager()
+        playerManager = DefaultAudioPlayerManager()
 
-        AudioSourceManagers.registerRemoteSources(audioPlayerManager)
-        AudioSourceManagers.registerLocalSource(audioPlayerManager)
+        playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault())
+        AudioSourceManagers.registerRemoteSources(playerManager)
+        AudioSourceManagers.registerLocalSource(playerManager)
     }
 
     fun getMusicManager(guild: Guild): GuildMusicManager {
         return musicManagers.computeIfAbsent(guild.idLong) { _ ->
-            val musicManager = GuildMusicManager(audioPlayerManager)
+            val musicManager = GuildMusicManager(playerManager)
             guild.audioManager.sendingHandler = musicManager.sendHandler
 
             musicManager
@@ -38,7 +42,7 @@ object PlayerManager {
         val guild = context.guild!!
         val musicManager = getMusicManager(guild)
 
-        audioPlayerManager.loadItemOrdered(musicManager, trackURL, object : AudioLoadResultHandler {
+        playerManager.loadItemOrdered(musicManager, trackURL, object : AudioLoadResultHandler {
 
             val queue = musicManager.scheduler.trackQueue
 
@@ -58,26 +62,28 @@ object PlayerManager {
                 val embed = EmbedBuilder()
                     .setColor(Color.MAGENTA)
 
-                    if (trackTitle == "Night Running" && trackAuthor == "Shin Sakiura") {
-                        embed.addField(
-                            "Added to the Queue!",
-                            "**$trackTitle**`[${formatTrackLength(track)}]` ${Emoji.nightRunning}\nauthor: $trackAuthor | position: ${queue.size + 1}",
-                            false
-                        )
-                        embed.setFooter("great choice!")
-                    }
-
+                if (trackTitle == "「NIGHT RUNNING」") {
                     embed.addField(
                         "Added to the Queue!",
-                        "**$trackTitle**`[${formatTrackLength(track)}]`\nauthor: $trackAuthor | position: ${queue.size + 1}",
+                        "**$trackTitle**`[${formatTrackLength(track)}]` ${Emoji.nightRunning}\nuploaded by: $trackAuthor | position: ${queue.size + 1}",
                         false
                     )
+                    embed.setFooter("great choice!")
+                }
+                else {
+                    embed.addField(
+                        "Added to the Queue!",
+                        "**$trackTitle**`[${formatTrackLength(track)}]`\nuploaded by: $trackAuthor | position: ${queue.size + 1}",
+                        false
+                    )
+                }
 
                 context.replyEmbeds(embed.build()).queue()
+                return
             }
 
             override fun playlistLoaded(playlist: AudioPlaylist?) {
-                if (playlist == null) {
+                if (playlist == null || playlist.tracks.isEmpty()) {
                     context.reply("Something went wrong ${Emoji.smolMichiAngry}\ntry typing the track/playlist name again, maybe in a different way").setEphemeral(true).queue()
                     return
                 }
@@ -92,11 +98,25 @@ object PlayerManager {
 
                     musicManager.scheduler.queue(firstTrack)
 
-                    embed.addField(
-                        "Added to the Queue!",
-                        "**$trackTitle**`[${formatTrackLength(firstTrack)}]`\nauthor: $trackAuthor | position: ${queue.size + 1}",
-                        false
-                    )
+                    if (trackTitle == "「NIGHT RUNNING」") {
+                        embed.addField(
+                            "Added to the Queue!",
+                            "**$trackTitle**`[${formatTrackLength(firstTrack)}]` ${Emoji.nightRunning}\nuploaded by: $trackAuthor | position: ${queue.size + 1}",
+                            false
+                        )
+                        embed.setFooter("great choice!")
+                        context.replyEmbeds(embed.build()).queue()
+                        return
+                    }
+                    else {
+                        embed.addField(
+                            "Added to the Queue!",
+                            "**$trackTitle**`[${formatTrackLength(firstTrack)}]`\nuploaded by: $trackAuthor | position: ${queue.size + 1}",
+                            false
+                        )
+                        context.replyEmbeds(embed.build()).queue()
+                        return
+                    }
 
                 }
 
@@ -112,6 +132,7 @@ object PlayerManager {
                     )
 
                 context.replyEmbeds(embed.build()).queue()
+                return
             }
 
             override fun noMatches() =
@@ -121,6 +142,20 @@ object PlayerManager {
                 context.reply("Sorry, I couldn't load the track ${Emoji.michiSad}").setEphemeral(true).queue()
         })
 
+    }
+
+    fun searchForMatchingTracks(search: String): Array<AudioTrack> {
+        var matchingResults: Array<AudioTrack>? = null
+        playerManager.loadItem("scsearch:$search", FunctionalResultHandler(
+            { audioTrack ->
+                matchingResults = arrayOf(audioTrack)
+            },
+            { playlist ->
+                matchingResults = playlist.tracks.toTypedArray()
+            },null, null)
+        )
+
+        return matchingResults ?: emptyArray()
     }
 
     private fun formatTrackLength(track: AudioTrack): String {
