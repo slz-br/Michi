@@ -47,14 +47,21 @@ class OnGuildReadyListener: ListenerAdapter() {
 
         Michi.commandList.forEach { cmd ->
 
-            if (cmd.scope != CommandScope.GUILD_SCOPE) return
+            if (cmd.scope == CommandScope.GUILD_SCOPE) {
 
-            val command = Commands.slash(cmd.name, cmd.description)
-            for(arg in cmd.arguments) {
-                command.addOption(arg.type, arg.name, arg.description, arg.isRequired)
+                val command = Commands.slash(cmd.name.lowercase(), cmd.description)
+                for (arg in cmd.arguments) {
+                    command.addOption(
+                        arg.type,
+                        arg.name.lowercase(),
+                        arg.description,
+                        arg.isRequired,
+                        arg.hasAutoCompletion
+                    )
+                }
+
+                commandData.add(command)
             }
-            commandData.add(command)
-
         }
 
         // report

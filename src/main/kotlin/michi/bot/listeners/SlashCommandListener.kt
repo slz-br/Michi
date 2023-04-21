@@ -1,9 +1,9 @@
 package michi.bot.listeners
 
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.dv8tion.jda.api.entities.User
 import java.io.BufferedReader
 import java.io.FileReader
 
@@ -14,7 +14,7 @@ import michi.bot.commands.misc.*
 import michi.bot.commands.util.*
 import michi.bot.util.Emoji
 
-private const val DELAY = (1000 * 5.5).toLong()
+private const val DELAY = (1000 * 5.25).toLong()
 
 /**
  * Called whenever a slashCommand is used.
@@ -23,15 +23,14 @@ private const val DELAY = (1000 * 5.5).toLong()
 class SlashCommandListener: ListenerAdapter() {
     companion object {
 
-        private val cooldownList = mutableSetOf<User>()
-        suspend fun cooldownManager(user: User) {
-            cooldownList.add(user)
-            delay(DELAY)
-            cooldownList.remove(user)
-        }
-
+    private val cooldownList = mutableSetOf<User>()
+    suspend fun cooldownManager(user: User) {
+        cooldownList.add(user)
+        delay(DELAY)
+        cooldownList.remove(user)
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         val blackList = BufferedReader(FileReader("BlackList.txt")).readLines()
         val name = event.name
