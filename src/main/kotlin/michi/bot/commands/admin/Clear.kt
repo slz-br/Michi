@@ -41,7 +41,7 @@ object Clear: MichiCommand("clear", "Deletes a certain amount of messages from t
      * @see canHandle
      */
     @OptIn(DelicateCoroutinesApi::class)
-    override fun execute(context: SlashCommandInteractionEvent) {
+    override suspend fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.member!!
         val channel = context.channel.asTextChannel()
         val amountOfMessages = context.options[0].asInt
@@ -64,7 +64,7 @@ object Clear: MichiCommand("clear", "Deletes a certain amount of messages from t
      * @author Slz
      * @see execute
      */
-    override fun canHandle(context: SlashCommandInteractionEvent): Boolean {
+    override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
         val sender = context.member!!
         val amountOfMessages = context.options[0].asInt
         val bot = context.guild!!.selfMember

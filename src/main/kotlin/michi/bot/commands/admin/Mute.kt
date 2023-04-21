@@ -39,7 +39,7 @@ object Mute: MichiCommand("mute", "Mutes the mentioned member for a specific per
      * @author Slz
      * @see canHandle
      */
-    override fun execute(context: SlashCommandInteractionEvent) {
+    override suspend fun execute(context: SlashCommandInteractionEvent) {
 
         val sender = context.user
 
@@ -87,7 +87,7 @@ object Mute: MichiCommand("mute", "Mutes the mentioned member for a specific per
      * @author Slz
      * @see execute
      */
-    override fun canHandle(context: SlashCommandInteractionEvent): Boolean {
+    override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
         val guild = context.guild!!
         val sender = context.member!!
         val bot = guild.selfMember

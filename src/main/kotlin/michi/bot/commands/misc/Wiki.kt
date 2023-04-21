@@ -34,7 +34,7 @@ object Wiki: MichiCommand("wiki", "Gives you a random wikipedia article.", Comma
      * @author Slz
      */
     @OptIn(DelicateCoroutinesApi::class)
-    override fun execute(context: SlashCommandInteractionEvent) {
+    override suspend fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.user
 
         if (!canHandle(context)) return
@@ -65,7 +65,7 @@ object Wiki: MichiCommand("wiki", "Gives you a random wikipedia article.", Comma
         GlobalScope.launch { SlashCommandListener.cooldownManager(sender) }
     }
 
-    override fun canHandle(context: SlashCommandInteractionEvent): Boolean {
+    override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
         val guild = context.guild
 
         guild?.let {

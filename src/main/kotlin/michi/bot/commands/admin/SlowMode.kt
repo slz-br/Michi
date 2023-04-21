@@ -41,7 +41,7 @@ object SlowMode: MichiCommand("slowmode", "Sets the channel slowmode.", CommandS
      * @author Slz
      */
     @OptIn(DelicateCoroutinesApi::class)
-    override fun execute(context: SlashCommandInteractionEvent) {
+    override suspend fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.member!!
         val channel = context.channel.asTextChannel()
         val slowTime = context.options[0].asInt
@@ -61,7 +61,7 @@ object SlowMode: MichiCommand("slowmode", "Sets the channel slowmode.", CommandS
         )
     }
 
-    override fun canHandle(context: SlashCommandInteractionEvent): Boolean {
+    override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
         val sender = context.member!!
         val bot = context.guild!!.selfMember
         val channel = context.channel.asTextChannel()

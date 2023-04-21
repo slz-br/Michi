@@ -72,7 +72,7 @@ object Ban: MichiCommand("ban", "Bans the mentioned users.", CommandScope.GUILD_
      * @see canHandle
      */
     @OptIn(DelicateCoroutinesApi::class)
-    override fun execute(context: SlashCommandInteractionEvent) {
+    override suspend fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.user
         val reason = context.getOptionsByName("reason")[0].asString
         val subjects = mutableListOf<Member>()
@@ -107,7 +107,7 @@ object Ban: MichiCommand("ban", "Bans the mentioned users.", CommandScope.GUILD_
      * @author Slz
      * @see execute
      */
-    override fun canHandle(context: SlashCommandInteractionEvent): Boolean {
+    override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
         val sender = context.member!!
         val bot = context.guild!!.selfMember
         val options = context.options

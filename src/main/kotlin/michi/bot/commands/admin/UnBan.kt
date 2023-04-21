@@ -48,7 +48,7 @@ object UnBan: MichiCommand("unban", "Unbans the mentioned users.", CommandScope.
      * @author Slz
      */
     @OptIn(DelicateCoroutinesApi::class)
-    override fun execute(context: SlashCommandInteractionEvent) {
+    override suspend fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.user
         val subjects = mutableListOf<User>()
         context.options.forEach { subjects.add(it.asUser) }
@@ -78,7 +78,7 @@ object UnBan: MichiCommand("unban", "Unbans the mentioned users.", CommandScope.
         GlobalScope.launch { SlashCommandListener.cooldownManager(sender) }
     }
 
-    override fun canHandle(context: SlashCommandInteractionEvent): Boolean {
+    override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
         val agent = context.member!!
         val options = context.options
         val guild = context.guild!!
