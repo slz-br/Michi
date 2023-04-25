@@ -33,7 +33,6 @@ object Ban: MichiCommand("ban", "Bans the mentioned users.", CommandScope.GUILD_
 
     override val botPermisions: List<Permission>
         get() = listOf(
-            Permission.ADMINISTRATOR,
             Permission.BAN_MEMBERS,
             Permission.MESSAGE_SEND,
             Permission.MESSAGE_EXT_EMOJI
@@ -112,7 +111,7 @@ object Ban: MichiCommand("ban", "Bans the mentioned users.", CommandScope.GUILD_
         val bot = context.guild!!.selfMember
         val options = context.options
         val senderTopRole = sender.roles.sortedDescending()[0].position
-        val botTopRole = context.guild!!.getMember(context.jda.selfUser)!!.roles.sortedDescending()[0].position
+        val botTopRole = bot.roles.sortedDescending()[0].position
         val subjects = mutableListOf<User>()
         val subjectsAsMembers = mutableListOf<Member>()
         options.forEach { if (it.type == OptionType.USER) subjects.add(it.asUser) }
