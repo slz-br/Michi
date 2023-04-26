@@ -57,9 +57,9 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.2")
 }
 
-group = "org.example"
+group = "com.github.slz_br"
 version = "1.0-SNAPSHOT"
-description = "Michi"
+description = "Michi a multipurpose Kotlin Discord bot that uses the JDA API."
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 publishing {
