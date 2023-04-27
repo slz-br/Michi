@@ -8,7 +8,6 @@ plugins {
     `java-library`
     `maven-publish`
     kotlin("jvm") version "1.8.10"
-
 }
 
 repositories {
@@ -55,6 +54,14 @@ dependencies {
     testImplementation("org.apache.maven.plugins:maven-surefire-plugin:3.0.0")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:1.7.20")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.2")
+
+    // PostgresSQL and exposed
+    implementation("org.jetbrains.exposed:exposed-core:0.41.1")
+    implementation("org.jetbrains.exposed:exposed-dao:0.41.1")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.41.1")
+    implementation("com.zaxxer:HikariCP:5.0.1")
+    implementation("org.postgresql:postgresql:42.6.0")
+
 }
 
 group = "com.github.slz_br"
