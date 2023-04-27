@@ -34,7 +34,7 @@ object SlashCommandListener: ListenerAdapter() {
         val blackList = BufferedReader(FileReader("BlackList.txt")).readLines()
         val name = event.name
         val sender = event.user
-        val guild = event.guild ?: return
+        val guild = event.guild
 
         // Checks if the user or guild is blacklisted
         if (blackList.contains(sender.id) || blackList.contains(guild.id)) {
