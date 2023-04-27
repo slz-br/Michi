@@ -2,11 +2,12 @@ package michi.bot.commands
 
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+
 abstract class MichiCommand(val name: String, val description: String, val scope: CommandScope) {
     protected open val userPermissions = listOf<Permission>()
     protected open val botPermisions = listOf<Permission>()
     protected open val ownerOnly = false
-    protected open val usage = ""
+    protected open val usage = "/$name"
     open val arguments = listOf<MichiArgument>()
 
     /**
@@ -15,7 +16,7 @@ abstract class MichiCommand(val name: String, val description: String, val scope
      * @author Slz
      * @see canHandle
      */
-    abstract fun execute(context: SlashCommandInteractionEvent)
+    abstract suspend fun execute(context: SlashCommandInteractionEvent)
 
     /**
      * Checks if it's possible to handle the command.
@@ -24,6 +25,6 @@ abstract class MichiCommand(val name: String, val description: String, val scope
      * @author Slz
      * @see execute
      */
-    protected abstract fun canHandle(context: SlashCommandInteractionEvent): Boolean
+    protected abstract suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean
 
 }
