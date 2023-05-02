@@ -1,8 +1,5 @@
 package michi.bot.commands.math
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import michi.bot.commands.CommandScope
 import michi.bot.commands.MichiCommand
 import michi.bot.listeners.SlashCommandListener
@@ -10,12 +7,13 @@ import michi.bot.util.Emoji
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 
-object Math: MichiCommand("math", "Gives you a basic math problem.", CommandScope.GUILD_SCOPE) {
+object Math: MichiCommand("math", "Gives you a basic math problem.", CommandScope.GLOBAL_SCOPE) {
 
     override val botPermisions: List<Permission>
         get() = listOf(
             Permission.MESSAGE_SEND,
-            Permission.MESSAGE_EXT_EMOJI
+            Permission.MESSAGE_EXT_EMOJI,
+            Permission.MESSAGE_SEND_IN_THREADS
         )
 
     /**
@@ -24,15 +22,14 @@ object Math: MichiCommand("math", "Gives you a basic math problem.", CommandScop
      * @author Slz
      * @see canHandle
      */
-    @OptIn(DelicateCoroutinesApi::class)
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.user
         if (!canHandle(context)) return
 
-        MathProblemManager.instances.add(MathProblemManager(MathProblem(sender), context))
+        MathProblemManager.instances += MathProblemManager(MathProblem(sender), context)
 
         // puts the user that sent the command in cooldown
-        GlobalScope.launch { SlashCommandListener.cooldownManager(sender) }
+        SlashCommandListener.cooldownManager(sender)
     }
 
     /**
