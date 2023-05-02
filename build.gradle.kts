@@ -44,7 +44,7 @@ dependencies {
     api("org.apache.maven.plugins:maven-failsafe-plugin:3.0.0")
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.20")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.5.0") // get access to kotlin coroutines
-    api("net.dv8tion:JDA:5.0.0-beta.6") // wrapper for discord api
+    api("net.dv8tion:JDA:5.0.0-beta.8") // wrapper for discord api
     api("io.github.cdimascio:dotenv-java:2.3.1") // api to get configs
     api("com.github.origma:Google-PerspectiveAPI-Java-Client:0.0.5")
     api("com.sedmelluq:lavaplayer:1.3.78")
@@ -59,7 +59,6 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-core:0.41.1")
     implementation("org.jetbrains.exposed:exposed-dao:0.41.1")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.41.1")
-    implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.postgresql:postgresql:42.6.0")
 
 }
