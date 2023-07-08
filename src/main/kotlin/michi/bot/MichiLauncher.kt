@@ -13,22 +13,14 @@ import michi.bot.listeners.*
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
-import okhttp3.internal.http2.Http2Connection
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 import kotlin.system.exitProcess
+import java.util.concurrent.LinkedBlockingDeque
 
-import michi.bot.commands.*
-import michi.bot.commands.mail.Inbox
-import michi.bot.commands.mail.Mail
-import michi.bot.commands.mail.Read
-import michi.bot.commands.mail.RemoveMail
-import michi.bot.commands.music.*
-import michi.bot.commands.music.dj.*
-import michi.bot.commands.util.*
+import michi.bot.listeners.*
 import michi.bot.database.DataBaseFactory
-import net.dv8tion.jda.api.utils.cache.CacheFlag
+import michi.bot.commands.MichiCommand
 
 val config: Dotenv = Dotenv.configure().load()
 val perspectiveAPI: PerspectiveAPI = PerspectiveAPI.create(config["PERSPECTIVE_API_TOKEN"])
@@ -47,14 +39,17 @@ fun main() {
  * @author Slz
  */
 class Michi {
+
     companion object {
         lateinit var logsPath: String
             private set
 
         val commandList = mutableListOf<MichiCommand>()
+
     }
+
     init {
-        val logger: Logger = LoggerFactory.getLogger(Michi::class.java)
+        val logger = LoggerFactory.getLogger(Michi::class.java)
 
         // ideas from: https://github.com/MrGaabriel/Ayla/blob/master/src/main/kotlin/com/github/mrgaabriel/ayla/AylaLauncher.kt <3
         val configFile = File(".env")
@@ -116,11 +111,57 @@ class Michi {
             GatewayIntent.MESSAGE_CONTENT,
         )
 
-        // Build
-        .build()
+        registerCommands()
+    }
 
-        // Logger message
-        logger.info("Michi is ready!")
+    private fun registerCommands() {
+        val commandsDir = File("${System.getProperty("user.dir")}\\build\\classes\\kotlin\\main\\michi\\bot\\commands")
+        val allCommandsDir = searchCommandDirectories(commandsDir)
+
+        allCommandsDir.forEach { currentDir ->
+            currentDir.listFiles()?.forEach fileLoop@{ file ->
+                if (!file.exists() || !file.name.endsWith(".class") || file.name.contains('$')) return@fileLoop
+
+                val packageName = currentDir.canonicalPath.split("main\\")[1]
+
+                val qualifiedName = "$packageName${file.canonicalPath.removePrefix(currentDir.canonicalPath)}"
+                    .dropLast(6)
+                    .replace('\\', '.')
+
+                val commandClass = Class.forName(qualifiedName)
+
+                if (
+                    !MichiCommand::class.java.isAssignableFrom(commandClass)
+                    || commandClass.getAnnotation(CommandNotImplemented::class.java) != null
+                ) return@fileLoop
+
+                val cmdConstructor = commandClass.asSubclass(MichiCommand::class.java).getDeclaredConstructor()
+                cmdConstructor.isAccessible = true
+                commandList.add(cmdConstructor.newInstance())
+            }
+        }
+    }
+
+    private fun searchCommandDirectories(initialDir: File): Set<File> {
+        if (!initialDir.isDirectory || !initialDir.exists()) return emptySet()
+
+        val commandDirectoriesList = mutableSetOf<File>()
+
+        val visited = mutableSetOf(initialDir)
+        val deque = LinkedBlockingDeque<File>().apply { add(initialDir) }
+
+        while (deque.isNotEmpty()) {
+            val dir = deque.pop()
+            dir.listFiles()!!.forEach {
+                if (!it.isDirectory || !it.exists() || visited.contains(it)) return@forEach
+
+                commandDirectoriesList.add(it)
+                visited.add(it)
+                deque.add(it)
+            }
+        }
+
+        return commandDirectoriesList
     }
 
 }

@@ -1,11 +1,10 @@
 package michi.bot.listeners
 
 import kotlinx.coroutines.*
+import michi.bot.Michi.Companion.commandList
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import java.io.BufferedReader
-import java.io.FileReader
 
 import michi.bot.commands.admin.*
 import michi.bot.commands.mail.*
@@ -23,6 +22,7 @@ private const val DELAY = (1000 * 5.25).toLong()
 object SlashCommandListener: ListenerAdapter() {
 
     private val cooldownList = mutableSetOf<User>()
+
     suspend fun cooldownManager(user: User) {
         cooldownList.add(user)
         delay(DELAY)
@@ -31,52 +31,42 @@ object SlashCommandListener: ListenerAdapter() {
 
     @OptIn(DelicateCoroutinesApi::class)
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
-        val blackList = BufferedReader(FileReader("BlackList.txt")).readLines()
-        val name = event.name
-        val sender = event.user
-        val guild = event.guild
+        CoroutineScope(Dispatchers.IO).launch {
+            val name = event.name
+            val sender = event.user
+            val guild = event.guild
+            val channel = event.channel
 
-        // Checks if the user or guild is blacklisted
-        if (blackList.contains(sender.id) || blackList.contains(guild.id)) {
-            event.reply("You can't use my commands anymore ${Emoji.michiTroll}").setEphemeral(true).queue()
-            return
-        }
+            // Checks if the user or guild is blacklisted
+            if (BlacklistDAO.find(sender) || BlacklistDAO.find(guild)) {
+                event.reply("You can't use my commands anymore ${Emoji.michiTroll}")
+                    .setEphemeral(true)
+                    .queue()
+                return@launch
+            }
 
-        // Checks if the user is in cooldown
-        if (cooldownList.contains(sender)) {
-            event.reply("You are in cooldown, wait a bit ${Emoji.michiSip}").setEphemeral(true).queue()
-            return
-        }
+            // If the guild somehow isn't in the database, put it in the database
+            if (GuildsDAO.get(event.guild) == null) guild?.let { GuildsDAO.post(it) }
 
-        // if everything is right, try to execute the command
-        GlobalScope.launch {
-            when (name) {
+            guild?.let {
+                if (channel.asTextChannel().isNSFW) {
+                    event.reply("You can't use my commands is nsfw channels.")
+                        .setEphemeral(true)
+                        .queue()
+                    return@launch
+                }
+            }
 
-                /* Admin Commands */
-                "ban" ->      Ban.execute(event)
-                "mute" ->     Mute.execute(event)
-                "unban" ->    UnBan.execute(event)
-                "clear" ->    Clear.execute(event)
-                "slowmode" -> SlowMode.execute(event)
+            // Checks if the user is in cooldown
+            if (cooldownList.contains(sender)) {
+                event.reply("You're in cooldown, wait a bit ${Emoji.michiSip}")
+                    .setEphemeral(true)
+                    .queue()
+                return@launch
+            }
 
-                /* Mail Commands */
-                "mail" ->        Mail.sendMail(event)
-                "mail-window" -> Mail.writeMail(event)
-                "inbox" ->       Mail.inbox(event)
-                "read" ->        Mail.read(event)
-                "remove" ->      Mail.remove(event)
-                "clear-inbox" -> Mail.clearInbox(event)
-                "report-mail" -> Mail.report(event)
-
-                /* Misc Commands*/
-                "wiki" ->    Wiki.execute(event)
-                "raccoon" -> Raccoon.execute(event)
-                "math" ->    Math.execute(event)
-
-                /* Util */
-                "help" -> help(event)
-                "ping" -> Ping.execute(event)
-
+            commandList.forEach {
+                if (name == it.name) it.execute(event)
             }
 
         }
