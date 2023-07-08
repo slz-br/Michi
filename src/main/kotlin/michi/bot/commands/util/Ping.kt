@@ -1,6 +1,6 @@
 package michi.bot.commands.util
 
-import michi.bot.commands.CommandScope.GUILD_SCOPE
+import michi.bot.commands.CommandScope.GLOBAL_SCOPE
 import michi.bot.commands.MichiCommand
 import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
