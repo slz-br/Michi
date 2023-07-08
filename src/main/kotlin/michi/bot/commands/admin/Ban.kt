@@ -1,16 +1,11 @@
 package michi.bot.commands.admin
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import michi.bot.commands.CommandScope
 import michi.bot.commands.MichiArgument
 import michi.bot.commands.MichiCommand
 import michi.bot.config
 import michi.bot.listeners.SlashCommandListener
-import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import michi.bot.util.Emoji
 import net.dv8tion.jda.api.entities.Guild

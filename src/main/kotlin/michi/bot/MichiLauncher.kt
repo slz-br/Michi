@@ -1,15 +1,10 @@
 package michi.bot
 
 import au.com.origma.perspectiveapi.v1alpha1.PerspectiveAPI
+import ch.qos.logback.core.status.Status
 import io.github.cdimascio.dotenv.Dotenv
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import michi.bot.commands.admin.*
-import michi.bot.commands.math.*
-import michi.bot.commands.misc.*
-import michi.bot.listeners.*
+import michi.bot.commands.CommandNotImplemented
+import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
@@ -30,8 +25,12 @@ val perspectiveAPI: PerspectiveAPI = PerspectiveAPI.create(config["PERSPECTIVE_A
  * @author Slz
  */
 
-fun main() {
-   Michi()
+suspend fun main() {
+    // initializing PostgresSQL
+    DataBaseFactory.init()
+
+    // instantiating michi
+    Michi()
 }
 
 /**
@@ -51,14 +50,15 @@ class Michi {
     init {
         val logger = LoggerFactory.getLogger(Michi::class.java)
 
-        // ideas from: https://github.com/MrGaabriel/Ayla/blob/master/src/main/kotlin/com/github/mrgaabriel/ayla/AylaLauncher.kt <3
+        // ideas from:
+        // https://github.com/MrGaabriel/Ayla/blob/master/src/main/kotlin/com/github/mrgaabriel/ayla/AylaLauncher.kt <3
         val configFile = File(".env")
         val logsDir = File("logs")
 
         if (!logsDir.exists()) {
             logsDir.mkdir()
             logsPath = logsDir.path
-            val testLog = File("${logsDir.path}\\testLog.md")
+            val testLog = File("$logsPath\\testLog.md")
             testLog.createNewFile()
 
             testLog.printWriter().use {
@@ -71,44 +71,52 @@ class Michi {
 
         if (!configFile.exists()) {
             configFile.createNewFile()
-            logger.info("Looks like you are trying to boot michi for the first time.\n You must configure her in the file \".env\"\nFollow the example in the file \"example.env\"")
+            logger.info("Looks like you are trying to boot Michi for the first time.\n You must configure her in the file \".env\"\nFollow the example in the file \"example.env\"")
             exitProcess(Status.INFO)
         }
 
         logger.info("configs loaded")
         val token = config["TOKEN"]
 
-        // Register Commands
-        commandList.add(Ban)
-        commandList.add(UnBan)
-        commandList.add(Clear)
-        commandList.add(Mute)
-        commandList.add(SlowMode)
-        commandList.add(Raccoon)
-        commandList.add(Wiki)
-        commandList.add(Math)
-        commandList.add(Ping)
+        // Initializing connection with Discord
+        DefaultShardManagerBuilder.createDefault(token).apply {
 
-        // Initializing JDA
-        val michi = DefaultShardManagerBuilder.createDefault(token)
+            // Activity
+            setActivity(Activity.watching("Brand New Animal"))
 
-        // Activity
-        michi.setActivity(Activity.watching("Brand New Animal!"))
+            // Event listeners
+            addEventListeners(
+                MessageListener,
+                OnGuildReadyListener,
+                SlashCommandListener,
+                ButtonListener,
+                CommandAutoCompletionListener,
+                OnReadyListener,
+                OnGuildJoin,
+                OnGuildLeaveListener,
+                LogsListener
+            )
 
-        // Event listeners
-        .addEventListeners(
-            MessageListener,
-            OnGuildReadyListener,
-            SlashCommandListener,
-            ModalInteractionListener,
-            ButtonListener,
-            CommandAutoCompletionListener,
-            OnReadyListener
-        )
+            // Gateway intents
+            enableIntents(
+                GatewayIntent.MESSAGE_CONTENT,
+                GatewayIntent.GUILD_VOICE_STATES
+            )
 
-        // Gateway intents
-        .enableIntents(
-            GatewayIntent.MESSAGE_CONTENT,
+            // Enable cache
+            enableCache(
+                CacheFlag.VOICE_STATE
+            )
+
+        }.build()
+
+        println(
+            """
+             __  __ ___ ___ _  _ ___ 
+            |  \/  |_ _/ __| || |_ _|
+            | |\/| || | (__| __ || | 
+            |_|  |_|___\___|_||_|___|
+            """.trimIndent()
         )
 
         registerCommands()

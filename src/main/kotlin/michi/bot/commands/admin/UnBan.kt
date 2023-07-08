@@ -1,8 +1,5 @@
 package michi.bot.commands.admin
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import michi.bot.commands.CommandScope
 import michi.bot.commands.MichiArgument
 import michi.bot.commands.MichiCommand
@@ -16,6 +13,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.awt.Color
 
+@Suppress("Unused")
 object UnBan: MichiCommand("unban", "Unbans the mentioned users.", CommandScope.GUILD_SCOPE) {
 
     override val userPermissions: List<Permission>
@@ -24,87 +22,77 @@ object UnBan: MichiCommand("unban", "Unbans the mentioned users.", CommandScope.
             Permission.BAN_MEMBERS
         )
 
-    override val botPermisions: List<Permission>
+    override val botPermissions: List<Permission>
         get() = listOf(
-            Permission.ADMINISTRATOR,
             Permission.BAN_MEMBERS,
             Permission.MESSAGE_SEND,
-            Permission.MESSAGE_EXT_EMOJI
+            Permission.MESSAGE_EXT_EMOJI,
+            Permission.MESSAGE_SEND_IN_THREADS
         )
 
     override val usage: String
-        get() = "/ban <1st user> <2nd user(optional) <3rd user(optional) <reason(optional)>"
+        get() = "/unban <1st user>"
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("user1", "the 1st user to ban", OptionType.USER, isRequired = true, hasAutoCompletion = false),
-            MichiArgument("user2", "the 2nd user to ban", OptionType.USER, isRequired = false, hasAutoCompletion = false),
-            MichiArgument("user3", "the 3rd user to ban", OptionType.USER, isRequired = false, hasAutoCompletion = false)
+            MichiArgument("user", "the 1st user to ban", OptionType.USER)
         )
 
     /**
-     * Unbans the mentioned user(s) if possible
+     * Unbans the mentioned user(s) if possible.
      * @param context The interaction to retrieve info from.
      * @author Slz
      */
-    @OptIn(DelicateCoroutinesApi::class)
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.user
-        val subjects = mutableListOf<User>()
-        context.options.forEach { subjects.add(it.asUser) }
-
-        // this is asserted because in the SlashCommandListener it's tested if the command
-        // comes or not from a guild
         val guild = context.guild!!
 
         // guard clauses
         if (!canHandle(context)) return
 
+        val subject = context.getOption("user")!!.asUser
+
         // if everything is right
-        val embed = EmbedBuilder()
-        embed.setColor(Color.BLUE).setTitle("UNBAN! ${Emoji.michiHappy}")
+        guild.unban(subject).queue()
 
-        for (subject in subjects) {
-            guild.unban(subject).queue()
-            embed.addField("Unbanned ${subject.name}", "", false)
-        }
+        EmbedBuilder().apply {
+            setColor(Color.BLUE).setTitle("UNBAN! ${Emoji.michiHappy}")
+            addField("Unbanned ${subject.name}", "", false)
+            setFooter("It's better that this user don't cause any trouble again")
 
-        if (subjects.size == 1) embed.setFooter("It's better that this user don't cause any trouble again")
-        else embed.setFooter("It's better that they don't cause any trouble again")
-
-        context.replyEmbeds(embed.build()).queue()
+        }.build()
+            .let(context::replyEmbeds)
+            .queue()
 
         // puts the user that sent the command in cooldown
-        GlobalScope.launch { SlashCommandListener.cooldownManager(sender) }
+        SlashCommandListener.cooldownManager(sender)
     }
 
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
         val agent = context.member!!
-        val options = context.options
+        val subject = context.getOption("user")?.asUser ?: return false
         val guild = context.guild!!
         val bot = guild.selfMember
 
-        for (subject in options) {
+        if (locateUserInGuild(guild, subject)) {
+            context.reply("${subject.name} isn't banned ${Emoji.michiHuh}")
+                .setEphemeral(true)
+                .queue()
+            return false
+        }
 
-            if (subject.type != OptionType.USER) continue
+        if (!agent.permissions.any { permission -> userPermissions.contains(permission) }) {
+            context.reply("You don't have the permissions to use this command, silly you ${Emoji.michiBlep}")
+                .setEphemeral(true)
+                .queue()
+            return false
+        }
 
-            if (locateUserInGuild(guild, subject.asUser)) {
-                context.reply("${subject.asUser.name} isn't banned ${Emoji.michiHuh}")
-                    .setEphemeral(true)
-                    .queue()
-                return false
-            }
-
-            if (!agent.permissions.any { permission -> userPermissions.contains(permission) }) {
-                context.reply("You don't have the permissions to use this command, silly you ${Emoji.michiBlep}").setEphemeral(true).queue()
-                return false
-            }
-
-            if (!bot.permissions.containsAll(botPermisions)) {
-                context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}").setEphemeral(true).queue()
-                return false
-            }
-
+        if (!bot.permissions.containsAll(botPermissions)) {
+            context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}")
+                .setEphemeral(true)
+                .queue()
+            return false
         }
 
         return true
@@ -121,8 +109,7 @@ object UnBan: MichiCommand("unban", "Unbans the mentioned users.", CommandScope.
         var userNotFound = false
 
         guild.retrieveMember(user).queue(null) { userNotFound = true }
-        if (userNotFound) return false
-        return true
+        return !userNotFound
     }
 
 }

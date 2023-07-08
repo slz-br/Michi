@@ -10,9 +10,12 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands
 object OnReadyListener: ListenerAdapter() {
 
     override fun onReady(event: ReadyEvent) {
+
+        // registering global commands
         val commandData: MutableList<CommandData> = ArrayList()
 
         commandList.forEach { cmd ->
+
             if (cmd.scope == CommandScope.GLOBAL_SCOPE) {
                 val command = Commands.slash(cmd.name.lowercase(), cmd.description)
                 for (arg in cmd.arguments) {
@@ -25,7 +28,7 @@ object OnReadyListener: ListenerAdapter() {
                     )
                 }
 
-                commandData.add(command)
+                commandData += command
             }
         }
 

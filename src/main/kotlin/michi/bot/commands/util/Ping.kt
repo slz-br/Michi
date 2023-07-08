@@ -7,12 +7,14 @@ import michi.bot.util.Emoji
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 
-object Ping: MichiCommand("ping", "Checks the latency of the bot response.", GUILD_SCOPE) {
+@Suppress("Unused")
+object Ping: MichiCommand("ping", "Checks the latency of the bot response.", GLOBAL_SCOPE) {
 
-    override val botPermisions: List<Permission>
+    override val botPermissions: List<Permission>
         get() = listOf(
             Permission.MESSAGE_SEND,
-            Permission.MESSAGE_EXT_EMOJI
+            Permission.MESSAGE_EXT_EMOJI,
+            Permission.MESSAGE_SEND_IN_THREADS
         )
 
     override val usage: String
@@ -34,7 +36,7 @@ object Ping: MichiCommand("ping", "Checks the latency of the bot response.", GUI
         guild?.let {
             val bot = guild.selfMember
 
-            if (!bot.permissions.containsAll(botPermisions)) {
+            if (!bot.permissions.containsAll(botPermissions)) {
                 context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}").setEphemeral(true).queue()
                 return false
             }

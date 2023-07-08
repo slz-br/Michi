@@ -1,13 +1,11 @@
 package michi.bot.database.tables
 
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.dao.id.IntIdTable
 
-object BlacklistTable: Table("blacklist") {
+object BlacklistTable: IntIdTable("blacklist", "position") {
 
     val type = varchar("type", 6)
-    val id = long("id")
+    val entityID = long("entity_id")
     val reason = text("reason").nullable()
-
-    override val primaryKey = PrimaryKey(id)
 
 }

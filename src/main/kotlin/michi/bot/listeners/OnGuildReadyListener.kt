@@ -1,7 +1,12 @@
 package michi.bot.listeners
 
+import kotlinx.coroutines.*
 import michi.bot.Michi
 import michi.bot.commands.CommandScope
+import michi.bot.database.dao.BlacklistDAO
+import michi.bot.database.dao.GuildsDAO
+import michi.bot.lavaplayer.PlayerManager
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.OptionType
@@ -15,7 +20,11 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands
 object OnGuildReadyListener: ListenerAdapter() {
 
     override fun onGuildReady(event: GuildReadyEvent) {
-        val commandData: MutableList<CommandData> = ArrayList()
+        CoroutineScope(Dispatchers.IO).launch {
+            val guild = event.guild
+            // Putting the guild in the database
+            GuildsDAO.post(guild)
+            PlayerManager.retrieveGuildMusicQueue(guild)
 
         // help
         commandData.add(Commands.slash("help", "Relevant info about michi."))

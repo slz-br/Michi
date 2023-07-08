@@ -6,30 +6,24 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 
-import michi.bot.commands.admin.*
-import michi.bot.commands.mail.*
-import michi.bot.commands.math.*
-import michi.bot.commands.misc.*
-import michi.bot.commands.util.*
+import michi.bot.database.dao.*
 import michi.bot.util.Emoji
-
-private const val DELAY = (1000 * 5.25).toLong()
 
 /**
  * Called whenever a slashCommand is used.
  * @author Slz
  */
 object SlashCommandListener: ListenerAdapter() {
+    private const val DELAY = (1000 * 5.25).toLong()
 
     private val cooldownList = mutableSetOf<User>()
 
     suspend fun cooldownManager(user: User) {
-        cooldownList.add(user)
+        cooldownList += user
         delay(DELAY)
-        cooldownList.remove(user)
+        cooldownList -= user
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         CoroutineScope(Dispatchers.IO).launch {
             val name = event.name

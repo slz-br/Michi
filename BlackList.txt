@@ -1,7 +1,0 @@
-// BlackList - Users that are here can't use Michi's Commands
-// - this file contains the id of users and guilds that are banned from using Michi's Commands;
-// - the content of that file(the banned users and guilds ids) won't be commited to GitHub to preserve their identity;
-// - if you see somebody breaking Michi's terms, you can report this on my discord: Slz²#5675
-// - if you don't want to be here, make sure to follow Michi's terms.
-
-// note: Michi doesn't have terms yet, when terms are created I will paste them here.

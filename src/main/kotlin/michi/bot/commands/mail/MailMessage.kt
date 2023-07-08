@@ -5,7 +5,6 @@ import au.com.origma.perspectiveapi.v1alpha1.models.AnalyzeCommentResponse
 import au.com.origma.perspectiveapi.v1alpha1.models.AttributeType
 import au.com.origma.perspectiveapi.v1alpha1.models.ContentType
 import au.com.origma.perspectiveapi.v1alpha1.models.Entry
-import michi.bot.logger
 import michi.bot.perspectiveAPI
 import net.dv8tion.jda.api.entities.User
 import java.net.MalformedURLException
@@ -30,14 +29,7 @@ class MailMessage(title: String, message: String, sender: User) {
         this.message = message
         this.sender = sender
 
-        message.split(" ").forEach {
-            containsLink = try {
-                URL(it)
-                true
-            } catch (e: MalformedURLException) {
-                false
-            }
-        }
+        if (message.split(" ").any { isURL(it) }) containsLink = true
 
         val request: AnalyzeCommentResponse? = perspectiveAPI.analyze(
             AnalyzeCommentRequest.Builder()
@@ -54,7 +46,6 @@ class MailMessage(title: String, message: String, sender: User) {
             .build()
         )
 
-
         if (request == null) {
             isSafe = false
             unknowLanguage = true
@@ -64,13 +55,11 @@ class MailMessage(title: String, message: String, sender: User) {
             val sexuallyExplicit = request.getAttributeScore(AttributeType.SEXUALLY_EXPLICIT).summaryScore.value
             val identityAttack =   request.getAttributeScore(AttributeType.IDENTITY_ATTACK).summaryScore.value
 
-            logger.info("severeToxicity: $severeToxicity")
-            logger.info("sexuallyExplicit: $sexuallyExplicit")
-            logger.info("identityAttack: $identityAttack")
-
             isSafe = severeToxicity < 0.55f && sexuallyExplicit < 0.6f && identityAttack < 0.6f
         }
     }
+
+    private fun isURL(message: String): Boolean = try { URL(message); true } catch (e: MalformedURLException) { false }
 
     override fun toString(): String = "**${this.title}**\n```${this.message}```"
 

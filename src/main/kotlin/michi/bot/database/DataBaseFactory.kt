@@ -2,8 +2,7 @@ package michi.bot.database
 
 import kotlinx.coroutines.*
 import michi.bot.config
-import michi.bot.database.tables.BlacklistTable
-import michi.bot.database.tables.GuildTable
+import michi.bot.database.tables.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
@@ -12,7 +11,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object DataBaseFactory {
 
-    fun init() {
+    suspend fun init() = withContext(Dispatchers.IO) {
         Database.connect(config["DB_URL"], config["DB_DRIVER"], config["DB_USER"], config["DB_PASSWORD"])
 
         transaction {
@@ -28,6 +27,6 @@ object DataBaseFactory {
 
     }
 
-    suspend fun <T> query(block: () -> T): T = withContext(Dispatchers.IO) { return@withContext block() }
+    suspend fun <T> query(block: () -> T): T = withContext(Dispatchers.IO) { block() }
 
 }
