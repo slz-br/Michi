@@ -11,26 +11,28 @@ import michi.bot.util.Emoji
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.commands.OptionType
-import java.awt.Color
-import java.util.concurrent.TimeUnit
+import net.dv8tion.jda.api.interactions.components.buttons.Button
 
 /**
- * Object for the "ban" command, a command that bans mentioned users from
- * the server if possible(case the sender and the bot have permission to ban)
+ * Object for the "ban" command, a command that bans the mentioned user from
+ * the guild if possible(case the sender and the bot have permission to ban the user)
  * @author Slz
  */
+@Suppress("Unused")
 object Ban: MichiCommand("ban", "Bans the mentioned users.", CommandScope.GUILD_SCOPE) {
+
     override val userPermissions: List<Permission>
         get() = listOf(
             Permission.ADMINISTRATOR,
             Permission.BAN_MEMBERS
         )
 
-    override val botPermisions: List<Permission>
+    override val botPermissions: List<Permission>
         get() = listOf(
             Permission.BAN_MEMBERS,
             Permission.MESSAGE_SEND,
-            Permission.MESSAGE_EXT_EMOJI
+            Permission.MESSAGE_EXT_EMOJI,
+            Permission.MESSAGE_SEND_IN_THREADS
         )
 
     override val usage: String
@@ -38,10 +40,8 @@ object Ban: MichiCommand("ban", "Bans the mentioned users.", CommandScope.GUILD_
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("user1", "the 1st user to ban", OptionType.USER, isRequired = true, hasAutoCompletion = false),
-            MichiArgument("user2", "the 2nd user to ban", OptionType.USER, isRequired = false, hasAutoCompletion = false),
-            MichiArgument("user3", "the 3rd user to ban", OptionType.USER, isRequired = false, hasAutoCompletion = false),
-            MichiArgument("reason", "The reason for the ban.", OptionType.STRING, isRequired = false, hasAutoCompletion = false)
+            MichiArgument("user", "the user to ban", OptionType.USER),
+            MichiArgument("reason", "The reason for the ban.", OptionType.STRING, isRequired = false)
         )
 
     /**
@@ -65,34 +65,23 @@ object Ban: MichiCommand("ban", "Bans the mentioned users.", CommandScope.GUILD_
      * @author Slz
      * @see canHandle
      */
-    @OptIn(DelicateCoroutinesApi::class)
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.user
-        val reason = context.getOptionsByName("reason")[0].asString
-        val subjects = mutableListOf<Member>()
+        val subject = context.getOption("user")!!.asMember!!
+        var reason = context.getOption("reason")?.asString
 
         // guard clause
         if (!canHandle(context)) return
 
-        context.options.forEach { if (it.type == OptionType.USER) subjects.add(it.asMember!!) }
+        if (reason != null && reason.length > 1750) reason = null
 
-        // if everything is right:
-        val embed = EmbedBuilder()
-        embed.setColor(Color.RED).setTitle("**Ban!** " + Emoji.michiExcite)
-
-        for (subject in subjects.toSet()) {
-            subject.ban(1, TimeUnit.HOURS).queue()
-            embed.addField("Banned ${subject.user.name}", "", false)
-        }
-
-        if (reason.isNotBlank() && reason.length < 1750) {
-            embed.addField("Reason: ", reason, false)
-        }
-
-        context.replyEmbeds(embed.build()).queue()
+        // ban confirmation
+        context.reply("Are you sure you want to ban ${subject.asMention}?\nreason: ${reason ?: "not provided or too large"}")
+            .setActionRow(Button.danger("ban-confirmation", "Ban!"))
+            .queue()
 
         // puts the user that sent the command in cooldown
-        GlobalScope.launch { SlashCommandListener.cooldownManager(sender) }
+        SlashCommandListener.cooldownManager(sender)
     }
 
     /**
@@ -104,49 +93,52 @@ object Ban: MichiCommand("ban", "Bans the mentioned users.", CommandScope.GUILD_
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
         val sender = context.member!!
         val bot = context.guild!!.selfMember
-        val options = context.options
+        val subject = context.getOption("user")!!.asMember!!
         val senderTopRole = sender.roles.sortedDescending()[0].position
         val botTopRole = bot.roles.sortedDescending()[0].position
-        val subjects = mutableListOf<User>()
-        val subjectsAsMembers = mutableListOf<Member>()
-        options.forEach { if (it.type == OptionType.USER) subjects.add(it.asUser) }
 
-        if (subjects.any { locateUserInGuild(context.guild!!, it) }) {
-            context.reply("Couldn't find the user in the guild ${Emoji.michiShrug}").setEphemeral(true).queue()
+        if (locateUserInGuild(context.guild!!, subject.user)) {
+            context.reply("Couldn't find the user in the guild ${Emoji.michiShrug}")
+                .setEphemeral(true)
+                .queue()
             return false
         }
 
-        options.forEach {
-            if (it.type == OptionType.USER) subjectsAsMembers.add(it.asMember!!)
-        }
-
         // checks if the agent is devil and is trying to ban michi >:(
-        if (subjects.any { it.id == config["BOT_ID"] }) {
-            context.reply("You can't ban me, idiot ${Emoji.michiUnimpressed}").setEphemeral(true).queue()
+        if (subject.id == config["BOT_ID"]) {
+            context.reply("You can't ban me, idiot ${Emoji.michiUnimpressed}")
+                .setEphemeral(true)
+                .queue()
             return false
         }
 
         // checks if the agent is trying to ban himself
-        if (subjects.any { it == sender.user }) {
-            context.reply("Are you trying to ban yourself? ${Emoji.michiHuh}").setEphemeral(true).queue()
+        if (subject == sender.user) {
+            context.reply("Are you trying to ban yourself? ${Emoji.michiHuh}")
+                .setEphemeral(true)
+                .queue()
             return false
         }
 
         if (!sender.permissions.any { permission -> userPermissions.contains(permission) }) {
-            context.reply("You don't have the permissions to use this command, silly you ${Emoji.michiBlep}").setEphemeral(true).queue()
+            context.reply("You don't have the permissions to use this command, silly you ${Emoji.michiBlep}")
+                .setEphemeral(true)
+                .queue()
             return false
         }
 
-        if (!bot.permissions.containsAll(botPermisions)) {
-            context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}").setEphemeral(true).queue()
+        if (!bot.permissions.containsAll(botPermissions)) {
+            context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}")
+                .setEphemeral(true)
+                .queue()
             return false
         }
 
-        for (subject in subjectsAsMembers) {
-            if (subject.roles.any { role -> role.position >= senderTopRole || role.position >= botTopRole }) {
-                context.reply("${subject.asMention} has a greater role than you or me").setEphemeral(true).queue()
-                return false
-            }
+        if (subject.roles.any { role -> role.position >= senderTopRole || role.position >= botTopRole }) {
+            context.reply("${subject.asMention} has a greater role than you or me")
+                .setEphemeral(true)
+                .queue()
+            return false
         }
 
         return true
