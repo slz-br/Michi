@@ -37,13 +37,12 @@ object MessageListener: ListenerAdapter() {
         val sender = event.author
 
         GlobalScope.launch {
-            // math
-            for (instance in MathProblemManager.instances) {
 
+            // math
+            MathProblemManager.instances.forEach { instance ->
                 if (sender == instance.problemInstance.user && event.channel == instance.context.channel) {
                     try {
                         msg.toInt()
-
                         instance.checkAnswer(event, instance)
                     } catch (e: NumberFormatException) {
                         return@launch
@@ -53,13 +52,13 @@ object MessageListener: ListenerAdapter() {
             }
 
             // help
-            when (msg) {
-                "<@${config["BOT_ID"]}>" -> {
-                    if (cooldownList.contains(event.author)) {
-                        event.message.reply("You're in cooldown, wait a bit ${Emoji.michiSip}").queue()
-                    }
-                    event.message.reply("Use /help for help").queue()
+            if (msg == "<@${config["BOT_ID"]}>") {
+                if (cooldownList.contains(event.author)) {
+                    event.message.reply("You're in cooldown, wait a bit ${Emoji.michiSip}")
+                        .queue()
                 }
+                event.message.reply("Use /help for help")
+                    .queue()
             }
 
         }
