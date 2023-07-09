@@ -7,7 +7,6 @@ package michi.bot.commands
  * other non-command classes.
  * @author Slz
  */
-@Retention
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
 annotation class CommandNotImplemented
