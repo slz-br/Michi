@@ -56,12 +56,16 @@ object Shuffle: MichiCommand("queue-shuffle", "Shuffles the queue.", CommandScop
         }
 
         if (!sender.permissions.any { permission -> userPermissions.contains(permission) }) {
-            context.reply("You don't have the permissions to use this command, silly you ${Emoji.michiBlep}").setEphemeral(true).queue()
+            context.reply("You don't have the permissions to use this command, silly you ${Emoji.michiBlep}")
+                .setEphemeral(true)
+                .queue()
             return false
         }
 
         if (!bot.permissions.containsAll(botPermissions)) {
-            context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}").setEphemeral(true).queue()
+            context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}")
+                .setEphemeral(true)
+                .queue()
             return false
         }
 
