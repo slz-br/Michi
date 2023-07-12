@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 import michi.bot.database.dao.*
 import michi.bot.util.Emoji
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 
 /**
  * Called whenever a slashCommand is used.
@@ -43,7 +44,7 @@ object SlashCommandListener: ListenerAdapter() {
             if (GuildsDAO.get(event.guild) == null) guild?.let { GuildsDAO.post(it) }
 
             guild?.let {
-                if (channel.asTextChannel().isNSFW) {
+                if (channel is TextChannel && channel.asTextChannel().isNSFW) {
                     event.reply("You can't use my commands is nsfw channels.")
                         .setEphemeral(true)
                         .queue()
