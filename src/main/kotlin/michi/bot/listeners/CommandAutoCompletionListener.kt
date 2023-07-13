@@ -20,17 +20,15 @@ object CommandAutoCompletionListener: ListenerAdapter() {
             when (event.name) {
 
                 "mute" -> {
-                    if (focusedOption.name == "time") {
-                        event.replyChoiceStrings(timeAutoCompletion.filter { it.startsWith(focusedOption.value) })
-                            .queue()
-                    }
+                    if (focusedOption.name != "time") return@launch
+                    event.replyChoiceStrings(timeAutoCompletion.filter { it.startsWith(focusedOption.value) })
+                        .queue()
                 }
 
                 "slowmode" -> {
-                    if (focusedOption.name == "time") {
-                        event.replyChoiceStrings(slowmodeAutoCompletion.filter { it.startsWith(focusedOption.value) })
-                            .queue()
-                    }
+                    if (focusedOption.name != "time") return@launch
+                    event.replyChoiceStrings(slowmodeAutoCompletion.filter { it.startsWith(focusedOption.value) })
+                        .queue()
                 }
 
             }
