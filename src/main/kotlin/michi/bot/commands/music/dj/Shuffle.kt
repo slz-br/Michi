@@ -35,7 +35,9 @@ object Shuffle: MichiCommand("queue-shuffle", "Shuffles the queue.", CommandScop
         val musicManager = PlayerManager.getMusicManager(guild)
         val queue = musicManager.scheduler.trackQueue
 
-        queue.shuffled().toCollection(queue)
+        val newQueue = queue.shuffled()
+        queue.clear()
+        newQueue.toCollection(queue)
         context.reply("queue sucessfully shuffled ${Emoji.michiThumbsUp}")
             .setEphemeral(true)
             .queue()
