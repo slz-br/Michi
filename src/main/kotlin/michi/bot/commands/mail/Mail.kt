@@ -22,16 +22,16 @@ object Mail: MichiCommand("mail", "Sends an anonymous message to someone.", Comm
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("title", "What is the mail about?", OptionType.STRING, isRequired = true, hasAutoCompletion = false),
-            MichiArgument("message", "The message you want to send.", OptionType.STRING, isRequired = true, hasAutoCompletion = false),
-            MichiArgument("receiver", "Who is this mail for?", OptionType.USER, isRequired = true, hasAutoCompletion = false)
+            MichiArgument("title", "What is the mail about?", OptionType.STRING),
+            MichiArgument("message", "The message you want to send.", OptionType.STRING),
+            MichiArgument("receiver", "Who is this mail for?", OptionType.USER)
         )
 
     @OptIn(DelicateCoroutinesApi::class)
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.user
         val jda = context.jda
-        val reportChannel = context.jda.getGuildById(config["BOT_SERVER_ID"])?.getTextChannelById("1085275324859818025") ?: return
+        val reportChannel = context.jda.getGuildById(config["BOT_SERVER_ID"])?.getTextChannelById(config["MAIL_REPORT_CHANNEL_ID"]) ?: return
 
         if (!canHandle(context)) return
 
