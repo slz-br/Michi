@@ -3,7 +3,7 @@ package michi.bot
 import au.com.origma.perspectiveapi.v1alpha1.PerspectiveAPI
 import ch.qos.logback.core.status.Status
 import io.github.cdimascio.dotenv.Dotenv
-import michi.bot.commands.CommandNotImplemented
+import michi.bot.commands.CommandDeactivated
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.requests.GatewayIntent
