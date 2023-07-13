@@ -31,9 +31,7 @@ object Skip: MichiCommand("skip", "Starts a poll to skip the current music(skips
 
         EmbedBuilder().apply {
             setColor(Color.MAGENTA)
-            setTitle("Skip Poll")
             addField("Poll to skip ${playingTrack.info.title}", "${poll.size} of ${usersInTheVC/2} needed voted to skip", false)
-            setFooter(guild.name, guild.iconUrl)
         }.build().let(context::replyEmbeds).queue()
 
         if (isSkippable(guild)) {

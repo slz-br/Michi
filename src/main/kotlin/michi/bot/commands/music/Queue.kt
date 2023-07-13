@@ -67,13 +67,16 @@ object Queue: MichiCommand("queue", "Gives you the queue of tracks of the server
         }
 
         val playingTrack = player.playingTrack
-        val playingTrackInfo = playingTrack.info
+        val playingTrackInfo = playingTrack.info ?: null
 
-        embed.addField(
-            "Current playing track:",
-            "${playingTrackInfo.title}`[${formatTrackLength(playingTrack)}]`\n`${playingTrackInfo.uri}`",
-            false
-        )
+
+        playingTrackInfo?.let {
+            embed.addField(
+                "Current playing track:",
+                "${playingTrackInfo.title}`[${formatTrackLength(playingTrack)}]`\n`${playingTrackInfo.uri}`",
+                false
+            )
+        }
 
         for (i in 0 until TRACKS_PER_PAGE) {
             if (i > queue.size - 1) break
