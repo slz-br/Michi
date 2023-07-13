@@ -84,7 +84,6 @@ object Math: MichiCommand("math", "Gives you a basic math problem.", CommandScop
  * @param sender The user that will need to solve this math problem.
  * @author Slz
  */
-
 class MathProblem(sender: User) {
     val problemAsString: String
     val result: Int
@@ -154,7 +153,13 @@ class MathProblemManager(problem: MathProblem, event: SlashCommandInteractionEve
     val context = event
 
     companion object {
+
+        /**
+         * LinkedList containing all the instances of MathProblemManager.
+         * @author Slz
+         */
         val instances = LinkedList<MathProblemManager>()
+
     }
 
     init {
@@ -179,7 +184,7 @@ class MathProblemManager(problem: MathProblem, event: SlashCommandInteractionEve
 
     /**
      * Checks if the math problem was solved after the delay.
-     * @param [problem] The math problem to check.
+     * @param problem The math problem to check.
      * @param context The context to reply if the problem wasn't answered in time.
      * @author Slz
      */

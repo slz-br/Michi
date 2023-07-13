@@ -40,6 +40,12 @@ object PlayerManager {
         }
     }
 
+    /**
+     * Function actually start streaming the track. This function must be invoked when someone successfully calls the play command.
+     * @param context The [SlashCommandInteractionEvent]
+     * @param trackURL The string containing the URL or Name of the track
+     * @author Slz
+     */
     fun loadAndPlay(context: SlashCommandInteractionEvent, trackURL: String) {
         val guild = context.guild ?: return
         val musicManager = getMusicManager(guild)

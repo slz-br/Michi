@@ -21,8 +21,6 @@ object DataBaseFactory {
                 GuildTable,
                 BlacklistTable
             )
-
-            commit()
         }
 
     }
