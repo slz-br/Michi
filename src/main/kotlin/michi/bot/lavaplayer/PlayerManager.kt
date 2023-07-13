@@ -20,6 +20,7 @@ object PlayerManager {
 
     private val musicManagers: MutableMap<Long, GuildMusicManager>
     private val playerManager: DefaultAudioPlayerManager
+    const val scLogoURL = "https://developers.soundcloud.com/assets/logo_white-af5006050dd9cba09b0c48be04feac57.png"
 
     init {
         musicManagers = HashMap()
@@ -76,29 +77,27 @@ object PlayerManager {
                     .setColor(Color.MAGENTA)
 
                 if (trackTitle == "「NIGHT RUNNING」") {
-                    embed.addField(
-                        "Added to the Queue!",
-                        "**$trackTitle**`[${formatTrackLength(track)}]` ${Emoji.nightRunning}\nuploaded by: $trackAuthor | position: ${queue.size + 1}",
-                        false
-                    )
-                    embed.setFooter("great choice!")
+                    embed.setTitle("**$trackTitle**`[${formatTrackLength(track)}]` ${Emoji.nightRunning}", track.info.uri)
+                    embed.setDescription("uploaded by: $trackAuthor | position: ${queue.size + 1}")
+                    embed.setImage(scLogoURL)
                 }
                 else {
-                    embed.addField(
-                        "Added to the Queue!",
-                        "**$trackTitle**`[${formatTrackLength(track)}]`\nuploaded by: $trackAuthor | position: ${queue.size + 1}",
-                        false
-                    )
+                    embed.setTitle("**$trackTitle**`[${formatTrackLength(track)}]`", track.info.uri)
+                    embed.setDescription("uploaded by: $trackAuthor | position: ${queue.size + 1}")
+                    embed.setImage(scLogoURL)
                 }
                 scheduler.queue(track)
 
-                context.replyEmbeds(embed.build()).queue()
+                context.reply("Added to the queue!").setEmbeds(embed.build())
+                    .queue()
                 return
             }
 
             override fun playlistLoaded(playlist: AudioPlaylist?) {
                 if (playlist == null || playlist.tracks.isEmpty()) {
-                    context.reply("Something went wrong ${Emoji.michiTired}\ntry typing the track/playlist name again, maybe in a different way").setEphemeral(true).queue()
+                    context.reply("Something went wrong ${Emoji.michiTired}\ntry typing the track/playlist name again, maybe in a different way")
+                        .setEphemeral(true)
+                        .queue()
                     return
                 }
 
@@ -118,27 +117,19 @@ object PlayerManager {
                     }
 
                     if (trackTitle == "「NIGHT RUNNING」") {
-                        embed.addField(
-                            "Added to the Queue!",
-                            "**$trackTitle**`[${formatTrackLength(firstTrack)}]` ${Emoji.nightRunning}\nuploaded by: $trackAuthor | position: ${queue.size + 1}",
-                            false
-                        )
-                        embed.setFooter("Great choice!")
-                        context.replyEmbeds(embed.build()).queue()
-                        return
+                        embed.setTitle("**$trackTitle**`[${formatTrackLength(firstTrack)}]` ${Emoji.nightRunning}", firstTrack.info.uri)
+                        embed.setDescription("uploaded by: $trackAuthor | position: ${queue.size + 1}")
+                        embed.setImage(scLogoURL)
                     }
                     else {
-                        embed.addField(
-                            "Added to the Queue!",
-                            "**$trackTitle**`[${formatTrackLength(firstTrack)}]`\nuploaded by: $trackAuthor | position: ${queue.size + 1}",
-                            false
-                        )
-                        // todo: fix this.
-                        // java.lang.IllegalStateException: This interaction has already been acknowledged or replied to. You can only reply or acknowledge an interaction once!
-                        context.replyEmbeds(embed.build()).queue()
-                        return
+                        embed.setTitle("**$trackTitle**`[${formatTrackLength(firstTrack)}]`", firstTrack.info.uri)
+                        embed.setDescription("uploaded by: $trackAuthor | position: ${queue.size + 1}")
+                        embed.setImage(scLogoURL)
                     }
 
+                    context.reply("Added to the queue!").setEmbeds(embed.build())
+                        .queue()
+                    return
                 }
 
                 playlist.tracks.forEach { track ->
@@ -151,14 +142,13 @@ object PlayerManager {
                     }
                 }
 
-                embed.setTitle("Playlist added!")
-                    .addField(
-                        playlist.name,
-                        "${playlist.tracks.size} tracks added to the queue",
-                        false
-                    )
+                embed.apply {
+                    setTitle(playlist.name)
+                    setDescription("${playlist.tracks.size} tracks added to the queue")
+                    setImage(scLogoURL)
+                }
 
-                context.replyEmbeds(embed.build())
+                context.reply("Playlist added to the queue!").setEmbeds(embed.build())
                     .queue()
                 return
             }

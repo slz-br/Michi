@@ -15,7 +15,10 @@ import java.util.concurrent.TimeUnit
 
 import michi.bot.commands.music.guildSkipPoll
 import michi.bot.database.dao.GuildsDAO
+import michi.bot.util.Emoji
+import net.dv8tion.jda.api.EmbedBuilder
 import org.slf4j.LoggerFactory
+import java.awt.Color
 
 class Scheduler(player: AudioPlayer, guild: Guild): AudioEventAdapter() {
 
@@ -62,7 +65,6 @@ class Scheduler(player: AudioPlayer, guild: Guild): AudioEventAdapter() {
      * @author Slz
      */
     fun queue(track: AudioTrack) {
-        // it may produce a NPE if called from outside, since it won't be checked if the next track is null.
         if (!audioPlayer.startTrack(track, true)) trackQueue.offer(track)
     }
 
@@ -71,7 +73,21 @@ class Scheduler(player: AudioPlayer, guild: Guild): AudioEventAdapter() {
      * @author Slz
      */
     fun nextTrack() {
-        audioPlayer.startTrack(trackQueue.poll(), false)
+        val newTrack = trackQueue.poll()
+        audioPlayer.startTrack(newTrack, false)
+        val voiceChannel = schedulerGuild.selfMember.voiceState?.channel?.asVoiceChannel()
+        val bot = schedulerGuild.selfMember
+
+        if (voiceChannel == null || !bot.hasPermission(voiceChannel) || newTrack == null) return
+        EmbedBuilder().apply {
+            setColor(Color.MAGENTA)
+            setTitle("Now Playing:", newTrack.info.uri)
+            addField(
+                newTrack.info.title,
+                "coming next: ${trackQueue.firstOrNull()?.info?.title ?: "No more music, the queue ended ${Emoji.michiSaddened}"}",
+                false
+            )
+        }.build().let(voiceChannel::sendMessageEmbeds).queue()
     }
 
     /**
@@ -85,6 +101,20 @@ class Scheduler(player: AudioPlayer, guild: Guild): AudioEventAdapter() {
 
         val track = trackQueue.elementAt(index - 1)
         audioPlayer.startTrack(track, false)
+        val voiceChannel = schedulerGuild.selfMember.voiceState?.channel?.asVoiceChannel()
+        val bot = schedulerGuild.selfMember
+
+        if (voiceChannel == null || !bot.hasPermission(voiceChannel)) return true
+        EmbedBuilder().apply {
+            setColor(Color.MAGENTA)
+            setTitle("Now Playing:", track.info.uri)
+            addField(
+                track.info.title,
+                "coming next: ${trackQueue.firstOrNull()?.info?.title ?: "No more music, the queue ended ${Emoji.michiSaddened}"}",
+                false
+            )
+        }.build().let(voiceChannel::sendMessageEmbeds).queue()
+
         return true
     }
 

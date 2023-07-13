@@ -44,7 +44,6 @@ class Michi {
             private set
 
         val commandList = mutableListOf<MichiCommand>()
-
     }
 
     init {
@@ -140,7 +139,7 @@ class Michi {
 
                 if (
                     !MichiCommand::class.java.isAssignableFrom(commandClass)
-                    || commandClass.getAnnotation(CommandNotImplemented::class.java) != null
+                    || commandClass.isAnnotationPresent(CommandDeactivated::class.java)
                 ) return@fileLoop
 
                 val cmdConstructor = commandClass.asSubclass(MichiCommand::class.java).getDeclaredConstructor()

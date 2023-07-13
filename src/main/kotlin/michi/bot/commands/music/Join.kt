@@ -35,13 +35,7 @@ object Join: MichiCommand("join", "Michi joins the audio channel that you're in.
 
         audioManager.openAudioConnection(channelToJoin)
 
-        EmbedBuilder().apply {
-            setColor(Color.MAGENTA)
-            setTitle("Joined!")
-            addField("joined ${channelToJoin.name}", "Put some music on ${Emoji.michiNodders}", false)
-            setFooter(guild.name, guild.iconUrl)
-        }.build()
-            .let(context::replyEmbeds)
+        context.reply("Joined ${channelToJoin.asMention}\nPut some music on ${Emoji.michiMusic}")
             .queue()
 
         // puts the user that sent the command in cooldown
