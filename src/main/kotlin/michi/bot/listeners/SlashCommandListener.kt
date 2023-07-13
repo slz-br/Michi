@@ -44,7 +44,7 @@ object SlashCommandListener: ListenerAdapter() {
             if (GuildsDAO.get(event.guild) == null) guild?.let { GuildsDAO.post(it) }
 
             guild?.let {
-                if (channel is TextChannel && channel.asTextChannel().isNSFW) {
+                if (channel is TextChannel && channel.isNSFW) {
                     event.reply("You can't use my commands is nsfw channels.")
                         .setEphemeral(true)
                         .queue()

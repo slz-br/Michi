@@ -6,6 +6,7 @@ import michi.bot.lavaplayer.PlayerManager
 import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 
 @Suppress("Unused")
@@ -36,7 +37,7 @@ object ForceSkip: MichiCommand("fskip", "Force a track to be skipped", CommandSc
         musicManager.scheduler.nextTrack()
 
         context.reply("Successfully skipped ${Emoji.michiThumbsUp}").setEphemeral(true).queue()
-        context.channel.asTextChannel().sendMessage("Current music force skipped by ${sender.asMention}").queue()
+        context.channel.sendMessage("Current music force skipped by ${sender.asMention}").queue()
 
         // puts the user that sent the command in cooldown
         SlashCommandListener.cooldownManager(sender)
@@ -47,7 +48,7 @@ object ForceSkip: MichiCommand("fskip", "Force a track to be skipped", CommandSc
         val sender = context.member!!
         val bot = guild.selfMember
         val botVoiceState = bot.voiceState!!
-        val channel = context.channel.asTextChannel()
+        val channel = context.channel
         val senderVoiceState = sender.voiceState!!
 
         if (!bot.permissions.containsAll(botPermissions)) {
@@ -92,7 +93,7 @@ object ForceSkip: MichiCommand("fskip", "Force a track to be skipped", CommandSc
             return false
         }
 
-        if (!bot.hasPermission(channel)) {
+        if (channel is TextChannel && !bot.hasPermission(channel)) {
 
             context.reply("I don't have permission to message in this channel")
                 .setEphemeral(true)

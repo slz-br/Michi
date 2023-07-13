@@ -7,6 +7,7 @@ import michi.bot.commands.MichiCommand
 import michi.bot.lavaplayer.PlayerManager
 import michi.bot.util.Emoji
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.net.URL
@@ -74,7 +75,7 @@ object ForcePlay: MichiCommand("fplay", "Forces a track to be played.", CommandS
         val guild = context.guild ?: return false
         val sender = context.member ?: return false
         val bot = guild.selfMember
-        val channel = context.channel.asTextChannel()
+        val channel = context.channel
         val senderVoiceState = sender.voiceState!!
         val botVoiceState = bot.voiceState!!
 
@@ -106,7 +107,7 @@ object ForcePlay: MichiCommand("fplay", "Forces a track to be played.", CommandS
             return false
         }
 
-        if (!bot.hasPermission(channel)) {
+        if (channel is TextChannel && !bot.hasPermission(channel)) {
             context.reply("I don't have permission to message in this channel")
                 .setEphemeral(true)
                 .queue()

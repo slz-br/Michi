@@ -8,6 +8,7 @@ import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
@@ -43,9 +44,10 @@ object SlowMode: MichiCommand("slowmode", "Sets the channel slowmode.", CommandS
      */
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.member!!
-        val channel = context.channel.asTextChannel()
 
         if (!canHandle(context)) return
+
+        val channel = context.channel.asTextChannel()
 
         val slowTime = context.getOption("time")!!.asString
         val manager = channel.manager
@@ -215,7 +217,7 @@ object SlowMode: MichiCommand("slowmode", "Sets the channel slowmode.", CommandS
         val guild = context.guild ?: return false
         val slowTime = context.getOption("time")!!.asString
         val bot = guild.selfMember
-        val channel = context.channel.asTextChannel()
+        val channel = context.channel
 
         if (!sender.permissions.any { permission -> userPermissions.contains(permission) }) {
             context.reply("You don't have the permissions to use this command, silly you ${Emoji.michiBlep}")
@@ -226,6 +228,13 @@ object SlowMode: MichiCommand("slowmode", "Sets the channel slowmode.", CommandS
 
         if (!bot.permissions.containsAll(botPermissions)) {
             context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}")
+                .setEphemeral(true)
+                .queue()
+            return false
+        }
+
+        if (channel !is TextChannel) {
+            context.reply("You can't use this command in channels with the type ${channel.type.name}")
                 .setEphemeral(true)
                 .queue()
             return false

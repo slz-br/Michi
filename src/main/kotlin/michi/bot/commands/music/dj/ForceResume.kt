@@ -6,6 +6,7 @@ import michi.bot.lavaplayer.PlayerManager
 import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 
 @Suppress("Unused")
@@ -29,7 +30,7 @@ object ForceResume: MichiCommand("fresume", "Forces the current track to be resu
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.user
         val guild = context.guild
-        val channel = context.channel.asTextChannel()
+        val channel = context.channel
 
         if (!canHandle(context)) return
 
@@ -50,7 +51,7 @@ object ForceResume: MichiCommand("fresume", "Forces the current track to be resu
         val bot = guild.selfMember
         val senderVoiceState = sender.voiceState ?: return false
         val botVoiceState = bot.voiceState ?: return false
-        val channel = context.channel.asTextChannel()
+        val channel = context.channel
         val player = PlayerManager.getMusicManager(guild).player
 
         if (!sender.permissions.any { permission -> userPermissions.contains(permission) }) {
@@ -81,7 +82,7 @@ object ForceResume: MichiCommand("fresume", "Forces the current track to be resu
             return false
         }
 
-        if (!bot.hasPermission(channel)) {
+        if (channel is TextChannel && !bot.hasPermission(channel)) {
             context.reply("I don't have permission to message in this channel")
                 .setEphemeral(true)
                 .queue()
