@@ -6,7 +6,6 @@ package michi.bot.commands
  * [GLOBAL_SCOPE] means that the command can be executed in guilds and direct messages.
  *
  * [GUILD_SCOPE] means that the command can only be used in guilds.
- * @sample
  * @author Slz
  */
 enum class CommandScope {
