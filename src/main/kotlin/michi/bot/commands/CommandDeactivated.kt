@@ -9,4 +9,4 @@ package michi.bot.commands
  */
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
-annotation class CommandNotImplemented
+annotation class CommandDeactivated
