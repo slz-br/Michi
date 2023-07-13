@@ -49,7 +49,9 @@ object PlayerManager {
      */
     fun loadAndPlay(context: SlashCommandInteractionEvent, trackURL: String) {
         val guild = context.guild ?: return
-        val musicManager = getMusicManager(guild)
+        val musicManager = synchronized("") {
+            getMusicManager(guild)
+        }
 
         playerManager.loadItemOrdered(musicManager, trackURL, object : AudioLoadResultHandler {
 
@@ -168,19 +170,13 @@ object PlayerManager {
     }
 
     private fun loadAndPlay(guild: Guild, trackURL: String) {
+        val musicManager = synchronized("") { getMusicManager(guild) }
 
-        playerManager.loadItemOrdered(getMusicManager(guild), trackURL, object : AudioLoadResultHandler {
-            val scheduler = getMusicManager(guild).scheduler
+        playerManager.loadItemOrdered(musicManager, trackURL, object : AudioLoadResultHandler {
+            val scheduler = musicManager.scheduler
 
             override fun trackLoaded(track: AudioTrack?) {
-
                 if (track == null) return
-
-                CoroutineScope(Dispatchers.IO).launch {
-                    val newQueue = GuildsDAO.selectMusicQueue(guild)?.plus("${track.info.uri},")?.removePrefix("null")
-                    GuildsDAO.setMusicQueue(guild, newQueue)
-                }
-
                 scheduler.queue(track)
             }
 
@@ -188,25 +184,10 @@ object PlayerManager {
                 if (playlist == null || playlist.tracks.isEmpty()) return
 
                 if (playlist.isSearchResult) {
-                    val firstTrack = playlist.tracks[0]
-
-                    getMusicManager(guild).scheduler.queue(firstTrack)
-
-                    CoroutineScope(Dispatchers.IO).launch {
-                        val newQueue = GuildsDAO.selectMusicQueue(guild)?.plus("${firstTrack.info.uri},")?.removePrefix("null")
-                        GuildsDAO.setMusicQueue(guild, newQueue)
-                    }
-
+                    playlist.tracks[0].let(musicManager.scheduler::queue)
+                    return
                 }
-
-                CoroutineScope(Dispatchers.IO).launch {
-                    val newQueue = GuildsDAO.selectMusicQueue(guild)?.plus("$trackURL,")?.removePrefix("null")
-                    GuildsDAO.setMusicQueue(guild, newQueue)
-                }
-
-                playlist.tracks.forEach { track ->
-                    getMusicManager(guild).scheduler.queue(track)
-                }
+                playlist.tracks.forEach(musicManager.scheduler::queue)
 
             }
 
