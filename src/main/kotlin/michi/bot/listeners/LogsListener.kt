@@ -39,7 +39,6 @@ object LogsListener: ListenerAdapter() {
                 setColor(Color.BLACK)
                 addField("Server Banner changed!", "banner:", false)
                 setImage(newBannerURL)
-                setFooter(guild.name, guild.iconUrl)
             }.build().let(logsChannel::sendMessageEmbeds).queue()
 
         }
@@ -60,7 +59,6 @@ object LogsListener: ListenerAdapter() {
                     "old description: $oldDescription\nnew description: $newDescription",
                     false
                 )
-                setFooter(guild.name, guild.iconUrl)
             }.build().let(logsChannel::sendMessageEmbeds).queue()
 
         }
@@ -76,7 +74,6 @@ object LogsListener: ListenerAdapter() {
             EmbedBuilder().apply {
                 setColor(Color.BLACK)
                 addField("Server boost tier changed!", "tier: $tier", false)
-                setFooter(guild.name, guild.iconUrl)
             }.build().let(logsChannel::sendMessageEmbeds).queue()
 
         }
@@ -92,7 +89,6 @@ object LogsListener: ListenerAdapter() {
             EmbedBuilder().apply {
                 setColor(Color.BLACK)
                 addField("Server boost count changed!", "count: $boostCount", false)
-                setFooter(guild.name, guild.iconUrl)
             }.build().let(logsChannel::sendMessageEmbeds).queue()
 
         }
@@ -109,7 +105,6 @@ object LogsListener: ListenerAdapter() {
             EmbedBuilder().apply {
                 setColor(Color.BLACK)
                 addField("Server name changed!", "old name: $oldName\nnew name: $newName", false)
-                setFooter(guild.name, guild.iconUrl)
             }.build().let(logsChannel::sendMessageEmbeds).queue()
 
         }
@@ -126,7 +121,6 @@ object LogsListener: ListenerAdapter() {
                 setColor(Color.BLACK)
                 addField("User was banned!", "user: ${bannedUser.asMention}", false)
                 setThumbnail(bannedUser.avatarUrl)
-                setFooter(guild.name, guild.iconUrl)
             }.build().let(logsChannel::sendMessageEmbeds).queue()
 
         }
@@ -143,7 +137,6 @@ object LogsListener: ListenerAdapter() {
                 setColor(Color.BLACK)
                 addField("User unbanned!", "user: ${unbannedUser.asMention}", false)
                 setThumbnail(unbannedUser.avatarUrl)
-                setFooter(guild.name, guild.iconUrl)
             }.build().let(logsChannel::sendMessageEmbeds).queue()
 
         }
@@ -165,7 +158,6 @@ object LogsListener: ListenerAdapter() {
                     false
                 )
                 setThumbnail(mutedUser.avatarUrl)
-                setFooter(guild.name, guild.iconUrl)
             }.build().let(logsChannel::sendMessageEmbeds).queue()
 
         }
@@ -182,7 +174,6 @@ object LogsListener: ListenerAdapter() {
                 setColor(Color.BLACK)
                 addField("User kicked", "user: ${memberRemoved.asMention}", false)
                 setThumbnail(memberRemoved.avatarUrl)
-                setFooter(guild.name, guild.iconUrl)
             }.build().let(logsChannel::sendMessageEmbeds).queue()
 
         }
@@ -198,7 +189,6 @@ object LogsListener: ListenerAdapter() {
             EmbedBuilder().apply {
                 setColor(Color.BLACK)
                 addField("Role created!", "name: ${role.name}\nposition: ${role.position}", false)
-                setFooter(guild.name, guild.iconUrl)
             }.build().let(logsChannel::sendMessageEmbeds).queue()
 
         }
@@ -214,7 +204,6 @@ object LogsListener: ListenerAdapter() {
             EmbedBuilder().apply {
                 setColor(Color.BLACK)
                 addField("Role deleted!", "name: ${role.name}", false)
-                setFooter(guild.name, guild.iconUrl)
             }.build().let(logsChannel::sendMessageEmbeds).queue()
 
         }
@@ -231,7 +220,6 @@ object LogsListener: ListenerAdapter() {
             val embed = EmbedBuilder().apply {
                 setColor(Color.BLACK)
                 setThumbnail(member.avatarUrl)
-                setFooter(guild.name, guild.iconUrl)
             }
 
             if (memberVoiceState.inAudioChannel()) {
@@ -284,7 +272,6 @@ object LogsListener: ListenerAdapter() {
             EmbedBuilder().apply {
                 setColor(Color.BLACK)
                 addField("Channel created!", "channel: ${channel.asMention}\ntype: ${channel.type.name}", false)
-                setFooter(guild.name, guild.iconUrl)
             }.build().let(logsChannel::sendMessageEmbeds).queue()
 
         }
@@ -300,7 +287,6 @@ object LogsListener: ListenerAdapter() {
             EmbedBuilder().apply {
                 setColor(Color.BLACK)
                 addField("Channel deleted!", "channel name: ${channel.name}\ntype: ${channel.type.name}", false)
-                setFooter(guild.name, guild.iconUrl)
             }.build().let(logsChannel::sendMessageEmbeds).queue()
 
         }
@@ -319,7 +305,6 @@ object LogsListener: ListenerAdapter() {
                     "New avatar: ${event.newAvatar}\n Old avatar: ${event.oldAvatar}",
                     false
                 )
-                setFooter(guild.name, guild.iconUrl)
             }.build().let(logsChannel::sendMessageEmbeds).queue()
 
         }
@@ -339,7 +324,6 @@ object LogsListener: ListenerAdapter() {
                     "new owner: $newOwner\nold owner: ${event.oldOwner}",
                     false
                 )
-                setFooter(guild.name, guild.iconUrl)
             }.build().let(logsChannel::sendMessageEmbeds).queue()
 
             GuildsDAO.setOwner(guild, newOwner)
