@@ -40,12 +40,21 @@ class Scheduler(player: AudioPlayer, guild: Guild): AudioEventAdapter() {
     override fun onTrackEnd(player: AudioPlayer?, track: AudioTrack?, endReason: AudioTrackEndReason?) {
 
         guildSkipPoll[schedulerGuild]?.clear()
+        val voiceChannel = schedulerGuild.selfMember.voiceState?.channel
+        val membersInVC = voiceChannel?.members?.filter { !it.user.isBot }
+
+        if (membersInVC != null && membersInVC.isEmpty()) {
+            schedulerGuild.audioManager.closeAudioConnection()
+            return
+        }
 
         if (trackQueue.isEmpty() && player?.playingTrack == null) {
             CoroutineScope(Dispatchers.IO).launch {
                 delay(TimeUnit.MINUTES.toMillis(3))
                 if (trackQueue.isEmpty() && player?.playingTrack == null) {
+                    GuildsDAO.setMusicQueue(schedulerGuild, "")
                     schedulerGuild.audioManager.closeAudioConnection()
+                    return@launch
                 }
             }
         }
