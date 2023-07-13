@@ -79,7 +79,7 @@ object GuildsDAO {
         }
     }
 
-    suspend fun selectMusicQueue(guild: Guild): String? = get(guild)?.musicQueue
+    suspend fun getMusicQueue(guild: Guild): String? = get(guild)?.musicQueue
 
     suspend fun setOwner(guild: Guild, newOwner: Member) {
         val guildRow = get(guild)

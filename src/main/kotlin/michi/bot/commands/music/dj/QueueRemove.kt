@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import michi.bot.commands.CommandScope
 import michi.bot.commands.MichiArgument
 import michi.bot.commands.MichiCommand
+import michi.bot.database.dao.GuildsDAO
 import michi.bot.lavaplayer.PlayerManager
 import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
@@ -46,6 +47,9 @@ object QueueRemove: MichiCommand("queue-remove", "Removes a music at a specific 
 
         val trackToRemove = queue.elementAt(position)
         queue -= trackToRemove
+
+        val guildMusicQueue = GuildsDAO.getMusicQueue(guild)
+        GuildsDAO.setMusicQueue(guild, guildMusicQueue?.replace(trackToRemove.info.uri, ""))
 
         context.reply("Successfully removed ${trackToRemove.info.title}`[${formatTrackLength(trackToRemove)}]` at the position ${position + 1} from the queue")
             .queue()

@@ -29,18 +29,21 @@ object NowPlaying: MichiCommand("np", "gives you the track that the bot is playi
         val guild = context.guild ?: return
         val sender = context.user
 
-        val playingTrack = PlayerManager.getMusicManager(guild).getPlayingTrack()
+        val playingTrack = PlayerManager.getMusicManager(guild).playingTrack
 
-        val embed = EmbedBuilder()
-            .setColor(Color.MAGENTA)
-            .addField(
-                "${playingTrack.info.title}[${formatTrackLength(playingTrack)}]",
-                "uploaded by: ${playingTrack.info.author}",
-                false
-            )
-            .setFooter("url: ${playingTrack.info.uri}")
+        if (playingTrack == null) {
+            context.reply("Nothing playing rn")
+                .setEphemeral(true)
+                .queue()
+            return
+        }
 
-        context.replyEmbeds(embed.build())
+        val embed = EmbedBuilder().apply {
+            setTitle("**${playingTrack.info.title}**`[${formatTrackLength(playingTrack)}]`", playingTrack.info.uri)
+            setColor(Color.MAGENTA)
+        }
+
+        context.reply("Now playing").setEmbeds(embed.build())
             .setEphemeral(true)
             .queue()
 

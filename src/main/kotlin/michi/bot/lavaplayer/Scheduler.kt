@@ -50,7 +50,7 @@ class Scheduler(player: AudioPlayer, guild: Guild): AudioEventAdapter() {
         if (endReason!!.mayStartNext) nextTrack()
         CoroutineScope(Dispatchers.IO).launch {
             track?.info?.uri?.let {
-                val newQueue = GuildsDAO.selectMusicQueue(schedulerGuild)?.replace("$it,", "")
+                val newQueue = GuildsDAO.getMusicQueue(schedulerGuild)?.replace("$it,", "")
                 GuildsDAO.setMusicQueue(schedulerGuild, newQueue)
             }
         }

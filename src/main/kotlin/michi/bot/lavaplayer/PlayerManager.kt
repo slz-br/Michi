@@ -16,8 +16,6 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import java.awt.Color
 import java.util.concurrent.TimeUnit
 
-// todo: add soundcloud icon, since their api require it.
-
 object PlayerManager {
 
     private val musicManagers: MutableMap<Long, GuildMusicManager>
@@ -64,7 +62,7 @@ object PlayerManager {
                 val scheduler = musicManager.scheduler
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    val newQueue = GuildsDAO.selectMusicQueue(guild)?.plus("${track.info.uri},")?.removePrefix("null")
+                    val newQueue = GuildsDAO.getMusicQueue(guild)?.plus("${track.info.uri},")?.removePrefix("null")
                     GuildsDAO.setMusicQueue(guild, newQueue)
                 }
 
@@ -109,7 +107,7 @@ object PlayerManager {
                     musicManager.scheduler.queue(firstTrack)
 
                     CoroutineScope(Dispatchers.IO).launch {
-                        val newQueue = GuildsDAO.selectMusicQueue(guild)?.plus("${firstTrack.info.uri},")?.removePrefix("null")
+                        val newQueue = GuildsDAO.getMusicQueue(guild)?.plus("${firstTrack.info.uri},")?.removePrefix("null")
                         GuildsDAO.setMusicQueue(guild, newQueue)
                     }
 
@@ -140,7 +138,7 @@ object PlayerManager {
                 playlist.tracks.forEach { track ->
                     musicManager.scheduler.queue(track)
                     CoroutineScope(Dispatchers.IO).launch {
-                        val newQueue = GuildsDAO.selectMusicQueue(guild)
+                        val newQueue = GuildsDAO.getMusicQueue(guild)
                             ?.plus("${track.info.uri},")
                             ?.removePrefix("null")
                         GuildsDAO.setMusicQueue(guild, newQueue)
@@ -223,8 +221,8 @@ object PlayerManager {
 
     }
 
-    suspend fun retrieveGuildMusicQueue(guild: Guild) = GuildsDAO.selectMusicQueue(guild)
-        ?.split(',')?.forEach { musicURI ->
+    suspend fun retrieveGuildMusicQueue(guild: Guild) = GuildsDAO.getMusicQueue(guild)?.split(',')?.forEach { musicURI ->
+        if (musicURI.isBlank()) return@forEach
         loadAndPlay(guild, musicURI)
     }
 

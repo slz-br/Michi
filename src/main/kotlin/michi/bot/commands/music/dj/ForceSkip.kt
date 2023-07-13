@@ -2,6 +2,7 @@ package michi.bot.commands.music.dj
 
 import michi.bot.commands.CommandScope
 import michi.bot.commands.MichiCommand
+import michi.bot.database.dao.GuildsDAO
 import michi.bot.lavaplayer.PlayerManager
 import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
@@ -35,6 +36,13 @@ object ForceSkip: MichiCommand("fskip", "Force a track to be skipped", CommandSc
         if (!canHandle(context)) return
 
         musicManager.scheduler.nextTrack()
+
+        val playingTrack = musicManager.playingTrack
+
+        playingTrack?.let {
+            val newMusicQueue = GuildsDAO.getMusicQueue(guild)?.replace(playingTrack.info.uri, "")
+            GuildsDAO.setMusicQueue(guild, newMusicQueue)
+        }
 
         context.reply("Successfully skipped ${Emoji.michiThumbsUp}").setEphemeral(true).queue()
         context.channel.sendMessage("Current music force skipped by ${sender.asMention}").queue()

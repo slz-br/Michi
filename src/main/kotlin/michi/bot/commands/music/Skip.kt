@@ -2,6 +2,7 @@ package michi.bot.commands.music
 
 import michi.bot.commands.CommandScope
 import michi.bot.commands.MichiCommand
+import michi.bot.database.dao.GuildsDAO
 import michi.bot.lavaplayer.PlayerManager
 import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
@@ -37,6 +38,12 @@ object Skip: MichiCommand("skip", "Starts a poll to skip the current music(skips
 
         if (isSkippable(guild)) {
             poll.clear()
+
+            val newMusicQueue = GuildsDAO.getMusicQueue(guild)?.replace(playingTrack.info.uri, "")
+            GuildsDAO.setMusicQueue(guild, newMusicQueue)
+
+            context.channel.sendMessage("Skipped ${playingTrack.info.title} ${Emoji.michiThumbsUp}")
+                .queue()
             musicManager.scheduler.nextTrack()
         }
 

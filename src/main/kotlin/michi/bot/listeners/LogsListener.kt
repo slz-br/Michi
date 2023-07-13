@@ -253,8 +253,19 @@ object LogsListener: ListenerAdapter() {
                 }
                 val scheduler = PlayerManager.getMusicManager(guild).scheduler
                 if (Skip.isSkippable(guild)) {
-                    guildSkipPoll[guild]!!.clear()
-                    scheduler.nextTrack()
+                    val playingTrack = PlayerManager.getMusicManager(guild).playingTrack
+
+                    playingTrack?.let {
+                        val newMusicQueue = GuildsDAO.getMusicQueue(guild)?.replace("${playingTrack.info.uri},", "")
+                        GuildsDAO.setMusicQueue(guild, newMusicQueue)
+
+
+                        guildSkipPoll[guild]!!.clear()
+                        scheduler.nextTrack()
+                        event.channelLeft?.asVoiceChannel()
+                            ?.sendMessage("Skipped ${playingTrack.info.title} ${Emoji.michiThumbsUp}")
+                            ?.queue()
+                    }
                 }
             }
 
