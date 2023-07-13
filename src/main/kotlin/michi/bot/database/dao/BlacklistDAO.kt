@@ -26,8 +26,6 @@ object BlacklistDAO {
                 this.reason = reason
             }
             guild.leave().queue()
-
-            commit()
         }
     }
 
@@ -37,35 +35,27 @@ object BlacklistDAO {
 
         transaction {
             if (BlacklistRow.find { BlacklistTable.entityID eq user.idLong }.any()) return@transaction
-
             BlacklistRow.new {
                 type = "user"
                 entityID = user.idLong
                 this.reason = reason
             }
-            commit()
         }
 
     }
 
     suspend fun remove(user: User) = withContext(Dispatchers.IO) {
         Database.connect(config["DB_URL"], config["DB_DRIVER"], config["DB_USER"], config["DB_PASSWORD"])
-
         transaction {
             BlacklistRow.find { BlacklistTable.entityID eq user.idLong }.singleOrNull()?.let(BlacklistRow::delete)
-            commit()
         }
-
     }
 
     suspend fun remove(guild: Guild) = withContext(Dispatchers.IO) {
         Database.connect(config["DB_URL"], config["DB_DRIVER"], config["DB_USER"], config["DB_PASSWORD"])
-
         transaction {
             BlacklistRow.find { BlacklistTable.entityID eq guild.idLong }.singleOrNull()?.let(BlacklistRow::delete)
-            commit()
         }
-
     }
 
     suspend fun find(user: User): Boolean = DataBaseFactory.query {

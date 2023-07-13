@@ -52,7 +52,6 @@ object GuildsDAO {
 
         transaction {
             GuildRow.find { GuildTable.guildID eq guild.idLong }.singleOrNull()?.let(GuildRow::delete)
-            commit()
         }
 
     }
@@ -70,7 +69,6 @@ object GuildsDAO {
         val guildRow = get(guild)
         transaction {
             guildRow?.logsChannelID = channel?.idLong
-            commit()
         }
     }
 
@@ -78,7 +76,6 @@ object GuildsDAO {
         val guildRow = get(guild)
         transaction {
             guildRow?.musicQueue = queue
-            commit()
         }
     }
 
@@ -88,7 +85,6 @@ object GuildsDAO {
         val guildRow = get(guild)
         transaction {
             guildRow?.ownerID = newOwner.idLong
-            commit()
         }
     }
 
