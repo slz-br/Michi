@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
  * @author Slz
  */
 @Suppress("Unused")
-object Ban: MichiCommand("ban", "Bans the mentioned users.", CommandScope.GUILD_SCOPE) {
+object Ban: MichiCommand("ban", "Bans the mentioned user.", CommandScope.GUILD_SCOPE) {
 
     override val userPermissions: List<Permission>
         get() = listOf(
@@ -36,7 +36,7 @@ object Ban: MichiCommand("ban", "Bans the mentioned users.", CommandScope.GUILD_
         )
 
     override val usage: String
-        get() = "/ban <user1> <user2(optional)> <user3(optional)> <reason(optional)>"
+        get() = "/ban <user> <reason(optional)>"
 
     override val arguments: List<MichiArgument>
         get() = listOf(
