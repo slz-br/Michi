@@ -67,11 +67,12 @@ object Ban: MichiCommand("ban", "Bans the mentioned user.", CommandScope.GUILD_S
      */
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.user
-        val subject = context.getOption("user")!!.asMember!!
-        var reason = context.getOption("reason")?.asString
 
         // guard clause
         if (!canHandle(context)) return
+
+        val subject = context.getOption("user")!!.asMember!!
+        var reason = context.getOption("reason")?.asString
 
         if (reason != null && reason.length > 1750) reason = null
 
