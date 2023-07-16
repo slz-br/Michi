@@ -28,7 +28,7 @@ object Unmute: MichiCommand("unmute", "Unmutes a user if the user is muted.", Co
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("user", "The user to unmute.", OptionType.USER, isRequired = true, hasAutoCompletion = false)
+            MichiArgument("user", "The user to unmute.", OptionType.USER)
         )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {

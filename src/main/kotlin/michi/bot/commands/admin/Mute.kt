@@ -31,19 +31,8 @@ object Mute: MichiCommand("mute", "Mutes the mentioned member for a specific per
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument(
-                "user",
-                "The user to mute",
-                OptionType.USER, isRequired = true,
-                hasAutoCompletion = false
-            ),
-            MichiArgument(
-                "time",
-                "The time to mute the user",
-                OptionType.STRING,
-                isRequired = true,
-                hasAutoCompletion = true
-            )
+            MichiArgument("user", "The user to mute", OptionType.USER),
+            MichiArgument("time", "The time to mute the user", OptionType.STRING, isRequired = true, hasAutoCompletion = true)
         )
 
     /**

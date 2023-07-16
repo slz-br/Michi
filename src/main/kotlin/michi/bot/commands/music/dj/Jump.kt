@@ -14,11 +14,7 @@ object Jump: MichiCommand("queue-jump", "Jumps to a specific song", CommandScope
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument(
-                "position",
-                "The position in the queue to jump to",
-                OptionType.INTEGER,
-            )
+            MichiArgument("position", "The position in the queue to jump to", OptionType.INTEGER)
         )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
