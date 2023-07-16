@@ -88,4 +88,13 @@ object GuildsDAO {
         }
     }
 
+    suspend fun getLanguage(guild: Guild): String? = get(guild)?.language
+
+    suspend fun setLanguage(guild: Guild, lang: Language) {
+        val guildRow = get(guild)
+        transaction {
+            guildRow?.language = lang.value
+        }
+    }
+
 }
