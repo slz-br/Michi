@@ -31,6 +31,8 @@ object NowPlaying: MichiCommand("np", "gives you the track that the bot is playi
 
         val playingTrack = PlayerManager.getMusicManager(guild).playingTrack
 
+        if (!canHandle(context)) return
+
         if (playingTrack == null) {
             context.reply("Nothing playing rn")
                 .setEphemeral(true)
@@ -83,13 +85,6 @@ object NowPlaying: MichiCommand("np", "gives you the track that the bot is playi
         if (!botVoiceState.inAudioChannel()) {
             val audioManager = guild.audioManager
             val channelToJoin = senderVoiceState.channel
-
-            if (channelToJoin == null) {
-                context.reply("Something went really wrong ${Emoji.michiOpsie}")
-                    .setEphemeral(true)
-                    .queue()
-                return false
-            }
 
             audioManager.openAudioConnection(channelToJoin)
         }
