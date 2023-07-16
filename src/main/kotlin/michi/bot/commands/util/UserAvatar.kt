@@ -27,7 +27,7 @@ object UserAvatar: MichiCommand("user-avatar", "Sends you an image of the user y
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("user", "The user to get the avatar", OptionType.USER, isRequired = true, hasAutoCompletion = false)
+            MichiArgument("user", "The user to get the avatar", OptionType.USER)
         )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {

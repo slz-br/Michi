@@ -31,12 +31,7 @@ object Play: MichiCommand("play", "plays the track/playlist that you searched fo
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("search",
-                "the name/link of a song/playlist.",
-                OptionType.STRING,
-                isRequired = true,
-                hasAutoCompletion = false
-            )
+            MichiArgument("search", "the name/link of a song/playlist.", OptionType.STRING)
         )
 
     override val usage: String

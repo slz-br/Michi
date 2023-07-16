@@ -17,7 +17,7 @@ object Read: MichiCommand("read", "Reads a mail at a specific position of your i
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("position", "The position of the mail in your inbox.", OptionType.INTEGER, isRequired = false, hasAutoCompletion = false)
+            MichiArgument("position", "The position of the mail in your inbox.", OptionType.INTEGER, false)
         )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {

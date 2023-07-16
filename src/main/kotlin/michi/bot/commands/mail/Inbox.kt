@@ -19,7 +19,7 @@ object Inbox: MichiCommand("inbox", "Checks for emails that you've received", Co
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("page", "The page of your inbox to see.", OptionType.INTEGER, isRequired = false, hasAutoCompletion = false)
+            MichiArgument("page", "The page of your inbox to see.", OptionType.INTEGER, false)
         )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {

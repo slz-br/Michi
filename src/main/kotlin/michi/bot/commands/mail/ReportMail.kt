@@ -24,7 +24,7 @@ object ReportMail: MichiCommand("report-mail", "Reports a mail that was sent to 
         )
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("position", "The position of the mail to report", OptionType.INTEGER, isRequired = true, hasAutoCompletion = false)
+            MichiArgument("position", "The position of the mail to report", OptionType.INTEGER)
         )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {

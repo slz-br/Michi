@@ -33,7 +33,7 @@ object ForcePlay: MichiCommand("fplay", "Forces a track to be played.", CommandS
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("search", "The name of the track to play", OptionType.STRING, isRequired = true, hasAutoCompletion = false)
+            MichiArgument("search", "The name of the track to play", OptionType.STRING)
         )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {

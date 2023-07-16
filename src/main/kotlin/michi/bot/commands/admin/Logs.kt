@@ -34,12 +34,7 @@ object Logs: MichiCommand("logs", "Enables/disables logs in the server", Command
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument(
-                name = "channel",
-                description = "The channel for posting logs",
-                type = OptionType.CHANNEL,
-                isRequired = false,
-            )
+            MichiArgument("channel", "The channel for posting logs", OptionType.CHANNEL, false)
         )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {

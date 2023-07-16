@@ -24,7 +24,7 @@ object RemoveMail: MichiCommand("remove-mail", "Removes a mail at a specific pos
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("position", "The position of the mail to remove", OptionType.INTEGER, isRequired = true, hasAutoCompletion = false)
+            MichiArgument("position", "The position of the mail to remove", OptionType.INTEGER)
         )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {

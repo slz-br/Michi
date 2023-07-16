@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
-@Suppress("Unused")
+@CommandDeactivated
 object UserInfo: MichiCommand("user-info", "Sends you info about the user you chose", CommandScope.GLOBAL_SCOPE) {
 
     override val usage: String
@@ -23,7 +23,7 @@ object UserInfo: MichiCommand("user-info", "Sends you info about the user you ch
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("user", "The user to get info", OptionType.USER, isRequired = true, hasAutoCompletion = false)
+            MichiArgument("user", "The user to get info", OptionType.USER)
         )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
