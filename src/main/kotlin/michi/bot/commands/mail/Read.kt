@@ -1,24 +1,29 @@
 package michi.bot.commands.mail
 
-import michi.bot.commands.CommandScope
+import com.charleskorn.kaml.YamlMap
+import com.charleskorn.kaml.yamlMap
+import michi.bot.commands.CommandScope.GLOBAL_SCOPE
 import michi.bot.commands.MichiArgument
 import michi.bot.commands.MichiCommand
-import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
+import michi.bot.util.ReplyUtils.getText
+import michi.bot.util.ReplyUtils.getYML
+import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 
+/**
+ * Object for the read command, a command that reads a mail from a specific position of a user's inbox
+ * @author Slz
+ */
 @Suppress("Unused")
-object Read: MichiCommand("read", "Reads a mail at a specific position of your inbox.", CommandScope.GLOBAL_SCOPE) {
+object Read: MichiCommand("read", GLOBAL_SCOPE) {
     override val usage: String
-        get() = "/read <position(optional)>"
+        get() = "/$name <position(optional)>"
 
-    override val arguments: List<MichiArgument>
-        get() = listOf(
-            MichiArgument("position", "The position of the mail in your inbox.", OptionType.INTEGER, false)
-        )
+    override val arguments = listOf(MichiArgument("position", OptionType.INTEGER, isRequired = false))
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.user
@@ -28,64 +33,61 @@ object Read: MichiCommand("read", "Reads a mail at a specific position of your i
         val mailPosition = context.getOption("position")?.asInt?.minus(1) ?: 0
         val inbox = inboxMap[sender]!!
 
-        if (!inbox[mailPosition].isSafe && !inbox[mailPosition].unknowLanguage) {
+        if (!inbox[mailPosition].isSafe && !inbox[mailPosition].unknownLanguage) {
 
             val readAnywayButton = Button.danger("read-anyway", "Read anyway")
             val cancelReading = Button.secondary("cancel-reading", "Cancel")
 
+            val warnMsg: YamlMap = getYML(context).yamlMap["warn_messages"]!!
+            val mailWarn: YamlMap = warnMsg["mail"]!!
+            val genericWarn: YamlMap = warnMsg["generic"]!!
+            val readUnsafeConfirmation = mailWarn.getText("read_unsafe_mail_confirmation").split("\n")
+
             val embed = EmbedBuilder().apply {
-                setTitle("This mails is unsafe ${Emoji.michiLook}")
-                setDescription("`a unsafe mail means that the mail may contain toxicity, identity attack or be sexually explicit`")
-                addField("Do you really want to read it? ${Emoji.michiThink}", "mail position: #${mailPosition + 1}", false)
-                setFooter("You can either ignore it and remove the mail from your inbox or read it. If you read and it is indeed unsafe, feel free to report with /report-mail")
+                setTitle(String.format(readUnsafeConfirmation[0], Emoji.michiLook))
+                setDescription(readUnsafeConfirmation[1])
+                addField(String.format(readUnsafeConfirmation[2], Emoji.michiThink), String.format(readUnsafeConfirmation[3], mailPosition + 1), false)
+                setFooter(readUnsafeConfirmation[4])
             }
 
-            context.replyEmbeds(embed.build()).apply {
-                setActionRow(
-                    readAnywayButton,
-                    cancelReading
-                )
-                setEphemeral(true)
+            context.michiReply(genericWarn.getText("check_your_dm"))
+
+            sender.openPrivateChannel().flatMap {
+                it.sendMessageEmbeds(embed.build())
+                    .setActionRow(readAnywayButton, cancelReading)
             }.queue()
             return
         }
 
-        context.reply("${inbox[mailPosition]}")
-            .setEphemeral(true)
-            .queue()
-
-        SlashCommandListener.cooldownManager(sender)
+        context.michiReply("${inbox[mailPosition]}")
     }
 
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
         val sender = context.user
         val mailPostion = context.getOption("position")?.asInt?.minus(1) ?: 0
         val guild = context.guild
-        val inbox = inboxMap[sender] ?: inboxMap.computeIfAbsent(sender) {
-            val userInbox = mutableListOf<MailMessage>()
-            userInbox
+        val inbox = inboxMap.computeIfAbsent(sender) {
+            mutableListOf()
         }
 
+        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val genericErr: YamlMap = err["generic"]!!
+        val mailErr: YamlMap = err["mail"]!!
+
         if (inbox.isEmpty()) {
-            context.reply("Your inbox is empty ${Emoji.michiSad}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(mailErr.getText("empty_inbox"), Emoji.michiSad))
             return false
         }
 
         if (mailPostion > inbox.size - 1 || mailPostion < 0) {
-            context.reply("Invalid position ${Emoji.smolMichiAngry}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(genericErr.getText("invalid_position"))
             return false
         }
 
         guild?.let {
             val bot = guild.selfMember
             if (!bot.permissions.containsAll(botPermissions)) {
-                context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}")
-                    .setEphemeral(true)
-                    .queue()
+                context.michiReply(String.format(genericErr.getText("bot_missing_perms"), Emoji.michiSad))
                 return false
             }
         }

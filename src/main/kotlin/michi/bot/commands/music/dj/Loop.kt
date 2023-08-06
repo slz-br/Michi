@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 
 @Suppress("Unused")
-object Shuffle: MichiCommand("queue-shuffle", GUILD_SCOPE) {
+object Loop: MichiCommand("loop", GUILD_SCOPE) {
 
     override val userPermissions = listOf(Permission.ADMINISTRATOR)
 
@@ -27,39 +27,42 @@ object Shuffle: MichiCommand("queue-shuffle", GUILD_SCOPE) {
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         if (!canHandle(context)) return
-
-        val sender = context.user
         val guild = context.guild!!
-        val musicManager = PlayerManager[guild]
-        val queue = musicManager.scheduler.trackQueue
+        val scheduler = PlayerManager[guild].scheduler
         val channel = guild.selfMember.voiceState!!.channel?.asGuildMessageChannel()
+        val senderAsMention = context.user.asMention
 
         val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
         val musicDjSuccess: YamlMap = success["music_dj"]!!
 
-        val newQueue = queue.shuffled()
-        queue.clear()
-        newQueue.toCollection(queue)
-        context.michiReply(String.format(musicDjSuccess.getText("queue_shuffle_ephemeral_message"), Emoji.michiThumbsUp))
-        channel?.sendMessage(String.format(musicDjSuccess.getText("queue_shuffle_public_message"), sender.asMention))?.queue()
+        scheduler.isLooping = !scheduler.isLooping
+
+        if (scheduler.isLooping) {
+            context.michiReply(String.format(musicDjSuccess.getText("loop_enabled_ephemeral_message"), Emoji.michiThumbsUp)) // "now Looping {s}", current playing track
+            channel?.sendMessage(String.format(musicDjSuccess.getText("loop_enabled_public_message"), senderAsMention))
+                ?.queue()
+            return
+        }
+
+        context.michiReply(musicDjSuccess.getText("loop_disabled_ephemeral_message")) // "loop disabled"
+        channel?.sendMessage(String.format(musicDjSuccess.getText("loop_disabled_public_message"), senderAsMention))?.queue()
     }
 
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
-        val guild = context.guild ?: return false
-        val sender = context.member ?: return false
+        val guild = context.guild!!
+        val sender = context.member!!
         val bot = guild.selfMember
-        val musicManager = PlayerManager[guild]
-        val queue = musicManager.scheduler.trackQueue
-        val senderVoiceState = sender.voiceState!!
         val botVoiceState = bot.voiceState!!
+        val senderVoiceState = sender.voiceState!!
+        val player = PlayerManager[guild].player
         val guildDjMap = GuildDJMap.computeIfAbsent(guild) { mutableSetOf() }
 
         val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
-        val musicErr: YamlMap = err["music"]!!
+        val musicDJErr: YamlMap = err["music_dj"]!!
 
-        if (queue.isEmpty()) {
-            context.michiReply(String.format(musicErr.getText("empty_queue"), Emoji.michiSad))
+        if (player.playingTrack == null) {
+            context.michiReply(musicDJErr.getText("loop_nothing_playing"))
             return false
         }
 
@@ -68,13 +71,8 @@ object Shuffle: MichiCommand("queue-shuffle", GUILD_SCOPE) {
             return false
         }
 
-        if (!bot.permissions.containsAll(botPermissions)) {
-            context.michiReply(String.format(genericErr.getText("bot_missing_perms"), Emoji.michiSad))
-            return false
-        }
-
         if (!senderVoiceState.inAudioChannel()) {
-            context.michiReply(String.format(musicErr.getText("user_not_in_vc"), Emoji.michiBlep))
+            context.michiReply(String.format(musicDJErr.getText("user_not_in_vc"), Emoji.michiBlep))
             return false
         }
 
@@ -83,10 +81,11 @@ object Shuffle: MichiCommand("queue-shuffle", GUILD_SCOPE) {
             val channelToJoin = senderVoiceState.channel
 
             audioManager.openAudioConnection(channelToJoin)
+            audioManager.isSelfDeafened = true
         }
 
         if (!botVoiceState.inAudioChannel()) {
-            context.michiReply(String.format(musicErr.getText("user_not_in_vc"), Emoji.michiBlep))
+            context.michiReply(String.format(musicDJErr.getText("user_not_in_vc"), Emoji.michiBlep))
             return false
         }
 

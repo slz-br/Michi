@@ -1,96 +1,105 @@
 package michi.bot.commands.music.dj
 
-import michi.bot.commands.CommandScope
+import com.charleskorn.kaml.YamlMap
+import com.charleskorn.kaml.yamlMap
+import kotlinx.coroutines.delay
+import michi.bot.commands.CommandScope.GUILD_SCOPE
 import michi.bot.commands.MichiCommand
 import michi.bot.lavaplayer.PlayerManager
-import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
+import michi.bot.util.ReplyUtils.getText
+import michi.bot.util.ReplyUtils.getYML
+import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import java.util.concurrent.TimeUnit
 
 @Suppress("Unused")
-object ForcePause: MichiCommand("fpause", "Forces the current track to be paused.", CommandScope.GUILD_SCOPE) {
-    override val userPermissions: List<Permission>
-        get() = listOf(
-            Permission.ADMINISTRATOR
-        )
+object ForcePause: MichiCommand("fpause", GUILD_SCOPE) {
+
+    override val userPermissions = listOf(Permission.ADMINISTRATOR)
 
     override val botPermissions: List<Permission>
         get() = listOf(
+            Permission.VOICE_CONNECT,
             Permission.MESSAGE_SEND,
             Permission.MESSAGE_EXT_EMOJI,
             Permission.MESSAGE_SEND_IN_THREADS
         )
 
-    override val usage: String
-        get() = "/fpause"
-
     override suspend fun execute(context: SlashCommandInteractionEvent) {
-        val sender = context.user
-        val guild = context.guild
-        val channel = context.channel
         if (!canHandle(context)) return
+        val sender = context.user
+        val guild = context.guild!!
 
-        val musicManager = PlayerManager.getMusicManager(guild!!)
+        val channel = guild.selfMember.voiceState!!.channel!!.asGuildMessageChannel()
+
+        val musicManager = PlayerManager[guild]
         val player = musicManager.player
         player.isPaused = true
 
-        context.reply("Successfully paused the track ${Emoji.michiThumbsUp}").setEphemeral(true).queue()
-        channel.sendMessage("${sender.asMention} force paused the current track").queue()
+        val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
+        val musicDjSuccess: YamlMap = success["music_dj"]!!
 
-        /* puts the user that sent the command in cooldown */
-        SlashCommandListener.cooldownManager(sender)
+        context.michiReply(String.format(musicDjSuccess.getText("track_paused_ephemeral_message"), Emoji.michiThumbsUp))
+        channel.sendMessage(String.format(musicDjSuccess.getText("track_paused_public_message"), sender.asMention)).queue()
+
+        delay(TimeUnit.MINUTES.toMillis(3))
+        if (player.isPaused) guild.audioManager.closeAudioConnection()
+
     }
 
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
-        val guild = context.guild ?: return false
-        val sender = context.member ?: return false
+        val guild = context.guild!!
+        val sender = context.member!!
         val bot = guild.selfMember
-        val senderVoiceState = sender.voiceState ?: return false
-        val botVoiceState = bot.voiceState ?: return false
-        val channel = context.channel
-        val player = PlayerManager.getMusicManager(guild).player
+        val senderVoiceState = sender.voiceState!!
+        val botVoiceState = bot.voiceState!!
+        val player = PlayerManager[guild].player
+        val guildDjMap = GuildDJMap.computeIfAbsent(guild) {
+            mutableSetOf()
+        }
 
-        if (!sender.permissions.any { permission -> userPermissions.contains(permission) }) {
-            context.reply("You don't have permission to use this command, silly you ${Emoji.michiBlep}")
-                .setEphemeral(true)
-                .queue()
+        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val genericErr: YamlMap = err["generic"]!!
+        val musicErr: YamlMap = err["music"]!!
+        val musicDjErr: YamlMap = err["music_dj"]!!
+
+        if (!sender.permissions.any(userPermissions::contains) && sender !in guildDjMap) {
+            context.michiReply(String.format(genericErr.getText("user_missing_perms"), Emoji.michiBlep))
             return false
         }
 
         if (!bot.permissions.containsAll(botPermissions)) {
-            context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(genericErr.getText("bot_missing_perms"), Emoji.michiSad))
             return false
         }
 
         if (!senderVoiceState.inAudioChannel()) {
-            context.reply("You need to be in a voice channel to use this command ${Emoji.michiBlep}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(musicErr.getText("user_not_in_vc"), Emoji.michiBlep))
+            return false
+        }
+
+        if (!botVoiceState.inAudioChannel() && bot.hasAccess(senderVoiceState.channel!!)) {
+            val audioManager = guild.audioManager
+            val channelToJoin = senderVoiceState.channel
+
+            audioManager.openAudioConnection(channelToJoin)
+            audioManager.isSelfDeafened = true
+        }
+
+        if (!botVoiceState.inAudioChannel()) {
+            context.michiReply(String.format(musicErr.getText("user_not_in_vc"), Emoji.michiBlep))
             return false
         }
 
         if (senderVoiceState.channel != botVoiceState.channel) {
-            context.reply("You need to be in the same voice channel as me to use this command")
-                .setEphemeral(true)
-                .queue()
-            return false
-        }
-
-        if (channel is TextChannel && !bot.hasPermission(channel)) {
-            context.reply("I don't have permission to message in this channel")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(musicErr.getText("user_not_in_bot_vc"))
             return false
         }
 
         if (player.isPaused) {
-            context.reply("The queue is already paused")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(musicDjErr.getText("player_already_paused"))
             return false
         }
 

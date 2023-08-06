@@ -1,15 +1,18 @@
 package michi.bot.commands.misc
 
+import com.charleskorn.kaml.YamlMap
+import com.charleskorn.kaml.yamlMap
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import michi.bot.commands.CommandScope
+import michi.bot.commands.CommandScope.GLOBAL_SCOPE
 import michi.bot.commands.MichiCommand
-import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
+import michi.bot.util.ReplyUtils.getText
+import michi.bot.util.ReplyUtils.getYML
+import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -17,14 +20,7 @@ import java.awt.Color
 import java.util.*
 
 @Suppress("Unused")
-object Math: MichiCommand("math", "Gives you a basic math problem.", CommandScope.GLOBAL_SCOPE) {
-
-    override val botPermissions: List<Permission>
-        get() = listOf(
-            Permission.MESSAGE_SEND,
-            Permission.MESSAGE_EXT_EMOJI,
-            Permission.MESSAGE_SEND_IN_THREADS
-        )
+object Math: MichiCommand("math", GLOBAL_SCOPE) {
 
     /**
      * Creates a math problem for the user if possible.
@@ -37,9 +33,6 @@ object Math: MichiCommand("math", "Gives you a basic math problem.", CommandScop
         if (!canHandle(context)) return
 
         MathProblemManager.instances += MathProblemManager(MathProblem(sender), context)
-
-        // puts the user that sent the command in cooldown
-        SlashCommandListener.cooldownManager(sender)
     }
 
     /**
@@ -52,22 +45,22 @@ object Math: MichiCommand("math", "Gives you a basic math problem.", CommandScop
         val sender = context.user
         val guild = context.guild
 
+        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val genericErr: YamlMap = err["generic"]!!
+        val miscErr: YamlMap = err["misc"]!!
+
         MathProblemManager.instances.forEach {
-            if (sender == it.problemInstance.user) {
-                context.reply("Solve one problem before calling another ${Emoji.smolMichiAngry}")
-                    .setEphemeral(true)
-                    .queue()
-                return false
-            }
+            if (sender != it.problemInstance.user) return@forEach
+
+            context.michiReply(String.format(miscErr.getText("user_already_has_math_problem"), Emoji.smolMichiAngry))
+            return false
         }
 
         guild?.run {
             val bot = guild.selfMember
 
             if (!bot.permissions.containsAll(botPermissions)) {
-                context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}")
-                    .setEphemeral(true)
-                    .queue()
+                context.michiReply(String.format(genericErr.getText("bot_missing_perms"), Emoji.michiSad))
                 return false
             }
 
@@ -171,12 +164,12 @@ class MathProblemManager(problem: MathProblem, event: SlashCommandInteractionEve
             .setFooter("Solve the problem as quickly as you can!")
 
         // sending the embed
-        context.replyEmbeds(embed.build()).queue()
+        context.michiReply(embed.build())
 
         // Counting the time
         initialTime = System.currentTimeMillis()
 
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(IO).launch {
             checkDelay(problemInstance, context)
         }
 
@@ -191,8 +184,7 @@ class MathProblemManager(problem: MathProblem, event: SlashCommandInteractionEve
     private suspend fun checkDelay(problem: MathProblem, context: SlashCommandInteractionEvent) {
         delay(35000L)
         if (!problemInstance.isAnswered) {
-            context.reply("${problem.user.name} couldn't solve the problem in time.")
-                .queue()
+            context.michiReply("${problem.user.name} couldn't solve the problem in time.")
             if (instances.contains(this)) instances.remove(this)
         }
 

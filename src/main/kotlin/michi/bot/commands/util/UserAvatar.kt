@@ -1,10 +1,14 @@
 package michi.bot.commands.util
 
-import michi.bot.commands.CommandScope
+import com.charleskorn.kaml.YamlMap
+import com.charleskorn.kaml.yamlMap
+import michi.bot.commands.CommandScope.GLOBAL_SCOPE
 import michi.bot.commands.MichiArgument
 import michi.bot.commands.MichiCommand
-import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
+import michi.bot.util.ReplyUtils.getText
+import michi.bot.util.ReplyUtils.getYML
+import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -12,7 +16,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.awt.Color
 
 @Suppress("Unused")
-object UserAvatar: MichiCommand("user-avatar", "Sends you an image of the user you chose", CommandScope.GLOBAL_SCOPE) {
+object UserAvatar: MichiCommand("user-avatar", GLOBAL_SCOPE) {
 
     override val botPermissions: List<Permission>
         get() = listOf(
@@ -23,16 +27,14 @@ object UserAvatar: MichiCommand("user-avatar", "Sends you an image of the user y
         )
 
     override val usage: String
-        get() = "/avatar <user>"
+        get() = "/$name <user>"
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("user", "The user to get the avatar", OptionType.USER)
+            MichiArgument("user", OptionType.USER)
         )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
-        val sender = context.user
-
         if (!canHandle(context)) return
 
         val user = context.getOption("user")?.asUser ?: return
@@ -42,9 +44,7 @@ object UserAvatar: MichiCommand("user-avatar", "Sends you an image of the user y
             setDescription("${user.asMention}'s avatar")
             setImage(user.avatarUrl)
         }
-        context.replyEmbeds(embed.build()).setEphemeral(true).queue()
-
-        SlashCommandListener.cooldownManager(sender)
+        context.michiReply(embed.build())
     }
 
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
@@ -53,8 +53,11 @@ object UserAvatar: MichiCommand("user-avatar", "Sends you an image of the user y
         guild?.let {
             val bot = it.selfMember
 
+            val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+            val genericErr: YamlMap = err["generic"]!!
+            
             if (!bot.permissions.containsAll(botPermissions)) {
-                context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}").setEphemeral(true).queue()
+                context.michiReply(String.format(genericErr.getText("bot_missing_perms"), Emoji.michiSad))
                 return false
             }
 

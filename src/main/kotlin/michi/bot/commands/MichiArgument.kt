@@ -6,8 +6,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
  * Used to define arguments of a MichiCommand.
  *
  * [name] The name of the argument.
- * 
- * [description] A brief explanation of what this argument is for.
  *
  * [type] The type of the argument(e.g: [OptionType.STRING] for strings)
  *
@@ -20,7 +18,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
  */
 data class MichiArgument(
     val name: String,
-    val description: String,
     val type: OptionType,
     val isRequired: Boolean = true,
     val hasAutoCompletion: Boolean = false

@@ -8,10 +8,13 @@ group = "com.github.slz_br"
 version = "1.0-SNAPSHOT"
 description = "Michi a multipurpose Kotlin Discord bot that uses the JDA API."
 
+val ktorVersion = "2.3.2"
+
 plugins {
     `java-library`
     `maven-publish`
     kotlin("jvm") version "1.9.0"
+    kotlin("plugin.serialization") version "1.8.21"
 }
 
 repositories {
@@ -25,6 +28,11 @@ repositories {
 }
 
 dependencies {
+    implementation("com.charleskorn.kaml:kaml:0.54.0") // Get the latest version number from https://github.com/charleskorn/kaml/releases/latest
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("org.apache.maven.plugins:maven-compiler-plugin:3.11.0")
     implementation("com.fasterxml.jackson.core:jackson-core:2.14.2")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")

@@ -1,6 +1,6 @@
 package michi.bot.database.dao
 
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
@@ -14,7 +14,7 @@ import michi.bot.database.tables.BlacklistTable
 
 object BlacklistDAO {
 
-    suspend fun post(guild: Guild, reason: String?) = withContext(Dispatchers.IO) {
+    suspend fun post(guild: Guild, reason: String?) = withContext(IO) {
         Database.connect(config["DB_URL"], config["DB_DRIVER"], config["DB_USER"], config["DB_PASSWORD"])
 
         if (find(guild)) return@withContext
@@ -30,7 +30,7 @@ object BlacklistDAO {
     }
 
     @Suppress("Unused")
-    suspend fun post(user: User, reason: String?) = withContext(Dispatchers.IO) {
+    suspend fun post(user: User, reason: String?) = withContext(IO) {
         Database.connect(config["DB_URL"], config["DB_DRIVER"], config["DB_USER"], config["DB_PASSWORD"])
 
         transaction {
@@ -44,14 +44,16 @@ object BlacklistDAO {
 
     }
 
-    suspend fun remove(user: User) = withContext(Dispatchers.IO) {
+    @Suppress("Unused")
+    suspend fun remove(user: User) = withContext(IO) {
         Database.connect(config["DB_URL"], config["DB_DRIVER"], config["DB_USER"], config["DB_PASSWORD"])
         transaction {
             BlacklistRow.find { BlacklistTable.entityID eq user.idLong }.singleOrNull()?.let(BlacklistRow::delete)
         }
     }
 
-    suspend fun remove(guild: Guild) = withContext(Dispatchers.IO) {
+    @Suppress("Unused")
+    suspend fun remove(guild: Guild) = withContext(IO) {
         Database.connect(config["DB_URL"], config["DB_DRIVER"], config["DB_USER"], config["DB_PASSWORD"])
         transaction {
             BlacklistRow.find { BlacklistTable.entityID eq guild.idLong }.singleOrNull()?.let(BlacklistRow::delete)

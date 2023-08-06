@@ -1,11 +1,14 @@
 package michi.bot.commands.misc
 
-import michi.bot.commands.CommandScope
+import com.charleskorn.kaml.YamlMap
+import com.charleskorn.kaml.yamlMap
+import michi.bot.commands.CommandScope.GLOBAL_SCOPE
 import michi.bot.commands.MichiCommand
-import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
+import michi.bot.util.ReplyUtils.getText
+import michi.bot.util.ReplyUtils.getYML
+import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import java.awt.Color
 
@@ -41,18 +44,7 @@ private val raccoonImages = listOf(
  * @see execute
  */
 @Suppress("Unused")
-object Raccoon: MichiCommand("raccoon", "Sends you a random raccoon pic or gif", CommandScope.GLOBAL_SCOPE) {
-
-    override val usage: String
-        get() = "/raccoon"
-
-    override val botPermissions: List<Permission>
-        get() = listOf(
-            Permission.MESSAGE_SEND,
-            Permission.MESSAGE_EXT_EMOJI,
-            Permission.MESSAGE_ATTACH_FILES,
-            Permission.MESSAGE_SEND_IN_THREADS
-        )
+object Raccoon: MichiCommand("raccoon", GLOBAL_SCOPE) {
 
     /**
      * Sends a random picture or gif of a raccoon.
@@ -61,25 +53,25 @@ object Raccoon: MichiCommand("raccoon", "Sends you a random raccoon pic or gif",
      * @see canHandle
      */
     override suspend fun execute(context: SlashCommandInteractionEvent) {
-        val sender = context.user
         val imageUrl = raccoonImages.random()
 
         if (!canHandle(context)) return
 
+        val raccoonMediaType = getYML(context).yamlMap.get<YamlMap>("success_messages")!!.get<YamlMap>("misc")!!
+            .getText("raccoon_media")
+            .split("\n") // I know, this looks confusing, but this is just a list with the elements "Raccoon Pic" or "Raccoon GIF"
+                                  //  I couldn't think of a better name for the variable
         // building the embed message
         val embed = EmbedBuilder()
         embed.setColor(Color.MAGENTA)
 
-        if (imageUrl.contains("gif")) embed.setTitle("Raccoon Gif")
-        else embed.setTitle("Raccoon Pic")
+        if (imageUrl.contains("gif")) embed.setTitle(raccoonMediaType[0])
+        else embed.setTitle(raccoonMediaType[1])
 
         embed.setImage(imageUrl)
 
         // sending the embed message
-        context.replyEmbeds(embed.build()).setEphemeral(true).queue()
-
-        // puts the user that sent the command in cooldown
-        SlashCommandListener.cooldownManager(sender)
+        context.michiReply(embed.build())
     }
 
     /**
@@ -95,10 +87,11 @@ object Raccoon: MichiCommand("raccoon", "Sends you a random raccoon pic or gif",
         guild?.let {
             val bot = guild.selfMember
 
+            val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+            val genericErr: YamlMap = err["generic"]!!
+
             if (!bot.permissions.containsAll(botPermissions)) {
-                context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}")
-                    .setEphemeral(true)
-                    .queue()
+                context.michiReply(String.format(genericErr.getText("bot_missing_perms"), Emoji.michiSad))
                 return false
             }
 

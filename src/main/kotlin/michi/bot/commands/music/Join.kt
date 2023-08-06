@@ -1,14 +1,20 @@
 package michi.bot.commands.music
 
-import michi.bot.commands.CommandScope
+import com.charleskorn.kaml.YamlMap
+import com.charleskorn.kaml.yamlMap
+import kotlinx.coroutines.delay
+import michi.bot.commands.CommandScope.GUILD_SCOPE
 import michi.bot.commands.MichiCommand
-import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
+import michi.bot.util.ReplyUtils.getText
+import michi.bot.util.ReplyUtils.getYML
+import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.channel.concrete.StageChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 
 @Suppress("Unused")
-object Join: MichiCommand("join", "Michi joins the audio channel that you're in.", CommandScope.GUILD_SCOPE) {
+object Join: MichiCommand("join", GUILD_SCOPE) {
 
     override val botPermissions: List<Permission>
         get() = listOf(
@@ -18,26 +24,27 @@ object Join: MichiCommand("join", "Michi joins the audio channel that you're in.
             Permission.MESSAGE_SEND_IN_THREADS
         )
 
-    override val usage: String
-        get() = "/join"
-
     override suspend fun execute(context: SlashCommandInteractionEvent) {
-        val sender = context.member ?: return
-        val senderAsUser = context.user
-        val guild = context.guild ?: return
-
         if (!canHandle(context)) return
+        val sender = context.member!!
+        val guild = context.guild!!
 
         val audioManager = guild.audioManager
         val channelToJoin = sender.voiceState?.channel ?: return
 
         audioManager.openAudioConnection(channelToJoin)
+        audioManager.isSelfDeafened = true
 
-        context.reply("Joined ${channelToJoin.asMention}\nPut some music on ${Emoji.michiMusic}")
-            .queue()
+        val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
+        val musicSuccess: YamlMap = success["music"]!!
 
-        // puts the user that sent the command in cooldown
-        SlashCommandListener.cooldownManager(senderAsUser)
+        context.michiReply(String.format(musicSuccess.getText("join"), channelToJoin.asMention, Emoji.michiMusic))
+
+        if (channelToJoin is StageChannel) {
+            delay(1500L)
+            channelToJoin.requestToSpeak().queue()
+        }
+
     }
 
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
@@ -47,33 +54,29 @@ object Join: MichiCommand("join", "Michi joins the audio channel that you're in.
         val senderVoiceState = sender.voiceState ?: return false
         val botVoiceState = bot.voiceState ?: return false
 
+        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val genericErr: YamlMap = err["generic"]!!
+        val musicErr: YamlMap = err["music"]!!
+
         if (botVoiceState.inAudioChannel()) {
-            context.reply("I'm already in a voice channel.")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(musicErr.getText("bot_already_in_vc"))
             return false
         }
 
         if (!senderVoiceState.inAudioChannel()) {
-            context.reply("You need to be in a voice channel to use this command.")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(musicErr.getText("user_not_in_vc"), Emoji.michiBlep))
             return false
         }
 
         val channelToJoin = senderVoiceState.channel ?: return false
 
         if (!bot.permissions.containsAll(botPermissions)) {
-            context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(genericErr.getText("bot_missing_perms"), Emoji.michiSad))
             return false
         }
 
         if (!bot.hasPermission(channelToJoin) || !bot.hasAccess(channelToJoin)) {
-            context.reply("I don't have permission to join this voice channel ${Emoji.michiSad}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(musicErr.getText("missing_vc_access"))
             return false
         }
 

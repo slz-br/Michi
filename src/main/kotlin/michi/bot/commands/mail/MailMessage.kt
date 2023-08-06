@@ -21,7 +21,7 @@ class MailMessage(title: String, message: String, sender: User) {
     var containsLink: Boolean = false
         private set
 
-    var unknowLanguage: Boolean = false
+    var unknownLanguage: Boolean = false
         private set
 
     init {
@@ -29,7 +29,7 @@ class MailMessage(title: String, message: String, sender: User) {
         this.message = message
         this.sender = sender
 
-        if (message.split(" ").any { isURL(it) }) containsLink = true
+        if (this.message.split(" ").any { isURL(it) }) containsLink = true
 
         val request: AnalyzeCommentResponse? = perspectiveAPI.analyze(
             AnalyzeCommentRequest.Builder()
@@ -48,7 +48,7 @@ class MailMessage(title: String, message: String, sender: User) {
 
         if (request == null) {
             isSafe = false
-            unknowLanguage = true
+            unknownLanguage = true
         }
         else {
             val severeToxicity =   request.getAttributeScore(AttributeType.SEVERE_TOXICITY).summaryScore.value

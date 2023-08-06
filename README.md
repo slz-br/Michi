@@ -3,7 +3,7 @@
 <img alt="Michi banner" src="https://media.discordapp.net/attachments/899140727974559824/1084466794816868352/ReadMichi.png"> <br>
 <img alt="Michi smug" src="https://cdn.discordapp.com/emojis/1076637043888758895.webp?size=40&quality=lossless" align="left">
 
-## The cutest Kotlin bot for discord!
+## The cutest Kotlin bot for Discord!
 Let the tanuki girl into your server and have fun with her commands, such as `/math` and `/raccoon` (my personal favorite).<br>
 Michi is a non-profitable project, this means that there isn't any premium command that you need to pay to use. 
 I made this project solely as a way to learn more about Kotlin and as a labour of love, so I don't think it'd be fair to charge any amount of money.

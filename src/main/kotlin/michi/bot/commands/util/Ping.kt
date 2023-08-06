@@ -1,33 +1,24 @@
 package michi.bot.commands.util
 
+import com.charleskorn.kaml.YamlMap
+import com.charleskorn.kaml.yamlMap
 import michi.bot.commands.CommandScope.GLOBAL_SCOPE
 import michi.bot.commands.MichiCommand
-import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
-import net.dv8tion.jda.api.Permission
+import michi.bot.util.ReplyUtils.getText
+import michi.bot.util.ReplyUtils.getYML
+import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 
 @Suppress("Unused")
-object Ping: MichiCommand("ping", "Checks the latency of the bot response.", GLOBAL_SCOPE) {
-
-    override val botPermissions: List<Permission>
-        get() = listOf(
-            Permission.MESSAGE_SEND,
-            Permission.MESSAGE_EXT_EMOJI,
-            Permission.MESSAGE_SEND_IN_THREADS
-        )
+object Ping: MichiCommand("ping", GLOBAL_SCOPE) {
 
     override val usage: String
         get() = "/ping"
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
-        val sender = context.user
-
         if (!canHandle(context)) return
-        context.reply("${Emoji.michiSmug} | pong!\n Gateway ping: ${context.jda.gatewayPing} ms").setEphemeral(true).queue()
-
-        // puts the user that sent the command in cooldown
-        SlashCommandListener.cooldownManager(sender)
+        context.michiReply("${Emoji.michiSmug} | pong!\nAPI ping: ${context.jda.gatewayPing} ms")
     }
 
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
@@ -36,8 +27,11 @@ object Ping: MichiCommand("ping", "Checks the latency of the bot response.", GLO
         guild?.let {
             val bot = guild.selfMember
 
+            val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+            val genericErr: YamlMap = err["generic"]!!
+
             if (!bot.permissions.containsAll(botPermissions)) {
-                context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}").setEphemeral(true).queue()
+                context.michiReply(String.format(genericErr.getText("bot_missing_perms"), Emoji.michiSad))
                 return false
             }
 

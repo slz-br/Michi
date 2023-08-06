@@ -1,54 +1,54 @@
 package michi.bot.commands.music.dj
 
-import michi.bot.commands.CommandScope
+import com.charleskorn.kaml.YamlMap
+import com.charleskorn.kaml.yamlMap
+import michi.bot.commands.CommandScope.GUILD_SCOPE
 import michi.bot.commands.MichiCommand
 import michi.bot.database.dao.GuildsDAO
 import michi.bot.lavaplayer.PlayerManager
-import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
+import michi.bot.util.ReplyUtils.getText
+import michi.bot.util.ReplyUtils.getYML
+import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 
 @Suppress("Unused")
-object ForceSkip: MichiCommand("fskip", "Force a track to be skipped", CommandScope.GUILD_SCOPE) {
+object ForceSkip: MichiCommand("fskip", GUILD_SCOPE) {
 
-    override val userPermissions: List<Permission>
-        get() = listOf(
-            Permission.ADMINISTRATOR
-        )
+    override val userPermissions = listOf(Permission.ADMINISTRATOR)
 
     override val botPermissions: List<Permission>
         get() = listOf(
+            Permission.VOICE_CONNECT,
             Permission.MESSAGE_SEND,
             Permission.MESSAGE_EXT_EMOJI,
             Permission.MESSAGE_SEND_IN_THREADS
         )
 
-    override val usage: String
-        get() = "/fskip"
-
     override suspend fun execute(context: SlashCommandInteractionEvent) {
-        val guild = context.guild!!
-        val musicManager = PlayerManager.getMusicManager(guild)
-        val sender = context.user
-
         if (!canHandle(context)) return
+        val guild = context.guild!!
+        val channel = guild.selfMember.voiceState!!.channel!!.asGuildMessageChannel()
+        val musicManager = PlayerManager[guild]
+        val sender = context.user
 
         musicManager.scheduler.nextTrack()
 
         val playingTrack = musicManager.playingTrack
 
         playingTrack?.let {
-            val newMusicQueue = GuildsDAO.getMusicQueue(guild)?.replace(playingTrack.info.uri, "")
-            GuildsDAO.setMusicQueue(guild, newMusicQueue)
+            GuildsDAO.getMusicQueue(guild)?.replace(playingTrack.info.uri, "")?.let {
+                GuildsDAO.setMusicQueue(guild, it)
+            }
         }
 
-        context.reply("Successfully skipped ${Emoji.michiThumbsUp}").setEphemeral(true).queue()
-        context.channel.sendMessage("Current music force skipped by ${sender.asMention}").queue()
+        val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
+        val musicDjSuccess: YamlMap = success["music_dj"]!!
 
-        // puts the user that sent the command in cooldown
-        SlashCommandListener.cooldownManager(sender)
+        context.michiReply(String.format(musicDjSuccess.getText("force_skip_ephemeral_message"), Emoji.michiThumbsUp))
+        channel.sendMessage(String.format(musicDjSuccess.getText("force_skip_public_message"), sender.asMention))
+            .queue()
     }
 
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
@@ -56,56 +56,38 @@ object ForceSkip: MichiCommand("fskip", "Force a track to be skipped", CommandSc
         val sender = context.member!!
         val bot = guild.selfMember
         val botVoiceState = bot.voiceState!!
-        val channel = context.channel
         val senderVoiceState = sender.voiceState!!
+        val guildDjMap = GuildDJMap.computeIfAbsent(guild) { mutableSetOf() }
 
+        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val genericErr: YamlMap = err["generic"]!!
+        val musicErr: YamlMap = err["music"]!!
+        
         if (!bot.permissions.containsAll(botPermissions)) {
-            context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(genericErr.getText("bot_missing_perms"), Emoji.michiSad))
             return false
         }
 
-        if (!sender.permissions.any { permission -> userPermissions.contains(permission) }) {
-            context.reply("You don't have permission to use this command, silly you ${Emoji.michiBlep}")
-                .setEphemeral(true)
-                .queue()
+        if (!sender.permissions.any(userPermissions::contains) && sender !in guildDjMap) {
+            context.michiReply(String.format(genericErr.getText("user_missing_perms"), Emoji.michiBlep))
             return false
         }
 
         if (!senderVoiceState.inAudioChannel()) {
-            context.reply("You need to be in a voice channel to use this command ${Emoji.michiBlep}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(musicErr.getText("user_not_in_vc"), Emoji.michiBlep))
             return false
         }
 
-        if (!botVoiceState.inAudioChannel()) {
+        if (!botVoiceState.inAudioChannel() && bot.hasAccess(senderVoiceState.channel!!)) {
             val audioManager = guild.audioManager
             val channelToJoin = senderVoiceState.channel
 
-            if (channelToJoin == null) {
-                context.reply("Something went really wrong ${Emoji.michiOpsie}")
-                    .setEphemeral(true)
-                    .queue()
-                return false
-            }
-
             audioManager.openAudioConnection(channelToJoin)
+            audioManager.isSelfDeafened = true
         }
 
-        if (senderVoiceState.channel != botVoiceState.channel) {
-            context.reply("You need to be in the same voice channel as me to use this command")
-                .setEphemeral(true)
-                .queue()
-            return false
-        }
-
-        if (channel is TextChannel && !bot.hasPermission(channel)) {
-
-            context.reply("I don't have permission to message in this channel")
-                .setEphemeral(true)
-                .queue()
+        if (!botVoiceState.inAudioChannel()) {
+            context.michiReply(String.format(musicErr.getText("user_not_in_vc"), Emoji.michiBlep))
             return false
         }
 

@@ -1,9 +1,15 @@
 package michi.bot.commands.music
 
+import com.charleskorn.kaml.YamlMap
+import com.charleskorn.kaml.yamlMap
+
+import michi.bot.commands.CommandScope.GUILD_SCOPE
 import michi.bot.commands.*
 import michi.bot.lavaplayer.PlayerManager
-import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
+import michi.bot.util.ReplyUtils.getText
+import michi.bot.util.ReplyUtils.getYML
+import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
@@ -16,9 +22,9 @@ import java.net.URL
  * @see execute
  */
 @Suppress("Unused")
-object Play: MichiCommand("play", "plays the track/playlist that you searched for.", CommandScope.GUILD_SCOPE) {
+object Play: MichiCommand("play", GUILD_SCOPE) {
 
-    private const val searchPrefix = "scsearch:"
+    private const val SEARCH_PREFIX = "scsearch:"
 
     override val botPermissions: List<Permission>
         get() = listOf(
@@ -29,26 +35,19 @@ object Play: MichiCommand("play", "plays the track/playlist that you searched fo
             Permission.MESSAGE_SEND_IN_THREADS
         )
 
-    override val arguments: List<MichiArgument>
-        get() = listOf(
-            MichiArgument("search", "the name/link of a song/playlist.", OptionType.STRING)
-        )
+    override val arguments = listOf(MichiArgument("search", OptionType.STRING))
 
     override val usage: String
-        get() = "/play <search(the name or link of a song/playlist)>"
+        get() = "/$name <search(the name or link of a song/playlist)>"
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
-        val sender = context.user
         var searchedTrack = context.getOptionsByName("search")[0].asString
 
         if (!canHandle(context)) return
 
-        if (!isURL(searchedTrack)) searchedTrack = "$searchPrefix:$searchedTrack"
+        if (!isURL(searchedTrack)) searchedTrack = "$SEARCH_PREFIX:$searchedTrack"
 
         PlayerManager.loadAndPlay(context, searchedTrack)
-
-        // puts the user that sent the command in cooldown
-        SlashCommandListener.cooldownManager(sender)
     }
 
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
@@ -59,17 +58,17 @@ object Play: MichiCommand("play", "plays the track/playlist that you searched fo
         val senderVoiceState = sender.voiceState!!
         val search = context.getOption("search")!!.asString
 
+        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val genericErr: YamlMap = err["generic"]!!
+        val musicErr: YamlMap = err["music"]!!
+
         if (!bot.permissions.containsAll(botPermissions)) {
-            context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(genericErr.getText("bot_missing_perms"), Emoji.michiSad))
             return false
         }
 
         if (!senderVoiceState.inAudioChannel()) {
-            context.reply("You need to be in a voice channel to use this command ${Emoji.michiBlep}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(musicErr.getText("user_not_in_vc"), Emoji.michiBlep))
             return false
         }
 
@@ -77,29 +76,19 @@ object Play: MichiCommand("play", "plays the track/playlist that you searched fo
             val audioManager = guild.audioManager
             val channelToJoin = senderVoiceState.channel
 
-            if (channelToJoin == null) {
-                context.reply("Something went really wrong ${Emoji.michiOpsie}")
-                    .setEphemeral(true)
-                    .queue()
-                return false
-            }
-
             audioManager.openAudioConnection(channelToJoin)
+            audioManager.isSelfDeafened = true
         }
 
         if (isURL(search)) {
             if (search.contains("youtube.com/") || search.contains("youtu.be/")) {
-                context.reply("I can't play musics from youtube ${Emoji.smolMichiAngry}")
-                    .setEphemeral(true)
-                    .queue()
+                context.michiReply(String.format(musicErr.getText("cant_stream_from_yt"), Emoji.smolMichiAngry))
                 return false
             }
         }
 
         if (senderVoiceState.channel?.id != botVoiceState.channel?.id) {
-            context.reply("You need to be in the same voice channel as me to use this command")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(musicErr.getText("user_not_in_bot_vc"))
             return false
         }
 

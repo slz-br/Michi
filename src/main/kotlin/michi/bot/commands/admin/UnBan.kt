@@ -1,10 +1,14 @@
 package michi.bot.commands.admin
 
-import michi.bot.commands.CommandScope
+import com.charleskorn.kaml.YamlMap
+import com.charleskorn.kaml.yamlMap
+import michi.bot.commands.CommandScope.GUILD_SCOPE
 import michi.bot.commands.MichiArgument
 import michi.bot.commands.MichiCommand
-import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
+import michi.bot.util.ReplyUtils.getText
+import michi.bot.util.ReplyUtils.getYML
+import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
@@ -13,8 +17,14 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.awt.Color
 
+/**
+ * Object for the unban command, a command that unbans a user
+ * if possible(the user to be unbanned is actually banned and if the sender
+ * of the command has permission to unban the user)
+ * @author Slz
+ */
 @Suppress("Unused")
-object UnBan: MichiCommand("unban", "Unbans the mentioned users.", CommandScope.GUILD_SCOPE) {
+object UnBan: MichiCommand("unban", GUILD_SCOPE) {
 
     override val userPermissions: List<Permission>
         get() = listOf(
@@ -31,11 +41,11 @@ object UnBan: MichiCommand("unban", "Unbans the mentioned users.", CommandScope.
         )
 
     override val usage: String
-        get() = "/unban <1st user>"
+        get() = "/$name <1st user>"
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("user", "the 1st user to ban", OptionType.USER)
+            MichiArgument("user", OptionType.USER)
         )
 
     /**
@@ -44,7 +54,6 @@ object UnBan: MichiCommand("unban", "Unbans the mentioned users.", CommandScope.
      * @author Slz
      */
     override suspend fun execute(context: SlashCommandInteractionEvent) {
-        val sender = context.user
         val guild = context.guild!!
 
         // guard clauses
@@ -55,17 +64,20 @@ object UnBan: MichiCommand("unban", "Unbans the mentioned users.", CommandScope.
         // if everything is right
         guild.unban(subject).queue()
 
+        val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
+        val adminSuccess: YamlMap = success["admin"]!!
+        val unbanMessage = adminSuccess.getText("unban_applied").split("\n")
+        val warn: YamlMap = getYML(context).yamlMap["warn_messages"]!!
+        val adminWarn: YamlMap = warn["admin"]!!
+
         EmbedBuilder().apply {
-            setColor(Color.BLUE).setTitle("UNBAN! ${Emoji.michiHappy}")
-            addField("Unbanned ${subject.name}", "", false)
-            setFooter("It's better that this user don't cause any trouble again")
+            setColor(Color.BLUE).setTitle(String.format(unbanMessage[0], Emoji.michiHappy))
+            addField(String.format(unbanMessage[1], subject.asMention), "", false)
+            setFooter(adminWarn.getText("unban_advice"))
 
         }.build()
             .let(context::replyEmbeds)
             .queue()
-
-        // puts the user that sent the command in cooldown
-        SlashCommandListener.cooldownManager(sender)
     }
 
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
@@ -74,24 +86,22 @@ object UnBan: MichiCommand("unban", "Unbans the mentioned users.", CommandScope.
         val guild = context.guild!!
         val bot = guild.selfMember
 
+        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val genericErr: YamlMap = err["generic"]!!
+        val adminErr: YamlMap = err["admin"]!!
+
         if (locateUserInGuild(guild, subject)) {
-            context.reply("${subject.name} isn't banned ${Emoji.michiHuh}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(adminErr.getText("user_not_banned"), subject.asMention, Emoji.michiHuh))
             return false
         }
 
-        if (!agent.permissions.any { permission -> userPermissions.contains(permission) }) {
-            context.reply("You don't have the permissions to use this command, silly you ${Emoji.michiBlep}")
-                .setEphemeral(true)
-                .queue()
+        if (!agent.permissions.any(userPermissions::contains)) {
+            context.michiReply(String.format(genericErr.getText("user_missing_perms"), Emoji.michiBlep))
             return false
         }
 
         if (!bot.permissions.containsAll(botPermissions)) {
-            context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(genericErr.getText("bot_missing_perms"), Emoji.michiSad))
             return false
         }
 

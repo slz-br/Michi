@@ -1,12 +1,15 @@
 package michi.bot.commands.admin
 
-import michi.bot.commands.CommandScope
+import com.charleskorn.kaml.YamlMap
+import com.charleskorn.kaml.yamlMap
+import michi.bot.commands.CommandScope.GUILD_SCOPE
 import michi.bot.commands.MichiArgument
 import michi.bot.commands.MichiCommand
 import michi.bot.database.dao.GuildsDAO
-import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
-import net.dv8tion.jda.api.Permission
+import michi.bot.util.ReplyUtils.getText
+import michi.bot.util.ReplyUtils.getYML
+import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
@@ -16,29 +19,19 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
  * @author Slz
  */
 @Suppress("Unused")
-object Logs: MichiCommand("logs", "Enables/disables logs in the server", CommandScope.GUILD_SCOPE) {
-    override val botPermissions: List<Permission>
-        get() = listOf(
-            Permission.MESSAGE_SEND,
-            Permission.MESSAGE_EXT_EMOJI,
-            Permission.MESSAGE_ATTACH_FILES,
-            Permission.MESSAGE_SEND_IN_THREADS,
-            Permission.MESSAGE_EMBED_LINKS
-        )
+object Logs: MichiCommand("logs", GUILD_SCOPE) {
 
     override val usage: String
-        get() = "/logs <GuildTextChannel(optional - ignore this option if you want to disable the logs)>"
+        get() = "/$name <GuildTextChannel(optional - ignore this option if you want to disable the logs)>"
 
-    override val ownerOnly: Boolean
-        get() = true
+    override val ownerOnly = true
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("channel", "The channel for posting logs", OptionType.CHANNEL, false)
+            MichiArgument("channel", OptionType.CHANNEL, isRequired = false)
         )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
-        val sender = context.user
         val guild = context.guild!!
 
         if (!canHandle(context)) return
@@ -47,12 +40,15 @@ object Logs: MichiCommand("logs", "Enables/disables logs in the server", Command
 
         GuildsDAO.setLogChannel(guild, logChannel)
 
-        if (logChannel == null)
-            context.reply("Done! log messages will no longer be notified ${Emoji.michiThumbsUp}").setEphemeral(true).queue()
-        else
-            context.reply("Done! log messages will be sent in ${logChannel.asMention}").setEphemeral(true).queue()
+        val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
+        val adminSuccess: YamlMap = success["admin"]!!
 
-        SlashCommandListener.cooldownManager(sender)
+        if (logChannel == null) {
+            context.michiReply(String.format(adminSuccess.getText("logs_wont_be_notified_anymory"), Emoji.michiThumbsUp))
+        }
+        else {
+            context.michiReply(String.format("logs_channel_setted", logChannel.asMention))
+        }
     }
 
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
@@ -61,33 +57,29 @@ object Logs: MichiCommand("logs", "Enables/disables logs in the server", Command
         val logChannel = context.getOption("channel")?.asChannel
         val sender = context.member ?: return false
 
+        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val genericErr: YamlMap = err["generic"]!!
+        val adminErr: YamlMap = err["admin"]!!
+
         if (!sender.isOwner) {
-            context.reply("Only the server owner can use this command.")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(genericErr.getText("user_isnt_owner"))
             return false
         }
 
         if (!bot.permissions.containsAll(botPermissions)) {
-            context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(genericErr.getText("bot_missing_perms"), Emoji.michiSad))
             return false
         }
 
         logChannel?.let {
 
             if (it !is GuildMessageChannelUnion) {
-                context.reply("Invalid channel, the channel must be a guild text channel")
-                    .setEphemeral(true)
-                    .queue()
+                context.michiReply(adminErr.getText("channel_type_err"))
                 return false
             }
 
             if (!bot.hasAccess(logChannel) || !bot.hasPermission(logChannel)) {
-                context.reply("I don't have permission to send messages in that channel ${Emoji.michiSad}")
-                    .setEphemeral(true)
-                    .queue()
+                context.michiReply(String.format(genericErr.getText("bot_missing_channel_access"), Emoji.michiSad))
                 return false
             }
 

@@ -1,30 +1,41 @@
 package michi.bot.commands.mail
 
+import com.charleskorn.kaml.YamlMap
+import com.charleskorn.kaml.yamlMap
 import kotlinx.coroutines.*
-import michi.bot.commands.CommandScope
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import michi.bot.commands.CommandScope.GLOBAL_SCOPE
 import michi.bot.commands.MichiArgument
 import michi.bot.commands.MichiCommand
 import michi.bot.config
-import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
+import michi.bot.util.ReplyUtils.getText
+import michi.bot.util.ReplyUtils.getYML
+import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 val inboxMap = HashMap<User, MutableList<MailMessage>>()
 
+/**
+ * Object for the mail command, a command that sends a mail to an inbox(check [inboxMap]) of another
+ * user.
+ * @author Slz
+ */
 @Suppress("Unused")
-object Mail: MichiCommand("mail", "Sends an anonymous message to someone.", CommandScope.GLOBAL_SCOPE) {
+object Mail: MichiCommand("mail", GLOBAL_SCOPE) {
     private val inMailCooldown = mutableSetOf<User>()
 
     override val usage: String
-        get() = "/mail <title> <message> <receiver(the person to receive the mail)>"
+        get() = "/$name <title> <message> <receiver(the person to receive the mail)>"
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("title", "What is the mail about?", OptionType.STRING),
-            MichiArgument("message", "The message you want to send.", OptionType.STRING),
-            MichiArgument("receiver", "Who is this mail for?", OptionType.USER)
+            MichiArgument("title", OptionType.STRING),
+            MichiArgument("message", OptionType.STRING),
+            MichiArgument("receiver", OptionType.USER)
         )
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -35,15 +46,20 @@ object Mail: MichiCommand("mail", "Sends an anonymous message to someone.", Comm
 
         if (!canHandle(context)) return
 
+        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val genericErr: YamlMap = err["generic"]!!
+        val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
+        val mailSuccess: YamlMap = success["mail"]!!
+
         val receiver = context.getOption("receiver")!!.asUser
         val title = context.getOption("title")!!.asString
         val message = context.getOption("message")!!.asString
 
         var mailSent = false
         jda.retrieveUserById(receiver.id).queue(
-            {
+            { receiverUser ->
                 // creating an inbox for the receiver if the receiver doesn't have one already
-                val receiverInbox = inboxMap.computeIfAbsent(it) {
+                val receiverInbox = inboxMap.computeIfAbsent(receiverUser) {
                     mutableListOf()
                 }
 
@@ -53,62 +69,61 @@ object Mail: MichiCommand("mail", "Sends an anonymous message to someone.", Comm
                 receiverInbox += mail
 
                 // reporting the mail to the report channel if it has an unknown language and is unsafe.
-                if(!mail.isSafe && !mail.unknowLanguage) reportChannel.sendMessage("$mail\nsender: ${sender.asMention}\nreceiver: ${receiver.asMention}").queue()
+                if(!mail.isSafe && !mail.unknownLanguage) reportChannel.sendMessage("$mail\nsender: ${sender.asMention}\nreceiver: ${receiver.asMention}").queue()
 
                 mailSent = true
                 GlobalScope.launch { deleteMail(receiverInbox, mail) }
 
-                context.reply("Mail sent ${Emoji.michiThumbsUp}").setEphemeral(true).queue()
+                context.michiReply(String.format(mailSuccess.getText("mail_sent"), Emoji.michiThumbsUp))
             },
             {
-                context.reply("Couldn't find the user ${Emoji.michiOpsie}").setEphemeral(true).queue()
+                context.michiReply(String.format(genericErr.getText("custom_user_not_found"), Emoji.michiOpsie))
             }
         )
 
         if (!mailSent) return
 
-        cooldownForSendingMailManager(sender)
-        SlashCommandListener.cooldownManager(sender)
+        Mutex().withLock {
+            cooldownForSendingMailManager(sender)
+        }
     }
 
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
         val sender = context.user
-        val receiver = context.getOption("receiver")?.asUser ?: return false
-        val title = context.getOption("title")?.asString ?: return false
-        val message = context.getOption("message")?.asString ?: return false
+        val receiver = context.getOption("receiver")?.asUser!!
+        val title = context.getOption("title")?.asString!!
+        val message = context.getOption("message")?.asString!!
+
+        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val mailErr: YamlMap = err["mail"]!!
 
         if (sender == receiver) {
-            context.reply("Are you trying to mail yourself? ${Emoji.michiHuh}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(mailErr.getText("trying_selfmail"), Emoji.michiHuh))
             return false
         }
 
         if (receiver.id == config["BOT_ID"]) {
-            context.reply("Sorry, I ain't open for mails ${Emoji.michiShrug}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(mailErr.getText("trying_to_mail_michi"), Emoji.michiShrug))
             return false
         }
 
         if (receiver.isBot) {
-            context.reply("You can't mail bots, don't you have anybody else to mail?")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(mailErr.getText("trying_to_mail_bot"))
             return false
         }
 
         if (message.isBlank() || title.isBlank()) {
-            context.reply("Neither the title nor the message can be formed only by whitespaces.")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(mailErr.getText("blank_mail"))
             return false
         }
 
         if (message.length < 10) {
-            context.reply("The message must have at least 10 characters.")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(mailErr.getText("invalid_message_length"))
+            return false
+        }
+
+        if (sender in inMailCooldown) {
+            context.michiReply(mailErr.getText("in_mail_cooldown"))
             return false
         }
 

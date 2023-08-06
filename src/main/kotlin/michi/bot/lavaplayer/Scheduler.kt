@@ -1,24 +1,26 @@
 package michi.bot.lavaplayer
 
+import com.charleskorn.kaml.YamlMap
+import com.charleskorn.kaml.yamlMap
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import net.dv8tion.jda.api.EmbedBuilder
+import org.slf4j.LoggerFactory
 import net.dv8tion.jda.api.entities.Guild
+import java.awt.Color
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.IO
 
 import michi.bot.commands.music.guildSkipPoll
 import michi.bot.database.dao.GuildsDAO
 import michi.bot.util.Emoji
-import net.dv8tion.jda.api.EmbedBuilder
-import org.slf4j.LoggerFactory
-import java.awt.Color
+import michi.bot.util.ReplyUtils.getText
+import michi.bot.util.ReplyUtils.getYML
 
 class Scheduler(player: AudioPlayer, guild: Guild): AudioEventAdapter() {
 
@@ -37,6 +39,11 @@ class Scheduler(player: AudioPlayer, guild: Guild): AudioEventAdapter() {
      */
     private val schedulerGuild = guild
 
+    /**
+     * If true, the current [AudioTrack] playing will replay when it ends.
+     */
+    var isLooping = false
+
     override fun onTrackEnd(player: AudioPlayer?, track: AudioTrack?, endReason: AudioTrackEndReason?) {
 
         guildSkipPoll[schedulerGuild]?.clear()
@@ -49,21 +56,27 @@ class Scheduler(player: AudioPlayer, guild: Guild): AudioEventAdapter() {
         }
 
         if (trackQueue.isEmpty() && player?.playingTrack == null) {
-            CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(IO).launch {
                 delay(TimeUnit.MINUTES.toMillis(3))
                 if (trackQueue.isEmpty() && player?.playingTrack == null) {
-                    GuildsDAO.setMusicQueue(schedulerGuild, "")
                     schedulerGuild.audioManager.closeAudioConnection()
                     return@launch
                 }
             }
         }
 
+        if (isLooping) {
+            player?.startTrack(track?.makeClone(), true)
+            return
+        }
+
         if (endReason!!.mayStartNext) nextTrack()
-        CoroutineScope(Dispatchers.IO).launch {
+
+        CoroutineScope(IO).launch {
             track?.info?.uri?.let {
-                val newQueue = GuildsDAO.getMusicQueue(schedulerGuild)?.replace("$it,", "")
-                GuildsDAO.setMusicQueue(schedulerGuild, newQueue)
+                GuildsDAO.getMusicQueue(schedulerGuild)?.replace("$it,", "")?.let { newTrackQueue ->
+                    GuildsDAO.setMusicQueue(schedulerGuild, newTrackQueue)
+                }
             }
         }
     }
@@ -84,19 +97,6 @@ class Scheduler(player: AudioPlayer, guild: Guild): AudioEventAdapter() {
     fun nextTrack() {
         val newTrack = trackQueue.poll()
         audioPlayer.startTrack(newTrack, false)
-        val voiceChannel = schedulerGuild.selfMember.voiceState?.channel?.asVoiceChannel()
-        val bot = schedulerGuild.selfMember
-
-        if (voiceChannel == null || !bot.hasPermission(voiceChannel) || newTrack == null) return
-        EmbedBuilder().apply {
-            setColor(Color.MAGENTA)
-            setTitle("Now Playing:", newTrack.info.uri)
-            addField(
-                newTrack.info.title,
-                "coming next: ${trackQueue.firstOrNull()?.info?.title ?: "No more music, the queue ended ${Emoji.michiSaddened}"}",
-                false
-            )
-        }.build().let(voiceChannel::sendMessageEmbeds).queue()
     }
 
     /**
@@ -109,26 +109,38 @@ class Scheduler(player: AudioPlayer, guild: Guild): AudioEventAdapter() {
         if ((index - 1) < 0 || index > trackQueue.size) return false
 
         val track = trackQueue.elementAt(index - 1)
+        trackQueue.remove(track)
         audioPlayer.startTrack(track, false)
-        val voiceChannel = schedulerGuild.selfMember.voiceState?.channel?.asVoiceChannel()
-        val bot = schedulerGuild.selfMember
-
-        if (voiceChannel == null || !bot.hasPermission(voiceChannel)) return true
-        EmbedBuilder().apply {
-            setColor(Color.MAGENTA)
-            setTitle("Now Playing:", track.info.uri)
-            addField(
-                track.info.title,
-                "coming next: ${trackQueue.firstOrNull()?.info?.title ?: "No more music, the queue ended ${Emoji.michiSaddened}"}",
-                false
-            )
-        }.build().let(voiceChannel::sendMessageEmbeds).queue()
 
         return true
     }
 
-    override fun onTrackException(player: AudioPlayer?, track: AudioTrack?, exception: FriendlyException?) {
-        LoggerFactory.getLogger(this::class.java)
+    override fun onTrackException(player: AudioPlayer?, track: AudioTrack?, exc: FriendlyException?) =
+        LoggerFactory.getLogger(this::class.java).warn(exc?.message)
+
+    override fun onTrackStart(player: AudioPlayer?, track: AudioTrack?) {
+        val channel = schedulerGuild.selfMember.voiceState?.channel?.asGuildMessageChannel()
+        val bot = schedulerGuild.selfMember
+
+        if (channel == null
+            || !bot.hasPermission(channel)
+            || track == null
+        ) return
+
+        if (isLooping) return
+
+        val other: YamlMap = runBlocking { getYML(schedulerGuild).yamlMap["other"]!! }
+        val musicOther: YamlMap = other["music"]!!
+
+        EmbedBuilder().apply {
+            setColor(Color.MAGENTA)
+            setTitle(musicOther.getText("scheduler_now_playing"), track.info.uri)
+            addField(
+                track.info.title,
+                String.format(musicOther.getText("coming_next"), trackQueue.firstOrNull()?.info?.title ?: String.format(musicOther.getText("nothing_coming_next"), Emoji.michiSaddened)),
+                false
+            )
+        }.build().let(channel::sendMessageEmbeds).queue()
     }
 
 }

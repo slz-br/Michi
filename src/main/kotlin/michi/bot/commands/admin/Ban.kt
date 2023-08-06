@@ -1,13 +1,17 @@
 package michi.bot.commands.admin
 
-import michi.bot.commands.CommandScope
+import com.charleskorn.kaml.YamlMap
+import com.charleskorn.kaml.yamlMap
+import michi.bot.commands.CommandScope.GUILD_SCOPE
 import michi.bot.commands.MichiArgument
 import michi.bot.commands.MichiCommand
 import michi.bot.config
-import michi.bot.listeners.SlashCommandListener
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import michi.bot.util.Emoji
+import michi.bot.util.ReplyUtils.getText
+import michi.bot.util.ReplyUtils.getYML
+import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.commands.OptionType
@@ -19,7 +23,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
  * @author Slz
  */
 @Suppress("Unused")
-object Ban: MichiCommand("ban", "Bans the mentioned user.", CommandScope.GUILD_SCOPE) {
+object Ban: MichiCommand("ban", GUILD_SCOPE) {
 
     override val userPermissions: List<Permission>
         get() = listOf(
@@ -36,12 +40,12 @@ object Ban: MichiCommand("ban", "Bans the mentioned user.", CommandScope.GUILD_S
         )
 
     override val usage: String
-        get() = "/ban <user> <reason(optional)>"
+        get() = "/$name <user> <reason(optional)>"
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("user", "the user to ban", OptionType.USER),
-            MichiArgument("reason", "The reason for the ban.", OptionType.STRING, isRequired = false)
+            MichiArgument("user", OptionType.USER),
+            MichiArgument("reason", OptionType.STRING, isRequired = false)
         )
 
     /**
@@ -66,9 +70,6 @@ object Ban: MichiCommand("ban", "Bans the mentioned user.", CommandScope.GUILD_S
      * @see canHandle
      */
     override suspend fun execute(context: SlashCommandInteractionEvent) {
-        val sender = context.user
-
-        // guard clause
         if (!canHandle(context)) return
 
         val subject = context.getOption("user")!!.asMember!!
@@ -76,13 +77,15 @@ object Ban: MichiCommand("ban", "Bans the mentioned user.", CommandScope.GUILD_S
 
         if (reason != null && reason.length > 1750) reason = null
 
+        val errMsg: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val adminErr: YamlMap = errMsg["admin"]!!
+        val warnMsg: YamlMap = getYML(context).yamlMap["warn_messages"]!!
+        val adminWarn: YamlMap = warnMsg["admin"]!!
+
         // ban confirmation
-        context.reply("Are you sure you want to ban ${subject.asMention}?\nreason: ${reason ?: "not provided or too large"}")
+        context.reply(String.format(adminWarn.getText("ban_confirmation"), subject.asMention, reason ?: adminErr.getText("ban_reason_null_or_too_large")))
             .setActionRow(Button.danger("ban-confirmation", "Ban!"))
             .queue()
-
-        // puts the user that sent the command in cooldown
-        SlashCommandListener.cooldownManager(sender)
     }
 
     /**
@@ -94,51 +97,38 @@ object Ban: MichiCommand("ban", "Bans the mentioned user.", CommandScope.GUILD_S
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
         val sender = context.member!!
         val bot = context.guild!!.selfMember
-        val subject = context.getOption("user")!!.asMember!!
+        val subject = context.getOption("user")?.asMember
         val senderTopRole = sender.roles.sortedDescending()[0].position
         val botTopRole = bot.roles.sortedDescending()[0].position
 
-        if (locateUserInGuild(context.guild!!, subject.user)) {
-            context.reply("Couldn't find the user in the guild ${Emoji.michiShrug}")
-                .setEphemeral(true)
-                .queue()
+        val errMsg: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val genericErr: YamlMap = errMsg["generic"]!!
+        val adminErr: YamlMap = errMsg["admin"]!!
+
+        if (subject == null) {
+            context.michiReply(String.format(genericErr.getText("user_not_found"), Emoji.michiShrug))
             return false
         }
 
         // checks if the agent is devil and is trying to ban michi >:(
         if (subject.id == config["BOT_ID"]) {
-            context.reply("You can't ban me, idiot ${Emoji.michiUnimpressed}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(adminErr.getText("trying_to_ban_michi"), Emoji.michiUnimpressed))
             return false
         }
 
         // checks if the agent is trying to ban himself
-        if (subject == sender.user) {
-            context.reply("Are you trying to ban yourself? ${Emoji.michiHuh}")
-                .setEphemeral(true)
-                .queue()
+        if (subject.user == sender.user) {
+            context.michiReply(String.format(adminErr.getText("trying_selfban"), Emoji.michiHuh))
             return false
         }
 
-        if (!sender.permissions.any { permission -> userPermissions.contains(permission) }) {
-            context.reply("You don't have the permissions to use this command, silly you ${Emoji.michiBlep}")
-                .setEphemeral(true)
-                .queue()
-            return false
-        }
-
-        if (!bot.permissions.containsAll(botPermissions)) {
-            context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}")
-                .setEphemeral(true)
-                .queue()
+        if (!sender.permissions.any(userPermissions::contains)) {
+            context.michiReply(String.format(genericErr.getText("user_missing_perms"), Emoji.michiBlep))
             return false
         }
 
         if (subject.roles.any { role -> role.position >= senderTopRole || role.position >= botTopRole }) {
-            context.reply("${subject.asMention} has a greater role than you or me")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(adminErr.getText("hierarchy_err"), subject.asMention))
             return false
         }
 

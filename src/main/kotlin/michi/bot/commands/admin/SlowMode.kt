@@ -1,19 +1,28 @@
 package michi.bot.commands.admin
 
-import kotlinx.coroutines.*
-import michi.bot.commands.CommandScope
+import com.charleskorn.kaml.YamlMap
+import com.charleskorn.kaml.yamlMap
+import michi.bot.commands.CommandScope.GUILD_SCOPE
 import michi.bot.commands.MichiArgument
 import michi.bot.commands.MichiCommand
-import michi.bot.listeners.SlashCommandListener
+import michi.bot.listeners.CommandAutoCompletionListener
 import michi.bot.util.Emoji
+import michi.bot.util.ReplyUtils.getText
+import michi.bot.util.ReplyUtils.getYML
+import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
+/**
+ * Object for the slowmode command, a command that defines a delay for sending messages
+ * in a channel.
+ * @author Slz
+ */
 @Suppress("Unused")
-object SlowMode: MichiCommand("slowmode", "Sets the channel slowmode.", CommandScope.GUILD_SCOPE) {
+object SlowMode: MichiCommand("slowmode", GUILD_SCOPE) {
 
     override val userPermissions: List<Permission>
         get() = listOf(
@@ -30,16 +39,16 @@ object SlowMode: MichiCommand("slowmode", "Sets the channel slowmode.", CommandS
         )
 
     override val usage: String
-        get() = "/slowmode <time>"
+        get() = "/$name <time>"
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("time", "the slowmode time.", OptionType.STRING, isRequired = true, hasAutoCompletion = true)
+            MichiArgument("time", OptionType.STRING, hasAutoCompletion = true)
         )
 
     /**
      * Applies slowMode to the channel that the command was sent in.
-     * @param context The interaction to reply to.
+     * @param context The interaction to michiReply to.
      * @author Slz
      */
     override suspend fun execute(context: SlashCommandInteractionEvent) {
@@ -49,167 +58,134 @@ object SlowMode: MichiCommand("slowmode", "Sets the channel slowmode.", CommandS
 
         val channel = context.channel.asTextChannel()
 
+        val errMsg: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val adminErr: YamlMap = errMsg["admin"]!!
+
         val slowTime = context.getOption("time")!!.asString
         val manager = channel.manager
 
         when (slowTime) {
             "0"  -> {
                 if (channel.slowmode == 0) {
-                    context.reply("This is the channel slowmode time already.")
-                        .setEphemeral(true)
-                        .queue()
+                    context.michiReply(adminErr.getText("slowmode_time_unchanged"))
                     return
                 }
-                manager.setSlowmode(0).queue()
+                manager.setSlowmode(0)
             }
 
             "5s" -> {
                 if (channel.slowmode == 5) {
-                    context.reply("This is the channel slowmode time already.")
-                        .setEphemeral(true)
-                        .queue()
+                    context.michiReply(adminErr.getText("slowmode_time_unchanged"))
                     return
                 }
-                manager.setSlowmode(5).queue()
+                manager.setSlowmode(5)
             }
 
             "10s" -> {
                 if (channel.slowmode == 10) {
-                    context.reply("This is the channel slowmode time already.")
-                        .setEphemeral(true)
-                        .queue()
+                    context.michiReply(adminErr.getText("slowmode_time_unchanged"))
                     return
                 }
-                manager.setSlowmode(10).queue()
+                manager.setSlowmode(10)
             }
 
             "15s" -> {
                 if (channel.slowmode == 15) {
-                    context.reply("This is the channel slowmode time already.")
-                        .setEphemeral(true)
-                        .queue()
+                    context.michiReply(adminErr.getText("slowmode_time_unchanged"))
                     return
                 }
-                manager.setSlowmode(15).queue()
+                manager.setSlowmode(15)
             }
 
             "30s" -> {
                 if (channel.slowmode == 30) {
-                    context.reply("This is the channel slowmode time already.")
-                        .setEphemeral(true)
-                        .queue()
+                    context.michiReply(adminErr.getText("slowmode_time_unchanged"))
                     return
                 }
-                manager.setSlowmode(30).queue()
+                manager.setSlowmode(30)
             }
 
             "1m" -> {
                 if (channel.slowmode == 60) {
-                    context.reply("This is the channel slowmode time already.")
-                        .setEphemeral(true)
-                        .queue()
+                    context.michiReply(adminErr.getText("slowmode_time_unchanged"))
                     return
                 }
-                manager.setSlowmode(60).queue()
+                manager.setSlowmode(60)
             }
 
             "2m" -> {
                 if (channel.slowmode == 120) {
-                    context.reply("This is the channel slowmode time already.")
-                        .setEphemeral(true)
-                        .queue()
+                    context.michiReply(adminErr.getText("slowmode_time_unchanged"))
                     return
                 }
-                manager.setSlowmode(120).queue()
+                manager.setSlowmode(120)
             }
 
             "5m" -> {
                 if (channel.slowmode == 300) {
-                    context.reply("This is the channel slowmode time already.")
-                        .setEphemeral(true)
-                        .queue()
+                    context.michiReply(adminErr.getText("slowmode_time_unchanged"))
                     return
                 }
-                manager.setSlowmode(300).queue()
+                manager.setSlowmode(300)
             }
 
             "10m" -> {
                 if (channel.slowmode == 600) {
-                    context.reply("This is the channel slowmode time already.")
-                        .setEphemeral(true)
-                        .queue()
+                    context.michiReply(adminErr.getText("slowmode_time_unchanged"))
                     return
                 }
-                manager.setSlowmode(600).queue()
+                manager.setSlowmode(600)
             }
 
             "15m" -> {
                 if (channel.slowmode == 900) {
-                    context.reply("This is the channel slowmode time already.")
-                        .setEphemeral(true)
-                        .queue()
+                    context.michiReply(adminErr.getText("slowmode_time_unchanged"))
                     return
                 }
-                manager.setSlowmode(900).queue()
+                manager.setSlowmode(900)
             }
 
             "30m" -> {
                 if (channel.slowmode == 1800) {
-                    context.reply("This is the channel slowmode time already.")
-                        .setEphemeral(true)
-                        .queue()
+                    context.michiReply(adminErr.getText("slowmode_time_unchanged"))
                     return
                 }
-                manager.setSlowmode(1800).queue()
+                manager.setSlowmode(1800)
             }
 
             "1h" -> {
                 if (channel.slowmode == 3600) {
-                    context.reply("This is the channel slowmode time already.")
-                        .setEphemeral(true)
-                        .queue()
+                    context.michiReply(adminErr.getText("slowmode_time_unchanged"))
                     return
                 }
-                manager.setSlowmode(3600).queue()
+                manager.setSlowmode(3600)
             }
 
             "2h" -> {
                 if (channel.slowmode == 7200) {
-                    context.reply("This is the channel slowmode time already.")
-                        .setEphemeral(true)
-                        .queue()
+                    context.michiReply(adminErr.getText("slowmode_time_unchanged"))
                     return
                 }
-                manager.setSlowmode(7200).queue()
+                manager.setSlowmode(7200)
             }
 
             "6h" -> {
                 if (channel.slowmode == ISlowmodeChannel.MAX_SLOWMODE) {
-                    context.reply("This is the channel slowmode time already.")
-                        .setEphemeral(true)
-                        .queue()
+                    context.michiReply(adminErr.getText("slowmode_time_unchanged"))
                     return
                 }
-                manager.setSlowmode(ISlowmodeChannel.MAX_SLOWMODE).queue()
+                manager.setSlowmode(ISlowmodeChannel.MAX_SLOWMODE)
             }
 
-            else -> {
-                context.reply("Type a valid option ${Emoji.smolMichiAngry}")
-                    .setEphemeral(true)
-                    .queue()
-                return
-            }
         }
 
-        context.reply("SlowMode successfully applied to ${channel.asMention}")
-            .setEphemeral(true)
-            .queue()
+        val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
+        val adminSuccess: YamlMap = success["admin"]!!
 
-        if (slowTime == "0") channel.sendMessage("${sender.asMention} removed the slowmode from this channel ${Emoji.michiJoy}").queue()
-        else channel.sendMessage("${sender.asMention} slowmoded this channel.").queue()
+        context.michiReply(adminSuccess.getText(String.format(adminSuccess.getText("slowmode_applied_ephemeral_message"), channel.asMention)))
 
-        // puts the user that sent the command in cooldown
-        CoroutineScope(Dispatchers.IO).launch { SlashCommandListener.cooldownManager(sender.user) }
+        if (slowTime == "0") channel.sendMessage(String.format(adminSuccess.getText("slowmode_removed"), sender.asMention, Emoji.michiJoy)).queue()
+        else channel.sendMessage(String.format(adminSuccess.getText("slowmode_applied_public_message"), sender.asMention)).queue()
     }
 
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
@@ -219,31 +195,27 @@ object SlowMode: MichiCommand("slowmode", "Sets the channel slowmode.", CommandS
         val bot = guild.selfMember
         val channel = context.channel
 
-        if (!sender.permissions.any { permission -> userPermissions.contains(permission) }) {
-            context.reply("You don't have the permissions to use this command, silly you ${Emoji.michiBlep}")
-                .setEphemeral(true)
-                .queue()
+        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val genericErr: YamlMap = err["generic"]!!
+        val adminErr: YamlMap = err["admin"]!!
+
+        if (slowTime !in CommandAutoCompletionListener.slowmodeAutoCompletion) {
+            context.michiReply(String.format(genericErr.getText("option_err"), Emoji.smolMichiAngry))
+            return false
+        }
+
+        if (!sender.permissions.any(userPermissions::contains)) {
+            context.michiReply(String.format(genericErr.getText("user_missing_perms"), Emoji.michiBlep))
             return false
         }
 
         if (!bot.permissions.containsAll(botPermissions)) {
-            context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(genericErr.getText("bot_missing_perms"), Emoji.michiSad))
             return false
         }
 
         if (channel !is TextChannel) {
-            context.reply("You can't use this command in channels with the type ${channel.type.name}")
-                .setEphemeral(true)
-                .queue()
-            return false
-        }
-
-        if (slowTime == "0" && channel.slowmode == 0) {
-            context.reply("The channel already isn't slowmoded.")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(adminErr.getText("channel_type_err"), channel.type.name))
             return false
         }
 

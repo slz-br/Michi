@@ -1,61 +1,62 @@
 package michi.bot.commands.music.dj
 
+import com.charleskorn.kaml.YamlMap
+import com.charleskorn.kaml.yamlMap
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
-import michi.bot.commands.CommandScope
+import michi.bot.commands.CommandScope.GUILD_SCOPE
 import michi.bot.commands.MichiArgument
 import michi.bot.commands.MichiCommand
 import michi.bot.database.dao.GuildsDAO
 import michi.bot.lavaplayer.PlayerManager
-import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
+import michi.bot.util.ReplyUtils.getText
+import michi.bot.util.ReplyUtils.getYML
+import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.util.concurrent.TimeUnit
 
 @Suppress("Unused")
-object QueueRemove: MichiCommand("queue-remove", "Removes a music at a specific position from the queue", CommandScope.GUILD_SCOPE) {
+object QueueRemove: MichiCommand("queue-remove", GUILD_SCOPE) {
 
-    override val userPermissions: List<Permission>
-        get() = listOf(
-            Permission.ADMINISTRATOR
-        )
+    override val userPermissions = listOf(Permission.ADMINISTRATOR)
 
     override val botPermissions: List<Permission>
         get() = listOf(
+            Permission.VOICE_CONNECT,
             Permission.MESSAGE_SEND,
             Permission.MESSAGE_EXT_EMOJI,
-            Permission.MESSAGE_ATTACH_FILES,
             Permission.MESSAGE_SEND_IN_THREADS
         )
-    override val usage: String
-        get() = "/queue-remove <position>"
 
-    override val arguments: List<MichiArgument>
-        get() = listOf(
-            MichiArgument("position", "The position of the track to remove.", OptionType.INTEGER)
-        )
+    override val arguments = listOf(MichiArgument("position", OptionType.INTEGER))
+
+    override val usage: String
+        get() = "/$name <position>"
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
-        val guild = context.guild!!
-        val musicManager = PlayerManager.getMusicManager(guild)
+        if (!canHandle(context)) return
         val sender = context.user
+        val guild = context.guild!!
+        val musicManager = PlayerManager[guild]
         val position = context.getOption("position")!!.asInt - 1
         val queue = musicManager.scheduler.trackQueue
 
-        if (!canHandle(context)) return
-
+        val channel = guild.selfMember.voiceState!!.channel?.asGuildMessageChannel()
         val trackToRemove = queue.elementAt(position)
         queue -= trackToRemove
 
         val guildMusicQueue = GuildsDAO.getMusicQueue(guild)
-        GuildsDAO.setMusicQueue(guild, guildMusicQueue?.replace(trackToRemove.info.uri, ""))
+        guildMusicQueue?.replace(trackToRemove.info.uri, "")?.let {
+            GuildsDAO.setMusicQueue(guild, it)
+        }
 
-        context.reply("Successfully removed ${trackToRemove.info.title}`[${formatTrackLength(trackToRemove)}]` at the position ${position + 1} from the queue")
-            .queue()
+        val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
+        val musicDjSuccess: YamlMap = success["music_dj"]!!
 
-        // puts the user that sent the command in cooldown
-        SlashCommandListener.cooldownManager(sender)
+        context.michiReply(String.format(musicDjSuccess.getText("queue_remove_ephemeral_message"), trackToRemove.info.title, formatTrackLength(trackToRemove), position + 1))
+        channel?.sendMessage(String.format(musicDjSuccess.getText("queue_remove_public_message"), sender.asMention, trackToRemove.info.title, formatTrackLength(trackToRemove)))?.queue()
     }
 
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
@@ -64,63 +65,54 @@ object QueueRemove: MichiCommand("queue-remove", "Removes a music at a specific 
         val bot = guild.selfMember
         val senderVoiceState = sender.voiceState!!
         val botVoiceState = bot.voiceState!!
-        val musicManager = PlayerManager.getMusicManager(guild)
+        val musicManager = PlayerManager[guild]
         val queue = musicManager.scheduler.trackQueue
         val position = context.getOption("position")!!.asInt - 1
+        val guildDjMap = GuildDJMap.computeIfAbsent(guild) { mutableSetOf() }
+
+        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val genericErr: YamlMap = err["generic"]!!
+        val musicErr: YamlMap = err["music"]!!
 
         if (queue.isEmpty()) {
-            context.reply("The queue is empty ${Emoji.michiSad}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(musicErr.getText("empty_queue"), Emoji.michiSad))
             return false
         }
 
         if (position < 0 || position > queue.size - 1) {
-            context.reply("Invalid position")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(genericErr.getText("invalid_position"))
             return false
         }
 
         if (!bot.permissions.containsAll(botPermissions)) {
-            context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(genericErr.getText("bot_missing_perms"), Emoji.michiSad))
             return false
         }
 
-        if (!sender.permissions.any { permission -> userPermissions.contains(permission) }) {
-            context.reply("You don't have permission to use this command, silly you ${Emoji.michiBlep}")
-                .setEphemeral(true)
-                .queue()
+        if (!sender.permissions.any(userPermissions::contains) && sender !in guildDjMap) {
+            context.michiReply(String.format(genericErr.getText("user_missing_perms"), Emoji.michiBlep))
             return false
         }
 
         if (!senderVoiceState.inAudioChannel()) {
-            context.reply("You need to be in a voice channel to use this command ${Emoji.michiBlep}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(musicErr.getText("user_not_in_vc"), Emoji.michiBlep))
             return false
         }
 
-        if (!botVoiceState.inAudioChannel()) {
+        if (!botVoiceState.inAudioChannel() && bot.hasAccess(senderVoiceState.channel!!)) {
             val audioManager = guild.audioManager
             val channelToJoin = senderVoiceState.channel
-
-            if (channelToJoin == null) {
-                context.reply("Something went really wrong ${Emoji.michiOpsie}")
-                    .setEphemeral(true)
-                    .queue()
-                return false
-            }
 
             audioManager.openAudioConnection(channelToJoin)
         }
 
-        if (senderVoiceState.channel?.asVoiceChannel() != botVoiceState.channel?.asVoiceChannel()) {
-            context.reply("You need to be in the same voice channel as me to use this command")
-                .setEphemeral(true)
-                .queue()
+        if (!botVoiceState.inAudioChannel()) {
+            context.michiReply(String.format(musicErr.getText("user_not_in_vc"), Emoji.michiBlep))
+            return false
+        }
+
+        if (senderVoiceState.channel != botVoiceState.channel) {
+            context.michiReply(musicErr.getText("user_not_in_bot_vc"))
             return false
         }
 

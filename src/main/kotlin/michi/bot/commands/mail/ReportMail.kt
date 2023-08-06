@@ -1,31 +1,27 @@
 package michi.bot.commands.mail
 
-import michi.bot.commands.CommandScope
+import com.charleskorn.kaml.YamlMap
+import com.charleskorn.kaml.yamlMap
+import michi.bot.commands.CommandScope.GLOBAL_SCOPE
 import michi.bot.commands.MichiArgument
 import michi.bot.commands.MichiCommand
-import michi.bot.listeners.SlashCommandListener
 import michi.bot.util.Emoji
+import michi.bot.util.ReplyUtils.getText
+import michi.bot.util.ReplyUtils.getYML
+import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import java.awt.Color
 
 @Suppress("Unused")
-object ReportMail: MichiCommand("report-mail", "Reports a mail that was sent to you.", CommandScope.GLOBAL_SCOPE) {
+object ReportMail: MichiCommand("report-mail", GLOBAL_SCOPE) {
 
-    override val botPermissions: List<Permission>
-        get() = listOf(
-            Permission.MESSAGE_SEND,
-            Permission.MESSAGE_EXT_EMOJI,
-            Permission.MESSAGE_ATTACH_FILES,
-            Permission.MESSAGE_SEND_IN_THREADS
-        )
-    override val arguments: List<MichiArgument>
-        get() = listOf(
-            MichiArgument("position", "The position of the mail to report", OptionType.INTEGER)
-        )
+    override val arguments = listOf(MichiArgument("position", OptionType.INTEGER))
+
+    override val usage: String
+        get() = "/$name <position>"
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.user
@@ -38,50 +34,55 @@ object ReportMail: MichiCommand("report-mail", "Reports a mail that was sent to 
         val reportButton = Button.danger("report-confirmation", "Report")
         val cancelButton = Button.secondary("cancel-report", "Cancel")
 
+        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val genericErr: YamlMap = err["generic"]!!
+        val warnMsg: YamlMap = getYML(context).yamlMap["warn_messages"]!!
+        val mailWarn: YamlMap = warnMsg["mail"]!!
+        val genericWarn: YamlMap = warnMsg["generic"]!!
+        val reportConfirmation = mailWarn.getText("mail_report_confirmation").split("\n")
+
         val embed = EmbedBuilder().apply {
             setColor(Color.RED)
-            setTitle("Report")
-            setDescription("Do you really want to report this mail? If so, are you sure that this is the right mail?")
-            addField("Mail to report: ", "#${position + 1} - ${inbox[position].title}", false)
-            setFooter("After the report, the mail will be checked and we'll send you a feedback message if possible.\nPlease note that: intentional fake reports may result in punishments for you.")
+            setTitle(reportConfirmation[0])
+            setDescription(reportConfirmation[1])
+            addField(reportConfirmation[2], String.format(reportConfirmation[3], position + 1, inbox[position].title), false)
+            setFooter(reportConfirmation[4])
         }
 
-        context.replyEmbeds(embed.build()).setActionRow(reportButton, cancelButton)
-            .setEphemeral(true)
-            .queue()
-
-        SlashCommandListener.cooldownManager(sender)
+        sender.openPrivateChannel().flatMap { it.sendMessageEmbeds(embed.build()).setActionRow(reportButton, cancelButton) }.queue(null) {
+            context.michiReply(genericErr.getText("michi_is_dm_blocked"))
+            return@queue
+        }
+        context.michiReply(genericWarn.getText("check_your_dm"))
     }
 
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
         val sender = context.user
         val position = context.getOption("position")?.asInt?.minus(1) ?: return false
         val guild = context.guild
-        val inbox = inboxMap[sender] ?: inboxMap.computeIfAbsent(sender) {
+        val inbox = inboxMap.computeIfAbsent(sender) {
             val userInbox = arrayListOf<MailMessage>()
             userInbox
         }
 
+        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val genericErr: YamlMap = err["generic"]!!
+        val mailErr: YamlMap = err["mail"]!!
+
         if (inbox.isEmpty()) {
-            context.reply("Your inbox is empty, what are you trying to report? ${Emoji.michiHuh}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(mailErr.getText("custom_empty_inbox"), Emoji.michiHuh))
             return false
         }
 
         if (position > inbox.size - 1 || position < 0) {
-            context.reply("Invalid position")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(genericErr.getText("invalid_position"))
             return false
         }
 
         guild?.let {
             val bot = guild.selfMember
             if (!bot.permissions.containsAll(botPermissions)) {
-                context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}")
-                    .setEphemeral(true)
-                    .queue()
+                context.michiReply(String.format(genericErr.getText("bot_missing_perms"), Emoji.michiSad))
                 return false
             }
         }

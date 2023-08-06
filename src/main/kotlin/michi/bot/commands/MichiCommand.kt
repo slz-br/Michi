@@ -2,23 +2,30 @@ package michi.bot.commands
 
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 /**
- * Abstract class used to create slash commands.
+ * Abstract class used to easily create slash commands.
  * @param name The name of the command.
- * @param description A brief description of the command.
  * @param scope The scope of the command. More about CommandScope can be found at [CommandScope]
  * @author Slz
  */
 @Suppress("Unused")
-abstract class MichiCommand(val name: String, val description: String, val scope: CommandScope) {
+abstract class MichiCommand(val name: String, val scope: CommandScope) {
+
+    /**
+     * Default logger for classes that extend MichiCommand.
+     * @author Slz
+     */
+    protected val logger: Logger = LoggerFactory.getLogger(MichiCommand::class.java)
 
     /**
      * A list of permissions that the user need to execute the command.
      * Default = empty list.
      * @see botPermissions
      */
-    protected open val userPermissions = listOf<Permission>()
+    protected open val userPermissions = emptyList<Permission>()
 
     /**
      * A List of permissions for Michi so she can run the commands.
@@ -51,7 +58,7 @@ abstract class MichiCommand(val name: String, val description: String, val scope
      * Default = empty list.
      * @see MichiArgument
      */
-    open val arguments = listOf<MichiArgument>()
+    open val arguments = emptyList<MichiArgument>()
 
     /**
      * Tries to execute the command.

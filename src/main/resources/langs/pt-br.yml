@@ -1,0 +1,323 @@
+error_messages:
+  generic:
+    user_missing_perms: "Você não tem permissão de usar esse comando, bobinho %s"
+    bot_missing_perms: "Eu não tenho permissão pra usar esse comando %s"
+    user_not_found: "Não consegui achar o usuário no server %s"
+    custom_user_not_found: "Não pude achar o usuário %s"
+    option_err: "Digite uma opção válida %s"
+    user_isnt_owner: "Só o dono do server pode usar esse comando."
+    bot_missing_channel_access: "Eu não tenho permissão de enviar mensagens nesse chat %s"
+    invalid_position: "Opção inválida."
+    invalid_page: "Página inválida."
+    user_in_command_cooldown: "Você tá cooldown, espera um pouquinho %s"
+    user_blacklisted: "Você não pode mais usar meus comandos %s"
+    cant_use_commands_in_nsfw_channel: "Você não pude usar meus comandos em canais NSFW."
+    michi_is_dm_blocked: "Você precisa me desbloquear ou permitir que eu mande mensagens para você."
+    unauthorized_user_interaction: "Ei! isso não é para você %s"
+
+  admin:
+    hierarchy_err: "%s tem um cargo maior que o meu ou o seu."
+    trying_to_ban_michi: "Você não pode me banir, idiota %s"
+    trying_to_mute_michi: "Quem você acha que é? Você não pode me mutar %s"
+    trying_selfban: "Você tá tentando se banir? %s"
+    trying_selfmute: "Por quê você está tentando se mutar? %s"
+    channel_type_err: "Chat inválido. O chat deve ser um canal de texto"
+    clear_invalid_value: "Valor inválido(deve ser entre 1 e 100)"
+    slowmode_time_unchanged: "Esse já é o tempo de slowmode do chat."
+    user_not_banned: "%s não está banido %s"
+    user_not_muted: "%s não está mutado %s"
+    same_language: "A lingua do server já está em Português."
+    ban_reason_null_or_too_large: "Não fornecida ou muito grande"
+    poll_char_limit_exceeded: "Essas opções ultrapassam o limite de caracteres desse comando (%d). Você pode resumir um pouco? %s"
+
+  mail:
+    empty_inbox: "Seu inbox tá vazio %s"
+    custom_empty_inbox: "Seu inbox tá vazio, o que você tá tentando reportar? %s"
+    trying_selfmail: "Você tá tentando enviar uma carta para si mesmo? %s"
+    trying_to_mail_michi: "Desculpa, eu não estou aberta para cartas %s"
+    trying_to_mail_bot: "Você não pode enviar cartas para bots. Você não tem nenhuma outra pessoa para enviar uma carta?"
+    invalid_message_length: "A mensagem deve ter pelo menos 10 dígitos"
+    blank_mail: "Nem o título nem a mensagem podem ser apenas formadas apenas de espaços."
+    in_mail_cooldown: "Você tá cooldown de enviar cartas. Você pode enviar uma carta a cada 4 horas."
+
+  misc:
+    user_already_has_math_problem: "Resolva um problema antes de pedir outro %s"
+    invalid_city_name: "Nome de cidade inválido.\n- Solução de problemas:\n - Certifique-se que o nome da cidade está escrito em Inglês."
+
+  music:
+    empty_queue: "A fila tá vazia %s"
+    now_playing_empty_queue: "A fila tá vazia, então não tem nada tocando agr %s"
+    missing_vc_access: "Eu não tenho permissão de entrar nesse canal de voz."
+    user_not_in_vc: "Você precisa estar em um canal de voz para usar esse comando %s"
+    user_not_in_bot_vc: "Você precisa estar no mesmo canal de voz que eu para usar esse comando."
+    bot_already_in_vc: "Eu já tô em um canal de voz."
+    bot_not_in_vc: "Eu não tô em um canal de voz."
+    custom_bot_not_in_vc: "Eu preciso estar em um canal de voz para você usar esse comando."
+    cant_stream_from_yt: "Eu não posso tocar músicas do youtube %s"
+    already_voted_skip: "Você já votou pra pular essa música %s"
+    unknown_error_finding_track: "Algo deu errado %s\ntente escrever o nome da música de novo, talvez escreva de forma diferente."
+    couldnt_find_track: "Não consegui encontrar a música %s"
+    couldnt_load_track: "Desculpa, Não consegui carregar a música %s"
+
+  music_dj:
+    player_already_paused: "A fila já tá pausada."
+    player_already_playing: "A fila não tá pausada pra você continuar ela."
+    loop_nothing_playing: "Não consigo habilitar o loop já que não tem nada tocando para loopar"
+
+warn_messages:
+  generic:
+    use_help_command: "Use /help para receber ajuda."
+    check_your_dm: "Olhe suas mensagens diretas."
+
+  admin:
+    ban_confirmation: "Você tem certeza que quer banir %s?\nMotivo: %s"
+
+  mail:
+    clear_inbox_confirmation: "Tem certeza que quer esvaziar seu inbox?"
+    contains_link: "> ⚠️ Contém links, tenha cuidado, links não podem ser filtrados. Se o link quebra os Termos de Serviço da Michi, sinta-se livre pra usar `/report-mail` na carta."
+    unknown_content: "> ❓ Não pude checar o conteúdo. Não fui capaz de verificar o conteúdo da carta(Já que o conteúdo pode ser verificado apenas se estiver em inglês e a carta não está em inglês). Se você ver algo inapropriado, sinta-se livre para usar `/report-mail` na carta."
+    possibly_inappropriate: "> ❗ Pode ser inapropriado - É sugerido que espere por uma resposta ou que remova a carta do seu inbox com `/remove-mail`. Leia a seu próprio risco."
+    mail_is_safe: "✅ Carta é segura"
+    read_unsafe_mail_confirmation: "Essa carta não é segura %s\n`Uma carta insegura significa que ela pode conter toxicidade, ataque de identidade ou ser sexualmente explicíta`\nVocê realmente quer ler? %s\nPosição da carta: #%d\nVocê pode ou ignorar e remover a carta ou ler. Se você ler e for realmente impróprio, sinta-se livra pra reportar a carta com `/report-mail`"
+    mail_report_confirmation: "Reportar\nVocê realmente quer reportar essa carta? Se sim, você tem certeza que é a carta certa?\nCarta para reportar:\n#%d - %s\nApós reportar, a carta vai ser verificada e tentaremos enviar uma mensagem de feedback. Por favor note que: reportar cartas falsamente pode causar punições para você."
+
+  music_dj:
+    clear_queue_confirmation: "Tem certeza que quer limpar a fila?\n Se não gostou de uma música você tambem pode só pular, remover ou só ignorar ela."
+
+success_messages:
+  admin:
+    clear_applied_public_message: "%s limpou %d mensagens nesse chat"
+    clear_applied_ephemeral_message: "Chat limpo com sucesso."
+    logs_wont_be_notified_anymore: "Pronto! mensagens de registro não serão mais enviadas %s"
+    logs_channel_setted: "Pronto! mensagens de registro vão ser enviadas em %s"
+    mute_applied: "%s silenciou %s por %s"
+    slowmode_applied_ephemeral_message: "SlowMode aplicado com sucesso em %s"
+    slowmode_applied_public_message: "%s colocou slowmode nesse canal."
+    slowmode_removed: "%s removeu o slowmode desse canal %s"
+    ban_applied: "BANIMENTO!\n%s foi BANIDO(sons de Ednaldo Pereira)\nUsuário banido por %s\nMotivo:"
+    unban_applied: "DESBANIMENTO! %s\n%s foi DESBANIDO"
+    unmute_applied: "Silenciamento removido de %s com sucesso %s"
+    language_changed: "Linguagem alterada para Português com sucesso!"
+
+  mail:
+    inbox_cleared: "Seu inbox de cartas foi limpo com sucesso %s"
+    mail_sent: "Carta enviada %s"
+    mail_removed: "A carta na posição %d do seu inbox foi removida."
+    mail_reported: "Obrigada por reportar %s\n Vou tentar resolver isso o mais rápido possível\n`Note: você pode receber uma mensagem de atualização sobre a sua reportação na sua DM(Mensagem Direta)`"
+    mail_report_cancelled: "Reportagem cancelada."
+    clear_inbox_cancelled: "Não se preocupe, suas cartas estão sã e salvas %s"
+    read_cancel: "Leitura cancelada."
+
+  misc:
+    raccoon_media: "GIF de guaxinim\nFoto de guaxinim"
+    weather_temperature_info: "Temperatura\nCelsius: `%s Cº`\nFahrenheit: `%s Fº`"
+    weather_feels_like_info: "Sensação térmica\nTemperatura\nCelsius: `%s Cº`\nFahrenheits: `%s Fº`"
+    weather_wind_info: "Vento\nQuilômetros: `%s KM/h`\nMilhas: `%s M/h`"
+    weather_time_info: "Ultima vez atualizado: %s | Tempo local: %s"
+
+  music:
+    join: "Entrei em %s\nColoca umas músicas pra tocar %s"
+    added_to_the_queue: "Adicionado à fila!"
+    playlist_added_to_the_queue: "Playlist aicionada à fila !\n%d músicas adicionadas."
+    queue_current_playing_track: "Música tocando atualmente:"
+    skip_poll: "Votação para pular %s\n%d de %d preciso votaram para pular."
+    skip: "%s pulada %s"
+
+  music_dj:
+    track_paused_ephemeral_message: "Música pausada com sucesso %s"
+    track_paused_public_message: "%s pausou a música atual."
+    force_play: "%s forçadamente colocou %s`%s` para tocar."
+    force_resume_ephemeral_message: "Fila despausada com sucesso %s"
+    force_resume_public_message: "%s despausou a fila."
+    force_skip_ephemeral_message: "Música forçadamente pulada com sucesso %s"
+    force_skip_public_message: "Música atual forçadamente pulada por %s"
+    queue_jump: "%s pulou para a música na posição %d da fila.\n#%d %s"
+    leave_ephemeral_message: "Tchau! %s"
+    leave_public_message: "%s me mandou sair do canal de voz."
+    loop_enabled_ephemeral_message: "Loop habilitado %s"
+    loop_enabled_public_message: "%s colocou a música atual em loop"
+    loop_disabled_ephemeral_message: "Loop desabilitado %s"
+    loop_disabled_public_message: "%s desabilitou o loop"
+    clear_queue_public_message: "%s limpou a fila."
+    clear_queue_ephemeral_message: "Fila limpa com sucesso %s"
+    clear_queue_cancelled: "Não se preocupe, as musicas estão sã e salvas %s"
+    queue_remove_ephemeral_message: "%s`[%s]` removida com sucesso na posição %d da fila."
+    queue_remove_public_message: "%s removeu %s`[%s]` da fila."
+    dj_setted: "%s adicionada à lista de DJs"
+    dj_removed: "%s removida da lista de DJs"
+    queue_shuffle_public_message: "%s bagunçou(randomizou a ordem) as músicas da fila."
+    queue_shuffle_ephemeral_message: "Fila bagunçada com sucesso %s"
+
+  util:
+    user_info_message: "Informações de %s\nCriado em:\nNome e ID:\nEntrou no server:\nÉ o dono?\nÉ um bot?\nSim\nNão"
+    help_message: "Eu estou aqui para ajudar, %s! %s\nPrefixo dos Comandos: **/**\nTodos meus comandos são de barra, isto significa que se você digitar \"/\" você pode ver todos meus comandos, a descrição do que eles fazem e o que eles precisam pra funcionar.\nTermos de Serviço:\nVocê precisa seguir algumas regras, então poderá usar meus comandos. No momento não há nenhuma, mas quando isto mudar eu avisarei."
+
+logs:
+  update_banner: "Banner do servidor alterado!\nbanner:"
+  update_description: "descrição do servidor alterada!\ndescrição antiga: %s\ndescrição nova: %s"
+  update_boost_tier: "Nível de boost do servidor alterado!\nnível: %s"
+  update_boost_count: "Quantidade de boosts do servidor alterada!\nquantidade: %d"
+  update_guild_name: "Nome do servidor alterado!\nnome antigo: %s\nnovo nome: %s"
+  user_banned: "Usuário Banido!\nusuário: %s"
+  user_unbanned: "Usuário desbanido!\nusuário: %s"
+  user_timeouted: "Usuário silenciado!\nusuário: %s\nsilenciado até: %s"
+  user_kicked: "Usuário expulso!\nusuário: %s"
+  role_created: "Cargo criado!\nnome: %s\nposição: %d"
+  role_deleted: "Cargo deletado!\nnome: %s"
+  joined_voice_channel: "Membro entrou em um canal de voz!\n%s entrou em %s"
+  left_voice_channel: "Membro saiu de um canal de voz!\n%s saiu de %s"
+  channel_created: "Canal criado!\ncanal: %s\ntipo: %s"
+  channel_deleted: "Canal deletado!\nnome do canal: %s\ntipo: %s"
+  user_updated_avatar: "Usuário mudou avatar!\nnovo avatar: %s\nantigo avatar: %s"
+  update_owner: "Dono do servidor alterado!\nnovo dono: %s\nantigo dono: %s"
+
+buttons:
+
+other:
+  generic:
+    page_count: "Página %d de %d"
+
+  time_units:
+    minute: "minuto"
+    hour: "hora"
+    day: "dia"
+    week: "semana"
+
+  music:
+    queue: "Fila"
+    uploaded_by: "Enviado por: `%s`"
+    requested_by: "Pedido por:"
+    position: "Posição: %d"
+    now_playing: "Tocando agora."
+    coming_next: "Vindo a seguir: %s"
+    nothing_coming_next: "Não tem mais música, a fila acabou %s"
+    scheduler_now_playing: "Tocando agora:"
+    custom_empty_queue: "A fila está vazia\nPor quê você não muda isso colocando umas músicas para tocar? %s"
+
+command_info:
+  description:
+    ban: "Bane um usuário"
+    clear: "Deleta uma quantidade de mensagens desse canal"
+    logs: "Habilita/disabilita o registro de eventos no servidor"
+    mute: "Silencia um usuário por um período de tempo"
+    poll: "Cria uma enquete para usuários votarem"
+    language: "Muda a linguagem das respostas do bot no servidor"
+    slowmode: "Define o slowmode do canal"
+    unban: "Desbane um usuário"
+    unmute: "Desilencia um usuário se ele estiver silenciado"
+    unwarn: "Remove um aviso de um usuário"
+    warn: "Dá um aviso à um usuário"
+    clear-inbox: "Limpa todas as cartas do seu inbox"
+    inbox: "Procura por cartas anônimas que você pode ter recebido"
+    mail: "Envia cartas anônimas"
+    read: "Lê uma carta do seu inbox"
+    remove-mail: "Remove uma carta do seu inbox"
+    report-mail: "Reporta uma carta"
+    math: "Te dá um problema de matemática básica"
+    raccoon: "Te envia um gif ou foto aleatória de um guaxinim"
+    weather: "Te dá informações do clima de uma cidade"
+    fpause: "Força que a atual música seja pausada"
+    fplay: "Força que uma música seja tocada imediatamente"
+    fresume: "Força que a música seja despausada caso ela estivesse pausada"
+    fskip: "Força que a atual música seja pulada"
+    queue-jump: "Pula para uma música em uma posição específica na fila"
+    leave: "Disconecta a Michi do canal de voz"
+    loop: "Toca a música repetidamente até que desligado"
+    clear-queue: "Limpa toda a fila de músicas"
+    queue-remove: "Remove uma música"
+    set-dj: "Dá permissões de DJ para alguém"
+    queue-shuffle: "Bagunça a fila(randomiza a ordem da fila)"
+    join: "Michi entra no canal de voz que você está"
+    np: "Dá informações sobre a música que está tocando"
+    play: "Toca a música/playlist que você pesquisou(ou coloca na fila)"
+    queue: "Mostra a fila de músicas que irão tocar"
+    skip: "Cria uma votação para pular a música atual(pula direto caso possível)"
+    help: "Envia uma mensagem contendo informações úteis sobre a Michi"
+    ping: "Checa a latência da resposta da Michi"
+    server-icon: "Dá a imagem do icone do servidor"
+    server-info: "Dá informações sobre o servidor"
+    user-avatar: "Dá a imagem de perfil de um usuário"
+    user-info: "Dá informações públicas de um usuário"
+
+  arguments_description:
+    ban:
+      user: "O usuário para banir"
+      reason: "O motivo do banimento"
+
+    clear:
+      amount: "A quantidade de mensagens para deletar"
+
+    logs:
+      channel: "O canal para enviar os registros"
+
+    mute:
+      user: "O usuário para silenciar"
+      time: "O tempo para mutar este usuário"
+
+    poll:
+      option-1: "A 1ª opção da enquete para os membros votarem"
+      option-2: "A 2ª opção da enquete para os memberos votarem"
+      time: "Por quanto tempo a enquete irá acontecer"
+
+    language:
+      language-name: "O nome da linguagem para ser definida"
+
+    slowmode:
+      time: "O tempo de slowmode"
+
+    unban:
+      user: "O usuário para desbanir"
+
+    unmute:
+      user: "O usuário para desilenciar"
+
+    unwarn:
+      user: "O usuário para remover o aviso"
+
+    warn:
+      user: "O usuário para aplicar um aviso"
+      reason: "O motivo do aviso"
+
+    inbox:
+      page: "A página do seu inbox que deseja ver"
+
+    mail:
+      title: "Sobre o que é a carta?"
+      message: "A mensagem que quer enviar com esta carta"
+      receiver: "Para quem é esta carta?"
+
+    read:
+      position: "A posição no seu inbox da carta que deseja ler"
+
+    remove-mail:
+      position: "A posição no seu inbox da carta que deseja remover"
+
+    report-mail:
+      position: "A posição no seu inbox da carta que deseja reportar"
+
+    weather:
+      city: "O nome da cidade que deseja ver o clima"
+
+    fplay:
+      search: "O nome/url da música/playlist para tocar"
+
+    queue-jump:
+      position: "A posição na fila para pular"
+
+    queue-remove:
+      position: "A posição na fila da música que deseja remover"
+
+    set-dj:
+      user: "O usuário para prover permissões de DJ"
+
+    play:
+      search: "O nome/url da música/playlist para tocar"
+
+    queue:
+      page: "A página da fila que deseja ver"
+
+    user-avatar:
+      user: "O usuário que deseja ver a foto de perfil"
+
+    user-info:
+      user: "O usuário para ver as informações"

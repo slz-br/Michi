@@ -1,11 +1,12 @@
 package michi.bot.database.dao
 
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import michi.bot.config
 import michi.bot.database.DataBaseFactory
 import michi.bot.database.rows.GuildRow
 import michi.bot.database.tables.GuildTable
+import michi.bot.util.Language
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
@@ -29,7 +30,6 @@ object GuildsDAO {
                 guildID = guild.idLong
                 name = guild.name
                 ownerID = guild.ownerIdLong
-                iconURL = guild.iconUrl
                 logsChannelID = null
                 language = when (guild.locale) {
                     DiscordLocale.PORTUGUESE_BRAZILIAN -> "pt-br"
@@ -56,7 +56,7 @@ object GuildsDAO {
 
     }
 
-    suspend fun get(guild: Guild?) = withContext(Dispatchers.IO) {
+    suspend fun get(guild: Guild?) = withContext(IO) {
         transaction {
             guild ?: return@transaction null
             GuildRow.find { GuildTable.guildID eq guild.idLong }.singleOrNull()
@@ -65,17 +65,19 @@ object GuildsDAO {
 
     suspend fun getLogsChannel(guild: Guild) = get(guild)?.logsChannelID
 
-    suspend fun setLogChannel(guild: Guild, channel: GuildMessageChannel?) = withContext(Dispatchers.IO) {
+    suspend fun setLogChannel(guild: Guild, channel: GuildMessageChannel?) = withContext(IO) {
         val guildRow = get(guild)
         transaction {
             guildRow?.logsChannelID = channel?.idLong
+            commit()
         }
     }
 
-    suspend fun setMusicQueue(guild: Guild, queue: String?) {
+    suspend fun setMusicQueue(guild: Guild, queue: String) {
         val guildRow = get(guild)
         transaction {
             guildRow?.musicQueue = queue
+            commit()
         }
     }
 
@@ -85,10 +87,14 @@ object GuildsDAO {
         val guildRow = get(guild)
         transaction {
             guildRow?.ownerID = newOwner.idLong
+            commit()
         }
     }
 
-    suspend fun getLanguage(guild: Guild): String? = get(guild)?.language
+    suspend fun getLanguage(guild: Guild): Language {
+        val lang = get(guild)?.language?.replace('-','_')?.uppercase() ?: "EN_US"
+        return Language.valueOf(lang)
+    }
 
     suspend fun setLanguage(guild: Guild, lang: Language) {
         val guildRow = get(guild)

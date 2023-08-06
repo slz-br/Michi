@@ -1,63 +1,65 @@
 package michi.bot.commands.music.dj
 
+import com.charleskorn.kaml.YamlMap
+import com.charleskorn.kaml.yamlMap
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
-import michi.bot.commands.CommandScope
+import michi.bot.commands.CommandScope.GUILD_SCOPE
 import michi.bot.commands.MichiArgument
 import michi.bot.commands.MichiCommand
 import michi.bot.lavaplayer.PlayerManager
 import michi.bot.util.Emoji
+import michi.bot.util.ReplyUtils.getText
+import michi.bot.util.ReplyUtils.getYML
+import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.net.URL
 import java.util.concurrent.TimeUnit
 
 @Suppress("Unused")
-object ForcePlay: MichiCommand("fplay", "Forces a track to be played.", CommandScope.GUILD_SCOPE) {
+object ForcePlay: MichiCommand("fplay", GUILD_SCOPE) {
 
-    override val userPermissions: List<Permission>
-        get() = listOf(
-            Permission.ADMINISTRATOR
-        )
+    override val userPermissions = listOf(Permission.ADMINISTRATOR)
 
     override val botPermissions: List<Permission>
         get() = listOf(
+            Permission.VOICE_CONNECT,
             Permission.MESSAGE_SEND,
             Permission.MESSAGE_EXT_EMOJI,
             Permission.MESSAGE_SEND_IN_THREADS
         )
 
     override val usage: String
-        get() = "/fplay <search(the name or link of a music/playlist)>"
+        get() = "/$name <search(the name or link of a music/playlist)>"
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("search", "The name of the track to play", OptionType.STRING)
+            MichiArgument("search", OptionType.STRING)
         )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
+        if (!canHandle(context)) return
         val sender = context.user
         val guild = context.guild!!
-        val musicManager = PlayerManager.getMusicManager(guild)
+        val musicManager = PlayerManager[guild]
         val scheduler = musicManager.scheduler
         val queue = scheduler.trackQueue
-        val channel = context.channel
+        val channel = guild.selfMember.voiceState!!.channel!!.asGuildMessageChannel()
         var trackURL = context.getOption("search")!!.asString
 
-        if (!canHandle(context)) return
+        if (!isURL(trackURL)) trackURL = "scsearch: $trackURL"
 
-        if (!isURL(trackURL)) trackURL = "scsearch:$trackURL"
+        val track = queue.last()
 
         PlayerManager.loadAndPlay(context, trackURL)
+
         scheduler.playTrackAt(queue.size - 1)
 
-        context.reply("Ok. Here is the track ${Emoji.michiThumbsUp}")
-            .setEphemeral(true)
-            .queue()
+        val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
+        val musicDjSuccess: YamlMap = success["music_dj"]!!
 
-        val track = queue.elementAt(queue.size-1)
-        channel.sendMessage("${sender.asMention} force played ${track.info.title}`[${formatTrackLength(track)}]`")
+        channel.sendMessage(String.format(musicDjSuccess.getText("force_play"), sender.asMention, track.info.title, formatTrackLength(track)))
             .queue()
     }
 
@@ -72,45 +74,47 @@ object ForcePlay: MichiCommand("fplay", "Forces a track to be played.", CommandS
     }
 
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
-        val guild = context.guild ?: return false
-        val sender = context.member ?: return false
+        val guild = context.guild!!
+        val sender = context.member!!
         val bot = guild.selfMember
-        val channel = context.channel
         val senderVoiceState = sender.voiceState!!
         val botVoiceState = bot.voiceState!!
+        val guildDjMap = GuildDJMap.computeIfAbsent(guild) { mutableSetOf() }
 
-        if (!sender.permissions.any { permission -> userPermissions.contains(permission) }) {
-            context.reply("You don't have permission to use this command, silly you ${Emoji.michiBlep}")
-                .setEphemeral(true)
-                .queue()
+        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val genericErr: YamlMap = err["generic"]!!
+        val musicErr: YamlMap = err["music"]!!
+
+        if (!sender.permissions.any(userPermissions::contains) && sender !in guildDjMap) {
+            context.michiReply(String.format(genericErr.getText("user_missing_perms"), Emoji.michiBlep))
+            return false
+        }
+
+        if (!botVoiceState.inAudioChannel()) {
+            context.michiReply(musicErr.getText("bot_not_in_vc"))
             return false
         }
 
         if (!bot.permissions.containsAll(botPermissions)) {
-            context.reply("I don't have the permissions to execute this command ${Emoji.michiSad}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(genericErr.getText("bot_missing_perms"), Emoji.michiSad))
             return false
         }
 
         if (!senderVoiceState.inAudioChannel()) {
-            context.reply("You need to be in a voice channel to use this command ${Emoji.michiBlep}")
-                .setEphemeral(true)
-                .queue()
+            context.michiReply(String.format(musicErr.getText("user_not_in_vc"), Emoji.michiBlep))
             return false
         }
 
-        if (senderVoiceState.channel != botVoiceState.channel) {
-            context.reply("You need to be in the same voice channel as me to use this command")
-                .setEphemeral(true)
-                .queue()
-            return false
+        if (!botVoiceState.inAudioChannel() && bot.hasAccess(senderVoiceState.channel!!)) {
+            val audioManager = guild.audioManager
+            val channelToJoin = senderVoiceState.channel
+
+            audioManager.openAudioConnection(channelToJoin)
+            audioManager.isSelfDeafened = true
         }
 
-        if (channel is TextChannel && !bot.hasPermission(channel)) {
-            context.reply("I don't have permission to message in this channel")
-                .setEphemeral(true)
-                .queue()
+        if (!botVoiceState.inAudioChannel()) {
+            context.michiReply(String.format(musicErr.getText("user_not_in_vc"), Emoji.michiBlep))
             return false
         }
 
