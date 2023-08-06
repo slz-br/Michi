@@ -70,10 +70,10 @@ class Michi {
 
     companion object {
         val commandList = mutableListOf<MichiCommand>()
+        val logger = LoggerFactory.getLogger(Michi::class.java)
     }
 
     init {
-        val logger = LoggerFactory.getLogger(Michi::class.java)
 
         // ideas from:
         // https://github.com/MrGaabriel/Ayla/blob/master/src/main/kotlin/com/github/mrgaabriel/ayla/AylaLauncher.kt <3
@@ -148,7 +148,7 @@ class Michi {
                 commandList.add(cmdConstructor.newInstance())
             }
         }
-        LoggerFactory.getLogger(Michi::class.java).info("Commands loaded | Amount: ${commandList.size}")
+        logger.info("Commands loaded | Amount: ${commandList.size}")
     }
 
     private fun searchCommandDirectories(initialDir: File): Set<File> {
