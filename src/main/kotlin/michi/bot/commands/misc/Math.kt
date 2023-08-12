@@ -185,7 +185,7 @@ class MathProblemManager(problem: MathProblem, event: SlashCommandInteractionEve
         delay(35000L)
         if (!problemInstance.isAnswered) {
             context.michiReply("${problem.user.name} couldn't solve the problem in time.")
-            if (instances.contains(this)) instances.remove(this)
+            if (this in instances) instances.remove(this)
         }
 
     }
@@ -213,7 +213,7 @@ class MathProblemManager(problem: MathProblem, event: SlashCommandInteractionEve
             this.problemInstance.isAnswered = true
         }
 
-        if (instances.contains(mathLogicInstance)) instances -= mathLogicInstance
+        if (mathLogicInstance in instances) instances -= mathLogicInstance
     }
 
 }

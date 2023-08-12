@@ -86,7 +86,7 @@ object Skip: MichiCommand("skip", GUILD_SCOPE) {
             return false
         }
 
-        if (guildSkipPoll[guild]!!.contains(sender.user)) {
+        if (sender.user in guildSkipPoll[guild]!!) {
             context.michiReply(String.format(musicErr.getText("already_voted_skip"), Emoji.smolMichiAngry))
             return false
         }

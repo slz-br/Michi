@@ -75,7 +75,7 @@ object Queue: MichiCommand("queue", GUILD_SCOPE) {
             )
         }
 
-        for (i in 0 until TRACKS_PER_PAGE) {
+        for (i in 0 ..< TRACKS_PER_PAGE) {
             if (i > queue.size - 1) break
 
             val track = queue.elementAt(page * TRACKS_PER_PAGE + i)

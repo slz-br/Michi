@@ -162,7 +162,7 @@ class Michi {
         while (deque.isNotEmpty()) {
             val dir = deque.pop()
             dir.listFiles()!!.forEach {
-                if (!it.isDirectory || !it.exists() || visited.contains(it)) return@forEach
+                if (!it.isDirectory || !it.exists() || it in visited) return@forEach
                 commandDirectoriesList.add(it)
                 visited.add(it)
                 deque.add(it)
