@@ -20,7 +20,7 @@ error_messages:
     trying_to_ban_michi: "Você não pode me banir, idiota %s"
     trying_to_mute_michi: "Quem você acha que é? Você não pode me mutar %s"
     trying_selfban: "Você tá tentando se banir? %s"
-    trying_selfmute: "Por quê você está tentando se mutar? %s"
+    trying_selfmute: "Por quê você tá tentando se mutar? %s"
     channel_type_err: "Chat inválido. O chat deve ser um canal de texto"
     clear_invalid_value: "Valor inválido(deve ser entre 1 e 100)"
     slowmode_time_unchanged: "Esse já é o tempo de slowmode do chat."
@@ -43,6 +43,7 @@ error_messages:
   misc:
     user_already_has_math_problem: "Resolva um problema antes de pedir outro %s"
     invalid_city_name: "Nome de cidade inválido.\n- Solução de problemas:\n - Certifique-se que o nome da cidade está escrito em Inglês."
+    user_already_in_type_racer_session: "Você já tem palavras para escrever."
 
   music:
     empty_queue: "A fila tá vazia %s"
@@ -183,6 +184,9 @@ other:
     day: "dia"
     week: "semana"
 
+  misc:
+    type_racer_words: "um algum ir estar ser ver livro zebra mola dado chave lua teria voar guardar observar suceder falhar sucesso fábrica incêndio minério batalha corrupção avião limão jaguar decidir chamar calçar trapacear jogar tropeçar humilhar úmido grotesco horrendo horroroso lidar retrair clamar salvar sádico lunático fantástico voltar inverno teclar consolidar olá bom guardião luta fuga multa triste assiste visite política bagunça insiste filantropo locutor coisa casa tempo ano senhor vital último quando cem até porque eu olho carta razão só ouvir único principal município pé cabeça língua exemplo licença útil escopo preço empatia michi texto encontrar procurar vendar tornará tomará transformará delícia moreno bífe ovo banana"
+
   music:
     queue: "Fila"
     uploaded_by: "Enviado por: `%s`"
@@ -192,7 +196,7 @@ other:
     coming_next: "Vindo a seguir: %s"
     nothing_coming_next: "Não tem mais música, a fila acabou %s"
     scheduler_now_playing: "Tocando agora:"
-    custom_empty_queue: "A fila está vazia\nPor quê você não muda isso colocando umas músicas para tocar? %s"
+    custom_empty_queue: "A fila tá vazia\nPor quê você não muda isso colocando umas músicas para tocar? %s"
 
 command_info:
   description:
@@ -215,6 +219,7 @@ command_info:
     report-mail: "Reporta uma carta"
     math: "Te dá um problema de matemática básica"
     raccoon: "Te envia um gif ou foto aleatória de um guaxinim"
+    type-racer: "Te envia uma imagem que contem palavras - digite-as o mais rápido que puder!"
     weather: "Te dá informações do clima de uma cidade"
     fpause: "Força que a atual música seja pausada"
     fplay: "Força que uma música seja tocada imediatamente"

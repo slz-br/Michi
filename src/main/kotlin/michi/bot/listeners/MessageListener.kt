@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import michi.bot.commands.misc.MathProblemManager
+import michi.bot.commands.misc.TypeRacer
 import michi.bot.config
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText
@@ -17,6 +18,7 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.lang.NumberFormatException
+import java.util.concurrent.TimeUnit
 
 /**
  * Class that holds the event handler [onMessageReceived].
@@ -73,8 +75,25 @@ object MessageListener: ListenerAdapter() {
                     .queue()
             }
 
-            mutex.withLock { cooldownManager(event.author) }
+            if (msg.startsWith("tr ")) {
+                val userSession = TypeRacer.sessions[sender] ?: return@launch
+                val timeInMiliss = (System.currentTimeMillis() - userSession.startTime)
+                val wordsToType = userSession.text.split(" ")
 
+                var counter = 0.toFloat()
+                msg.removePrefix("tr ").split(" ").forEachIndexed { index, text ->
+                   if (text.equals(wordsToType[index], ignoreCase = true)) counter++
+                }
+
+                userSession.isAnswered = true
+
+                val timeFormated = "${(timeInMiliss / TimeUnit.SECONDS.toMillis(1))}s ${timeInMiliss % TimeUnit.SECONDS.toMillis(1)}ms"
+                val averageWordsPerMinute = String.format("%.3f", ((counter / timeInMiliss) * 60000))
+
+                event.message.reply("CW: $counter | $timeFormated | WPM: $averageWordsPerMinute")
+                    .queue { it.delete().queueAfter(15, TimeUnit.SECONDS) }
+            }
+            mutex.withLock { cooldownManager(event.author) }
         }
 
     }

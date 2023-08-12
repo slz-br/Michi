@@ -43,6 +43,7 @@ error_messages:
   misc:
      user_already_has_math_problem: "Solve one problem before calling another %s"
      invalid_city_name: "Invalid city name.\n- TroubleShoot:\n - Certify that the city name is in English."
+     user_already_in_type_racer_session: "You already have words to type."
 
   music:
      empty_queue: "The queue is empty %s"
@@ -190,6 +191,9 @@ other:
     day: "day"
     week: "week"
 
+  misc:
+    type_racer_words: "the is water food like into than from or one had we were when down because those think remember against book morning night teach self they them mind tree three speed science father call answer land laugh day old complete best hundred wonder plane quick school children right left differ bring brought paper wheel during sun family perhaps develop michi decide correct place between island nothing above below greater exceed week success failure gone through invalid valid moon gave an begin fool fall fell feel felt dealt held melt saw ball zipper zebra lead joint bridge hold question cat yet"
+
   music:
     queue: "Queue"
     uploaded_by: "Uploaded by: `%s`"
@@ -222,6 +226,7 @@ command_info:
     report-mail: "Reports a mail from your inbox"
     math: "Gives you a basic math problem"
     raccoon: "Sends you a random raccoon pic or gif"
+    type-racer: "Sends you an image containing words - type them as fast as you can!"
     weather: "Gives you info about the weather of a city"
     fpause: "Forces the current track to be paused"
     fplay: "Forces a track to be played immediately"
