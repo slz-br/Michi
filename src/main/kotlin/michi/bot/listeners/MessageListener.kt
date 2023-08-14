@@ -2,15 +2,13 @@ package michi.bot.listeners
 
 import com.charleskorn.kaml.YamlMap
 import com.charleskorn.kaml.yamlMap
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import michi.bot.commands.misc.MathProblemManager
 import michi.bot.commands.misc.TypeRacer
 import michi.bot.config
+import michi.bot.database.dao.TypeRacerDAO
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText
 import michi.bot.util.ReplyUtils.getYML
@@ -91,7 +89,15 @@ object MessageListener: ListenerAdapter() {
                 val averageWordsPerMinute = String.format("%.3f", ((counter / timeInMiliss) * 60000))
 
                 event.message.reply("CW: $counter | $timeFormated | WPM: $averageWordsPerMinute")
-                    .queue { it.delete().queueAfter(15, TimeUnit.SECONDS) }
+                    .queue()
+
+                val wordsPerMinutesAsFloat = (counter / timeInMiliss) * 60000
+
+                TypeRacerDAO.putLatest(sender, wordsPerMinutesAsFloat)
+
+                if (wordsPerMinutesAsFloat > TypeRacerDAO.getScoresMap(sender)["pb"]!!) {
+                    TypeRacerDAO.putPersonalBest(sender, wordsPerMinutesAsFloat)
+                }
             }
             mutex.withLock { cooldownManager(event.author) }
         }

@@ -20,7 +20,9 @@ object DataBaseFactory {
 
             SchemaUtils.createMissingTablesAndColumns(
                 GuildTable,
-                BlacklistTable
+                BlacklistTable,
+                UserTable,
+                TypeRacerTable
             )
         }
 
