@@ -15,4 +15,4 @@ When I release Michi, I will paste the invite link here.
 
 ## 📘 TOS
 If you want to use Michi's commands, you will need to follow a couple of rules. <br>
-There isn't any yet, since the bot isn't public yet, but if I create the TOS, I will link it here.
+There aren't any yet, since the bot isn't public yet, but if I create the TOS, I will link it here.
