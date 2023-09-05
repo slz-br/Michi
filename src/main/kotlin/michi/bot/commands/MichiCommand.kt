@@ -21,6 +21,12 @@ abstract class MichiCommand(val name: String, val scope: CommandScope) {
     protected val logger: Logger = LoggerFactory.getLogger(MichiCommand::class.java)
 
     /**
+     * Map containing the description of the command for multiple different locales.
+     * @author Slz
+     */
+    abstract val descriptionLocalization: Map<DiscordLocale, String>
+
+    /**
      * A list of permissions that the user need to execute the command.
      * Default = empty list.
      * @see botPermissions
