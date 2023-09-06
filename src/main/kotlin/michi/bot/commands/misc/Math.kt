@@ -16,11 +16,19 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.awt.Color
 import java.util.*
 
 @Suppress("Unused")
 object Math: MichiCommand("math", GLOBAL_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Gives you a basic math problem to solve",
+            DiscordLocale.ENGLISH_UK to "Gives you a basic math problem to solve",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Te dá um problema de matemática básica para resolver"
+        )
 
     /**
      * Creates a math problem for the user if possible.

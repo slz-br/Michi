@@ -11,12 +11,21 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import java.awt.Color
 
 @Suppress("Unused")
 object ReportMail: MichiCommand("report-mail", GLOBAL_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Reports a mail from your inbox",
+            DiscordLocale.ENGLISH_UK to "Reports a mail from your inbox",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Reporta uma carta do seu inbox"
+        )
+
 
     override val arguments = listOf(MichiArgument("position", OptionType.INTEGER))
 

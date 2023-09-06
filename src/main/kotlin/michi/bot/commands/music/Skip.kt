@@ -14,11 +14,19 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.awt.Color
 
 val guildSkipPoll = HashMap<Guild, MutableSet<User>>()
 
 object Skip: MichiCommand("skip", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Starts a poll to skip the current music(skips right away if possible)",
+            DiscordLocale.ENGLISH_UK to "Starts a poll to skip the current music(skips right away if possible)",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Cria uma votação para pular a música atual(pula direto caso possível)"
+        )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.user

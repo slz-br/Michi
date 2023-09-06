@@ -11,10 +11,18 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 
 @Suppress("Unused")
 object QueueClear: MichiCommand("clear-queue", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Clears the entire music queue",
+            DiscordLocale.ENGLISH_UK to "Clears the entire music queue",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Limpa toda a fila de músicas"
+        )
 
     override val userPermissions = listOf(Permission.ADMINISTRATOR)
 

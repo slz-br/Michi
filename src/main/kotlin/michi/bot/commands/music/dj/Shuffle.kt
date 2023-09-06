@@ -11,9 +11,17 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 
 @Suppress("Unused")
 object Shuffle: MichiCommand("queue-shuffle", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Shuffles the queue",
+            DiscordLocale.ENGLISH_UK to "Shuffles the queue",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Bagunça a fila(randomiza a ordem da fila)"
+        )
 
     override val userPermissions = listOf(Permission.ADMINISTRATOR)
 

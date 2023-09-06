@@ -12,6 +12,7 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.time.Duration
 

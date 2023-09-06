@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 /**
@@ -23,6 +24,13 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
  */
 @Suppress("Unused")
 object SlowMode: MichiCommand("slowmode", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Sets the channel's slowmode",
+            DiscordLocale.ENGLISH_UK to "Sets the channel's slowmode",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Define o slowmode do canal"
+        )
 
     override val userPermissions: List<Permission>
         get() = listOf(

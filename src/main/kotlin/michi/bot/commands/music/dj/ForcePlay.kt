@@ -13,12 +13,20 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.net.URL
 import java.util.concurrent.TimeUnit
 
 @Suppress("Unused")
 object ForcePlay: MichiCommand("fplay", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Forces a track to be played immediately",
+            DiscordLocale.ENGLISH_UK to "Forces a track to be played immediately",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Força que uma música seja tocada imediatamente"
+        )
 
     override val userPermissions = listOf(Permission.ADMINISTRATOR)
 

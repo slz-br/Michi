@@ -10,9 +10,17 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 
 @Suppress("Unused")
 object Leave: MichiCommand("leave", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Disconnects Michi from the voice channel",
+            DiscordLocale.ENGLISH_UK to "Disconnects Michi from the voice channel",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Disconecta a Michi do canal de voz"
+        )
 
     override val userPermissions = listOf(Permission.ADMINISTRATOR)
 

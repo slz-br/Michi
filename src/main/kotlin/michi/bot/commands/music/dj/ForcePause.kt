@@ -12,10 +12,18 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.util.concurrent.TimeUnit
 
 @Suppress("Unused")
 object ForcePause: MichiCommand("fpause", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Forces the current track to be paused",
+            DiscordLocale.ENGLISH_UK to "Forces the current track to be paused",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Força que a atual música seja pausada"
+        )
 
     override val userPermissions = listOf(Permission.ADMINISTRATOR)
 

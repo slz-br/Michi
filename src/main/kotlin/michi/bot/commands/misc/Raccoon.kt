@@ -10,6 +10,7 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.awt.Color
 
 private val raccoonImages = listOf(
@@ -45,6 +46,13 @@ private val raccoonImages = listOf(
  */
 @Suppress("Unused")
 object Raccoon: MichiCommand("raccoon", GLOBAL_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Sends you a random raccoon pic or gif",
+            DiscordLocale.ENGLISH_UK to "Sends you a random raccoon pic or gif",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Te envia um gif ou foto aleatória de um guaxinim"
+        )
 
     /**
      * Sends a random picture or gif of a raccoon.

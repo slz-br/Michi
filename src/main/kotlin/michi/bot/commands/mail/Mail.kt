@@ -15,6 +15,7 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 val inboxMap = HashMap<User, MutableList<MailMessage>>()
@@ -27,6 +28,12 @@ val inboxMap = HashMap<User, MutableList<MailMessage>>()
 @Suppress("Unused")
 object Mail: MichiCommand("mail", GLOBAL_SCOPE) {
     private val inMailCooldown = mutableSetOf<User>()
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Sends an anonymous message to someone",
+            DiscordLocale.ENGLISH_UK to "Sends an anonymous message to someone",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Envia uma carta anônima para alguém"
+        )
 
     override val usage: String
         get() = "/$name <title> <message> <receiver(the person to receive the mail)>"

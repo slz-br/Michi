@@ -11,9 +11,17 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 
 @Suppress("Unused")
 object ForceResume: MichiCommand("fresume", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Forces the current track to be resumed if it was paused",
+            DiscordLocale.ENGLISH_UK to "Forces the current track to be resumed if it was paused",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Força que a música seja despausada caso ela estivesse pausada"
+        )
 
     override val userPermissions = listOf(Permission.ADMINISTRATOR)
 

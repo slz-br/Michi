@@ -12,6 +12,7 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 /**
@@ -20,6 +21,13 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
  */
 @Suppress("Unused")
 object Logs: MichiCommand("logs", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Enables/disables logs in the server",
+            DiscordLocale.ENGLISH_UK to "Enables/disables logs in the server",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Habilita/disabilita o registro de eventos no servidor"
+        )
 
     override val usage: String
         get() = "/$name <GuildTextChannel(optional - ignore this option if you want to disable the logs)>"

@@ -13,11 +13,19 @@ import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.awt.Color
 import java.util.concurrent.TimeUnit
 
 @Suppress("Unused")
 object NowPlaying: MichiCommand("np", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Gives you info about the track that Michi is currently playing",
+            DiscordLocale.ENGLISH_UK to "Gives you info about the track that Michi is currently playing",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Dá informações sobre a música que está tocando"
+        )
 
     override val botPermissions: List<Permission>
         get() = listOf(

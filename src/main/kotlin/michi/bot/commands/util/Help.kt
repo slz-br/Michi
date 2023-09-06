@@ -4,19 +4,25 @@ import com.charleskorn.kaml.YamlMap
 import com.charleskorn.kaml.yamlMap
 import michi.bot.commands.CommandScope.GLOBAL_SCOPE
 import michi.bot.commands.MichiCommand
-import michi.bot.database.dao.GuildsDAO
 import michi.bot.util.Emoji
-import michi.bot.util.Language
 import michi.bot.util.ReplyUtils.getText
 import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.awt.Color
 
 @Suppress("Unused")
 object Help: MichiCommand("help", GLOBAL_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Sends you a message containing helpful info about Michi",
+            DiscordLocale.ENGLISH_UK to "Sends you a message containing helpful info about Michi",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Envia uma mensagem contendo informações úteis sobre a Michi"
+        )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         if (!canHandle(context)) return

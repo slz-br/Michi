@@ -12,9 +12,17 @@ import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.channel.concrete.StageChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 
 @Suppress("Unused")
 object Join: MichiCommand("join", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Michi joins the audio channel that you're in",
+            DiscordLocale.ENGLISH_UK to "Michi joins the audio channel that you're in",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Michi entra no canal de voz que você está"
+        )
 
     override val botPermissions: List<Permission>
         get() = listOf(

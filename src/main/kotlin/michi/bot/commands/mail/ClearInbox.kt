@@ -9,6 +9,7 @@ import michi.bot.util.ReplyUtils.getText
 import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 
 /**
@@ -17,6 +18,12 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
  */
 @Suppress("Unused")
 object ClearInbox: MichiCommand("clear-inbox", GLOBAL_SCOPE) {
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Clears all mails from your inbox",
+            DiscordLocale.ENGLISH_UK to "Clears all mails from your inbox",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Limpa todas as cartas do seu inbox"
+        )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         if (!canHandle(context)) return

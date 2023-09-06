@@ -14,12 +14,20 @@ import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.awt.Color
 import java.util.concurrent.TimeUnit
 
 @Suppress("Unused")
 object Queue: MichiCommand("queue", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Gives you the queue of tracks that will play",
+            DiscordLocale.ENGLISH_UK to "Gives you the queue of tracks that will play",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Mostra a fila de músicas que irão tocar"
+        )
 
     private const val TRACKS_PER_PAGE = 5
 

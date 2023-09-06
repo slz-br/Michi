@@ -10,10 +10,18 @@ import michi.bot.util.ReplyUtils.getText
 import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 @Suppress("Unused")
 object RemoveMail: MichiCommand("remove-mail", GLOBAL_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Removes a mail from your inbox",
+            DiscordLocale.ENGLISH_UK to "Removes a mail from your inbox",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Remove uma carta do seu inbox"
+        )
 
     override val usage: String
         get() = "/$name <position(the position of the mail in your inbox)>"

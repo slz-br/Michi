@@ -12,6 +12,7 @@ import michi.bot.util.ReplyUtils.getText
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.utils.FileUpload
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -22,6 +23,12 @@ import javax.imageio.ImageIO
 @Suppress("Unused")
 object TypeRacer: MichiCommand("type-racer", GLOBAL_SCOPE) {
     val sessions = mutableMapOf<User, TypeRacerText>()
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Sends you an image containing words - type them as fast as you can!",
+            DiscordLocale.ENGLISH_UK to "Sends you an image containing words - type them as fast as you can!",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Te envia uma imagem que contem palavras - digite-as o mais rápido que puder!"
+        )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         if (!canHandle(context)) return

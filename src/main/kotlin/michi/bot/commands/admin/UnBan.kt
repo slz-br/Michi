@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.awt.Color
 
@@ -25,7 +26,12 @@ import java.awt.Color
  */
 @Suppress("Unused")
 object UnBan: MichiCommand("unban", GUILD_SCOPE) {
-
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Unbans a user",
+            DiscordLocale.ENGLISH_UK to "Unbans a user",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Desbane um usuário"
+        )
     override val userPermissions: List<Permission>
         get() = listOf(
             Permission.ADMINISTRATOR,

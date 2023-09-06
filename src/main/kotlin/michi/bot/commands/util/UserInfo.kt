@@ -10,11 +10,19 @@ import michi.bot.util.ReplyUtils.getYML
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.time.format.DateTimeFormatter
 
 @Suppress("Unused")
 object UserInfo: MichiCommand("user-info", GLOBAL_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Sends you public info about a user",
+            DiscordLocale.ENGLISH_UK to "Sends you public info about a user",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Dá informações públicas de um usuário"
+        )
 
     override val usage: String
         get() = "/$name <user>"

@@ -12,6 +12,7 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.net.URL
 
@@ -23,6 +24,13 @@ import java.net.URL
  */
 @Suppress("Unused")
 object Play: MichiCommand("play", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "plays the track/playlist that you searched for(or puts it in the queue)",
+            DiscordLocale.ENGLISH_UK to "plays the track/playlist that you searched for(or puts it in the queue)",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Toca a música/playlist que você pesquisou(ou coloca na fila)"
+        )
 
     private const val SEARCH_PREFIX = "scsearch:"
 

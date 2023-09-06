@@ -12,12 +12,20 @@ import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 val GuildDJMap = mutableMapOf<Guild, MutableSet<Member>>()
 
 @Suppress("Unused")
 object SetDJ: MichiCommand("set-dj", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Gives DJ permissions to someone",
+            DiscordLocale.ENGLISH_UK to "Gives DJ permissions to someone",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Dá permissões de DJ para alguém"
+        )
 
     override val ownerOnly = true
 

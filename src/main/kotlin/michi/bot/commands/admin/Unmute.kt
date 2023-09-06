@@ -11,6 +11,7 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 /**
@@ -21,6 +22,13 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
  */
 @Suppress("Unused")
 object Unmute: MichiCommand("unmute", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Unmute a user if the user is muted",
+            DiscordLocale.ENGLISH_UK to "Unmute a user if the user is muted",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Desilencia um usuário se ele estiver silenciado"
+        )
 
     override val userPermissions: List<Permission>
         get() = listOf(

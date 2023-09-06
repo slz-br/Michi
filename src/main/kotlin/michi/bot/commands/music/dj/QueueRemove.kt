@@ -14,11 +14,19 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.util.concurrent.TimeUnit
 
 @Suppress("Unused")
 object QueueRemove: MichiCommand("queue-remove", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Removes a music at a specific position from the queue",
+            DiscordLocale.ENGLISH_UK to "Removes a music at a specific position from the queue",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Remove uma música"
+        )
 
     override val userPermissions = listOf(Permission.ADMINISTRATOR)
 

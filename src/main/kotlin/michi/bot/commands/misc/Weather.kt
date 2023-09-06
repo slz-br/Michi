@@ -22,11 +22,20 @@ import michi.bot.util.ReplyUtils.michiReply
 import michi.bot.util.ReplyUtils.michiSendMessage
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import org.apache.maven.surefire.shared.lang3.StringUtils
 
 @Suppress("Unused")
 object Weather: MichiCommand("weather", GLOBAL_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Gives you info about the weather of a city",
+            DiscordLocale.ENGLISH_UK to "Gives you info about the weather of a city",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Te dá informações do clima de uma cidade"
+        )
+
     private const val BASE_URL = "http://api.weatherapi.com/v1"
     private val client = HttpClient(CIO) {
         install(ContentNegotiation) {

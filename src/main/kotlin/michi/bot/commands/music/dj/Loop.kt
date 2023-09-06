@@ -11,9 +11,17 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 
 @Suppress("Unused")
 object Loop: MichiCommand("loop", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Play a track repeatedly until it's disabled",
+            DiscordLocale.ENGLISH_UK to "Play a track repeatedly until it's disabled",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Toca a música repetidamente até que desligado"
+        )
 
     override val userPermissions = listOf(Permission.ADMINISTRATOR)
 

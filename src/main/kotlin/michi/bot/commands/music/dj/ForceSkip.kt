@@ -12,9 +12,17 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 
 @Suppress("Unused")
 object ForceSkip: MichiCommand("fskip", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Force the current track to be skipped",
+            DiscordLocale.ENGLISH_UK to "Force the current track to be skipped",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Força que a atual música seja pulada"
+        )
 
     override val userPermissions = listOf(Permission.ADMINISTRATOR)
 

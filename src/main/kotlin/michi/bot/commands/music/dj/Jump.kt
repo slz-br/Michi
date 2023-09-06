@@ -12,10 +12,18 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 @Suppress("Unused")
 object Jump: MichiCommand("queue-jump", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Jumps to a song in a specific position in the queue",
+            DiscordLocale.ENGLISH_UK to "Jumps to a song in a specific position in the queue",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Pula para uma música em uma posição específica na fila"
+        )
 
     override val arguments = listOf(MichiArgument("position", OptionType.INTEGER))
 

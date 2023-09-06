@@ -10,10 +10,18 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.awt.Color
 
 @Suppress("Unused")
 object ServerIcon: MichiCommand("server-icon", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Gives you the image of the server's icon",
+            DiscordLocale.ENGLISH_UK to "Gives you the image of the server's icon",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Dá a imagem do icone do servidor"
+        )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         val guild = context.guild ?: return
