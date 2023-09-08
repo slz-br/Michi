@@ -53,7 +53,7 @@ object Logs: MichiCommand("logs", GUILD_SCOPE) {
 
         val logChannel = context.getOption("channel")?.asChannel?.asGuildMessageChannel()
 
-        GuildsDAO.setLogChannel(guild, logChannel)
+        GuildDAO.setLogChannel(guild, logChannel)
 
         val success: YamlMap = getYML(context.user).yamlMap["success_messages"]!!
         val adminSuccess: YamlMap = success["admin"]!!
