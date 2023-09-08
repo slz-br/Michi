@@ -37,7 +37,7 @@ object LogsListener: ListenerAdapter() {
         CoroutineScope(IO).launch {
             val newBannerURL = event.newBannerUrl
             val guild = event.guild
-            val logsChannelID = GuildsDAO.getLogsChannel(guild) ?: return@launch
+            val logsChannelID = GuildDAO.getLogsChannel(guild) ?: return@launch
             val logsChannel = guild.getTextChannelById(logsChannelID) ?: return@launch
             val logs: YamlMap = getYML(event.guild).yamlMap["logs"]!!
             val logMessage = logs.getText("update_banner").split("\n")
@@ -54,7 +54,7 @@ object LogsListener: ListenerAdapter() {
     override fun onGuildUpdateDescription(event: GuildUpdateDescriptionEvent)  {
         CoroutineScope(IO).launch {
             val guild = event.guild
-            val logsChannelID = GuildsDAO.getLogsChannel(guild) ?: return@launch
+            val logsChannelID = GuildDAO.getLogsChannel(guild) ?: return@launch
             val logsChannel = guild.getTextChannelById(logsChannelID) ?: return@launch
             val logs: YamlMap = getYML(event.guild).yamlMap["logs"]!!
             val logMessage = logs.getText("update_description").split("\n")
@@ -74,7 +74,7 @@ object LogsListener: ListenerAdapter() {
     override fun onGuildUpdateBoostTier(event: GuildUpdateBoostTierEvent) {
         CoroutineScope(IO).launch {
             val guild = event.guild
-            val logsChannelID = GuildsDAO.getLogsChannel(guild) ?: return@launch
+            val logsChannelID = GuildDAO.getLogsChannel(guild) ?: return@launch
             val logsChannel = guild.getTextChannelById(logsChannelID) ?: return@launch
             val logs: YamlMap = getYML(event.guild).yamlMap["logs"]!!
             val logMessage = logs.getText("update_boost_tier").split("\n")
@@ -90,7 +90,7 @@ object LogsListener: ListenerAdapter() {
     override fun onGuildUpdateBoostCount(event: GuildUpdateBoostCountEvent) {
         CoroutineScope(IO).launch {
             val guild = event.guild
-            val logsChannelID = GuildsDAO.getLogsChannel(guild) ?: return@launch
+            val logsChannelID = GuildDAO.getLogsChannel(guild) ?: return@launch
             val logsChannel = guild.getTextChannelById(logsChannelID) ?: return@launch
 
             val logs: YamlMap = getYML(event.guild).yamlMap["logs"]!!
@@ -107,7 +107,7 @@ object LogsListener: ListenerAdapter() {
     override fun onGuildUpdateName(event: GuildUpdateNameEvent) {
         CoroutineScope(IO).launch {
             val guild = event.guild
-            val logsChannelID = GuildsDAO.getLogsChannel(guild) ?: return@launch
+            val logsChannelID = GuildDAO.getLogsChannel(guild) ?: return@launch
             val logsChannel = guild.getTextChannelById(logsChannelID) ?: return@launch
             val logs: YamlMap = getYML(event.guild).yamlMap["logs"]!!
             val logMessage = logs.getText("update_guild_name").split("\n")
@@ -127,7 +127,7 @@ object LogsListener: ListenerAdapter() {
     override fun onGuildBan(event: GuildBanEvent) {
         CoroutineScope(IO).launch {
             val guild = event.guild
-            val logsChannelID = GuildsDAO.getLogsChannel(guild) ?: return@launch
+            val logsChannelID = GuildDAO.getLogsChannel(guild) ?: return@launch
             val logsChannel = guild.getTextChannelById(logsChannelID) ?: return@launch
             val bannedUser = event.user
 
@@ -146,7 +146,7 @@ object LogsListener: ListenerAdapter() {
     override fun onGuildUnban(event: GuildUnbanEvent) {
         CoroutineScope(IO).launch {
             val guild = event.guild
-            val logsChannelID = GuildsDAO.getLogsChannel(guild) ?: return@launch
+            val logsChannelID = GuildDAO.getLogsChannel(guild) ?: return@launch
             val logsChannel = guild.getTextChannelById(logsChannelID) ?: return@launch
             val unbannedUser = event.user
 
@@ -165,7 +165,7 @@ object LogsListener: ListenerAdapter() {
     override fun onGuildMemberUpdateTimeOut(event: GuildMemberUpdateTimeOutEvent) {
         CoroutineScope(IO).launch {
             val guild = event.guild
-            val logsChannelID = GuildsDAO.getLogsChannel(guild) ?: return@launch
+            val logsChannelID = GuildDAO.getLogsChannel(guild) ?: return@launch
             val logsChannel = guild.getTextChannelById(logsChannelID) ?: return@launch
             val mutedUser = event.user
             val mutedUntil = event.newTimeOutEnd
@@ -189,7 +189,7 @@ object LogsListener: ListenerAdapter() {
     override fun onGuildMemberRemove(event: GuildMemberRemoveEvent)  {
         CoroutineScope(IO).launch {
             val guild = event.guild
-            val logsChannelID = GuildsDAO.getLogsChannel(guild) ?: return@launch
+            val logsChannelID = GuildDAO.getLogsChannel(guild) ?: return@launch
             val logsChannel: TextChannel = guild.getTextChannelById(logsChannelID) ?: return@launch
             val memberKicked = event.user
 
@@ -208,7 +208,7 @@ object LogsListener: ListenerAdapter() {
     override fun onRoleCreate(event: RoleCreateEvent) {
         CoroutineScope(IO).launch {
             val guild = event.guild
-            val logsChannelID = GuildsDAO.getLogsChannel(guild) ?: return@launch
+            val logsChannelID = GuildDAO.getLogsChannel(guild) ?: return@launch
             val logsChannel: TextChannel = guild.getTextChannelById(logsChannelID) ?: return@launch
             val role = event.role
 
@@ -226,7 +226,7 @@ object LogsListener: ListenerAdapter() {
     override fun onRoleDelete(event: RoleDeleteEvent) {
         CoroutineScope(IO).launch {
             val guild = event.guild
-            val logsChannelID = GuildsDAO.getLogsChannel(guild) ?: return@launch
+            val logsChannelID = GuildDAO.getLogsChannel(guild) ?: return@launch
             val logsChannel = guild.getTextChannelById(logsChannelID) ?: return@launch
             val role = event.role
 
@@ -244,7 +244,7 @@ object LogsListener: ListenerAdapter() {
     override fun onGuildVoiceUpdate(event: GuildVoiceUpdateEvent) {
         CoroutineScope(IO).launch {
             val guild = event.guild
-            val logsChannelID = GuildsDAO.getLogsChannel(guild) ?: return@launch
+            val logsChannelID = GuildDAO.getLogsChannel(guild) ?: return@launch
             val logsChannel = guild.getTextChannelById(logsChannelID) ?: return@launch
             val member = event.member
             val memberVoiceState = event.voiceState
@@ -281,8 +281,8 @@ object LogsListener: ListenerAdapter() {
                     val playingTrack = PlayerManager[guild].playingTrack
 
                     playingTrack?.let {
-                        GuildsDAO.getMusicQueue(guild)?.replace("${playingTrack.info.uri},", "")?.let {
-                            GuildsDAO.setMusicQueue(guild, it)
+                        GuildDAO.getMusicQueue(guild)?.replace("${playingTrack.info.uri},", "")?.let {
+                            GuildDAO.setMusicQueue(guild, it)
                         }
 
                         val success: YamlMap = getYML(event.guild).yamlMap["success_messages"]!!
@@ -305,7 +305,7 @@ object LogsListener: ListenerAdapter() {
     override fun onChannelCreate(event: ChannelCreateEvent) {
         CoroutineScope(IO).launch {
             val guild = event.guild
-            val logsChannelID = GuildsDAO.getLogsChannel(guild) ?: return@launch
+            val logsChannelID = GuildDAO.getLogsChannel(guild) ?: return@launch
             val logsChannel = guild.getTextChannelById(logsChannelID) ?: return@launch
             val channel = event.channel
 
@@ -323,7 +323,7 @@ object LogsListener: ListenerAdapter() {
     override fun onChannelDelete(event: ChannelDeleteEvent) {
         CoroutineScope(IO).launch {
             val guild = event.guild
-            val logsChannelID = GuildsDAO.getLogsChannel(guild) ?: return@launch
+            val logsChannelID = GuildDAO.getLogsChannel(guild) ?: return@launch
             val logsChannel = guild.getTextChannelById(logsChannelID) ?: return@launch
             val channel = event.channel
 
@@ -341,7 +341,7 @@ object LogsListener: ListenerAdapter() {
     override fun onGuildMemberUpdateAvatar(event: GuildMemberUpdateAvatarEvent) {
         CoroutineScope(IO).launch {
             val guild = event.guild
-            val logsChannelID = GuildsDAO.getLogsChannel(guild) ?: return@launch
+            val logsChannelID = GuildDAO.getLogsChannel(guild) ?: return@launch
             val logsChannel = guild.getTextChannelById(logsChannelID) ?: return@launch
 
             val logs: YamlMap = getYML(event.guild).yamlMap["logs"]!!
@@ -362,7 +362,7 @@ object LogsListener: ListenerAdapter() {
     override fun onGuildUpdateOwner(event: GuildUpdateOwnerEvent) {
         CoroutineScope(IO).launch {
             val guild = event.guild
-            val logsChannelID = GuildsDAO.getLogsChannel(guild) ?: return@launch
+            val logsChannelID = GuildDAO.getLogsChannel(guild) ?: return@launch
             val logsChannel = guild.getTextChannelById(logsChannelID) ?: return@launch
             val newOwner = event.newOwner ?: return@launch
 
@@ -378,7 +378,7 @@ object LogsListener: ListenerAdapter() {
                 )
             }.build().let(logsChannel::sendMessageEmbeds).queue()
 
-            GuildsDAO.setOwner(guild, newOwner)
+            GuildDAO.setOwner(guild, newOwner)
         }
     }
 
