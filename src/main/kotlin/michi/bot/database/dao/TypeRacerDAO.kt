@@ -2,15 +2,15 @@ package michi.bot.database.dao
 
 import michi.bot.database.DataBaseFactory
 import michi.bot.database.rows.TypeRacerRow
-import michi.bot.database.rows.UserRow
 import net.dv8tion.jda.api.entities.User
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object TypeRacerDAO {
 
     private suspend fun post(user: User): TypeRacerRow {
-        val entity = UserDAO.computeIfAbsent(user)
-        return get(entity) ?: transaction {
+        val entity = UserDAO.postIfAbsent(user)
+
+        return get(user) ?: transaction {
             TypeRacerRow.new {
                 userId = entity
                 pb = 0f
@@ -40,9 +40,9 @@ object TypeRacerDAO {
         }
     }
 
-    suspend fun get(user: UserRow): TypeRacerRow? = DataBaseFactory.query {
+    suspend fun get(user: User): TypeRacerRow? = DataBaseFactory.query {
         transaction {
-            TypeRacerRow.findById(user.id)
+            TypeRacerRow.all().find { it.userId.userId == user.idLong }
         }
     }
 

@@ -9,4 +9,5 @@ class UserRow(id: EntityID<Int>): IntEntity(id) {
     companion object : IntEntityClass<UserRow>(UserTable)
 
     var userId by UserTable.userId
+    var preferredLanguage by UserTable.preferredLanguage
 }
