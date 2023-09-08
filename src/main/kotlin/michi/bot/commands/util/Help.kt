@@ -27,11 +27,8 @@ object Help: MichiCommand("help", GLOBAL_SCOPE) {
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         if (!canHandle(context)) return
         val sender = context.user
-        val guild = context.guild
 
-        val language = if (guild != null) GuildsDAO.getLanguage(guild) else Language.EN_US
-
-        val success: YamlMap = getYML(language).yamlMap["success_messages"]!!
+        val success: YamlMap = getYML(sender).yamlMap["success_messages"]!!
         val utilSuccess: YamlMap = success["util"]!!
 
         val helpMessage = utilSuccess.getText("help_message").split('\n')

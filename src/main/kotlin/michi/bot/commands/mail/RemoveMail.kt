@@ -26,13 +26,22 @@ object RemoveMail: MichiCommand("remove-mail", GLOBAL_SCOPE) {
     override val usage: String
         get() = "/$name <position(the position of the mail in your inbox)>"
 
-    override val arguments = listOf(MichiArgument("position", OptionType.INTEGER))
+    override val arguments = listOf(
+        MichiArgument(
+            name = "position",
+            descriptionLocalization = mapOf(
+                DiscordLocale.ENGLISH_US to "The position in your inbox of the mail to remove",
+                DiscordLocale.ENGLISH_UK to "The position in your inbox of the mail to remove",
+                DiscordLocale.PORTUGUESE_BRAZILIAN to "A posição no seu inbox da carta para remover"
+            ),
+            type = OptionType.INTEGER
+        )
+    )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
-        val sender = context.user
-
         if (!canHandle(context)) return
 
+        val sender = context.user
         val mailIndex = context.getOption("position")!!.asInt - 1
 
         inboxMap.computeIfAbsent(sender) {
@@ -40,7 +49,7 @@ object RemoveMail: MichiCommand("remove-mail", GLOBAL_SCOPE) {
             userInbox
         }.removeAt(mailIndex)
 
-        val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
+        val success: YamlMap = getYML(sender).yamlMap["success_messages"]!!
         val mailSuccess: YamlMap = success["mail"]!!
 
         context.michiReply(String.format(mailSuccess.getText("mail_removed"), mailIndex + 1))
@@ -54,7 +63,7 @@ object RemoveMail: MichiCommand("remove-mail", GLOBAL_SCOPE) {
             mutableListOf()
         }
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val mailErr: YamlMap = err["mail"]!!
 

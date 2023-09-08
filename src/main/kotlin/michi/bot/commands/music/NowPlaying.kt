@@ -51,7 +51,7 @@ object NowPlaying: MichiCommand("np", GUILD_SCOPE) {
             setColor(Color.MAGENTA)
         }
 
-        val success: YamlMap = getYML(context).yamlMap["other"]!!
+        val success: YamlMap = getYML(context.user).yamlMap["other"]!!
         val musicOther: YamlMap = success["music"]!!
 
         context.michiReply(embed.build(), message = musicOther.getText("now_playing"))
@@ -64,7 +64,7 @@ object NowPlaying: MichiCommand("np", GUILD_SCOPE) {
         val senderVoiceState = sender.voiceState ?: return false
         val botVoiceState = bot.voiceState ?: return false
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val musicErr: YamlMap = err["music"]!!
 

@@ -32,13 +32,23 @@ object Read: MichiCommand("read", GLOBAL_SCOPE) {
     override val usage: String
         get() = "/$name <position(optional)>"
 
-    override val arguments = listOf(MichiArgument("position", OptionType.INTEGER, isRequired = false))
+    override val arguments = listOf(
+        MichiArgument(
+            name = "position",
+            descriptionLocalization = mapOf(
+                DiscordLocale.ENGLISH_US to "The position of the mail to read in your inbox",
+                DiscordLocale.ENGLISH_UK to "The postion of the mail to read in your inbox",
+                DiscordLocale.PORTUGUESE_BRAZILIAN to "A posição da carta para ler na seu inbox"
+            ),
+            type = OptionType.INTEGER,
+            isRequired = false
+        )
+    )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
-        val sender = context.user
-
         if (!canHandle(context)) return
 
+        val sender = context.user
         val mailPosition = context.getOption("position")?.asInt?.minus(1) ?: 0
         val inbox = inboxMap[sender]!!
 
@@ -47,10 +57,10 @@ object Read: MichiCommand("read", GLOBAL_SCOPE) {
             val readAnywayButton = Button.danger("read-anyway", "Read anyway")
             val cancelReading = Button.secondary("cancel-reading", "Cancel")
 
-            val warnMsg: YamlMap = getYML(context).yamlMap["warn_messages"]!!
+            val warnMsg: YamlMap = getYML(sender).yamlMap["warn_messages"]!!
             val mailWarn: YamlMap = warnMsg["mail"]!!
             val genericWarn: YamlMap = warnMsg["generic"]!!
-            val readUnsafeConfirmation = mailWarn.getText("read_unsafe_mail_confirmation").split("\n")
+            val readUnsafeConfirmation = mailWarn.getText("read_unsafe_mail_confirmation").split('\n')
 
             val embed = EmbedBuilder().apply {
                 setTitle(String.format(readUnsafeConfirmation[0], Emoji.michiLook))
@@ -79,7 +89,7 @@ object Read: MichiCommand("read", GLOBAL_SCOPE) {
             mutableListOf()
         }
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val mailErr: YamlMap = err["mail"]!!
 

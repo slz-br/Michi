@@ -35,15 +35,14 @@ object Join: MichiCommand("join", GUILD_SCOPE) {
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         if (!canHandle(context)) return
         val sender = context.member!!
-        val guild = context.guild!!
 
-        val audioManager = guild.audioManager
+        val audioManager = context.guild!!.audioManager
         val channelToJoin = sender.voiceState?.channel ?: return
 
         audioManager.openAudioConnection(channelToJoin)
         audioManager.isSelfDeafened = true
 
-        val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
+        val success: YamlMap = getYML(sender.user).yamlMap["success_messages"]!!
         val musicSuccess: YamlMap = success["music"]!!
 
         context.michiReply(String.format(musicSuccess.getText("join"), channelToJoin.asMention, Emoji.michiMusic))
@@ -62,7 +61,7 @@ object Join: MichiCommand("join", GUILD_SCOPE) {
         val senderVoiceState = sender.voiceState ?: return false
         val botVoiceState = bot.voiceState ?: return false
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val musicErr: YamlMap = err["music"]!!
 

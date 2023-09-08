@@ -26,7 +26,8 @@ error_messages:
      slowmode_time_unchanged: "This is the channel's slowmode time already."
      user_not_banned: "%s isn't banned %s"
      user_not_muted: "%s isn't muted %s"
-     same_language: "The guild language already is English."
+     guild_same_language: "The guild language already is English."
+     same_language: "The language already is English."
      ban_reason_null_or_too_large: "Not provided or too large."
      poll_char_limit_exceeded: "These options exceed the character for this command (%d). Can you narrow it down? %s"
 
@@ -44,6 +45,7 @@ error_messages:
      user_already_has_math_problem: "Solve one problem before calling another %s"
      invalid_city_name: "Invalid city name.\n- TroubleShoot:\n - Certify that the city name is in English."
      user_already_in_type_racer_session: "You already have words to type."
+     trying_to_get_bot_typeracer_stats: "You can't get type-racer stats from bots."
 
   music:
      empty_queue: "The queue is empty %s"
@@ -90,7 +92,6 @@ warn_messages:
   util:
     guild_icon_not_found: "This server doesn't have an icon %s"
 
-
 success_messages:
    admin:
      clear_applied_public_message: "%s cleared %d messages in this chat"
@@ -104,6 +105,7 @@ success_messages:
      ban_applied: "BAN!\nBanned %s\nUser banned by %s\nReason:"
      unban_applied: "UNBAN! %s\nUnbanned %s"
      unmute_applied: "Successfully unmuted %s %s"
+     guild_language_changed: "Guild language successfully changed to English!"
      language_changed: "Language successfully changed to English!"
 
    mail:
@@ -114,13 +116,16 @@ success_messages:
      mail_report_cancelled: "Report cancelled."
      clear_inbox_cancelled: "Don't worry, your mails are safe and sound %s"
      read_cancel: "Reading cancelled."
+     math_correct_answer: "**Correct** %s %s\nTime: %ds"
+     math_wrong_answer: "**Wrong** %s %s\nAnswer: %d"
 
    misc:
      raccoon_media: "Raccoon GIF\nRaccoon Pic"
      weather_temperature_info: "Temperature\nCelsius: `%s Cº`\nFahrenheit: `%s Fº`"
-     weather_feels_like_info: "Feels like\nTemperature\nCelsius: `%s Cº`\nFahrenheits: `%s Fº`"
+     weather_feels_like_info: "Feels like\nCelsius: `%s Cº`\nFahrenheits: `%s Fº`"
      weather_wind_info: "Wind\nKilometers: `%s KM/h`\nMiles: `%s M/h`"
      weather_time_info: "Last updated: %s | Local time: %s"
+     type_racer_stats: "%s's TypeRacer Stats\nPersonal Best:\nLatest:"
 
    music:
      join: "Joined %s\nPut some music on %s"
@@ -159,6 +164,9 @@ success_messages:
    util:
      user_info_message: "%s's Info\nCreated In:\nName & ID:\nJoined Server:\nIs the Owner?\nIs a bot?\nYes\nNo"
      help_message: "I'm here to help, %s! %s\nCommands Prefix: **/**\nAll my commands are slash commands, it means that if you type \"/\" you can see my commands, a description of what they do and what they need work.\nTerms Of Service:\nYou need to follow some rules, so you can use my commands. At the moment, there aren't any rule, but if it changes, i'll let you know."
+     guild_info: "Description:\nOwner:\nMember count:\nLanguage:\nCreation date:"
+     guild_icon: "%s's icon"
+     user_avatar: "%s's avatar"
 
 logs:
   update_banner: "Server Banner changed!\nbanner:"
@@ -185,6 +193,10 @@ other:
   generic:
     page_count: "Page %d of %d"
 
+  greetings:
+    greeting_messages: "Hello, Hi, Sup, Good morning, Good afternoon, Good night, gn"
+    greeting_responses: "Sup %s\nHi! %s\nHey! what's up? %s\nHey! how are you doing? %s"
+
   time_units:
     minute: "minute"
     hour: "hour"
@@ -204,88 +216,3 @@ other:
     nothing_coming_next: "No more music, the queue ended %s"
     scheduler_now_playing: "Now playing:"
     custom_empty_queue: "The queue is empty\nwhy don't you change this putting some music to play? %s"
-
-command_info:
-
-  arguments_description:
-    ban:
-      user: "The user to ban"
-      reason: "The reason for the ban"
-
-    clear:
-      amount: "The amount of messages to delete"
-
-    logs:
-      channel: "The channel for sending the logs"
-
-    mute:
-      user: "The user to mute"
-      time: "The time to mute the user"
-
-    poll:
-      option-1: "The 1st option of the poll for users to vote"
-      option-2: "The 2nd option of the poll for users to vote"
-      time: "For how long the poll will happen"
-
-    language:
-      language-name: "The name of the language to change to"
-
-    slowmode:
-      time: "The slowmode time"
-
-    unban:
-      user: "The user to unban"
-
-    unmute:
-      user: "The user to unmute"
-
-    unwarn:
-      user: "The user to unwarn"
-
-    warn:
-      user: "The user to warn"
-      reason: "The reason for the warn"
-
-    inbox:
-      page: "The page of your inbox to see"
-
-    mail:
-      title: "What is the mail about?"
-      message: "The message you want to send with this mail"
-      receiver: "Who is this mail for?"
-
-    read:
-      position: "The position of the mail you want to read in your inbox"
-
-    remove-mail:
-      position: "The position in your inbox of the mail to remove"
-
-    report-mail:
-      position: "The position in your inbox of the mail to report"
-
-    weather:
-      city: "The name of the city to look the weather"
-
-    fplay:
-      search: "The name/url of the track/playlist to play"
-
-    queue-jump:
-      position: "The position in the queue to jump to"
-
-    queue-remove:
-      position: "The position of the track to remove in the queue"
-
-    set-dj:
-      user: "The user to give DJ permissions to"
-
-    play:
-      search: "The name/url of the song/playlist to play"
-
-    queue:
-      page: "The page of the queue to see"
-
-    user-avatar:
-      user: "The user to get the profile picture"
-
-    user-info:
-      user: "The user to get the info"

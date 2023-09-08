@@ -22,22 +22,23 @@ object ClearInbox: MichiCommand("clear-inbox", GLOBAL_SCOPE) {
         get() = mapOf(
             DiscordLocale.ENGLISH_US to "Clears all mails from your inbox",
             DiscordLocale.ENGLISH_UK to "Clears all mails from your inbox",
-            DiscordLocale.PORTUGUESE_BRAZILIAN to "Limpa todas as cartas do seu inbox"
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Limpa todas as cartas da sua inbox"
         )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         if (!canHandle(context)) return
+        val sender = context.user
 
         val deleteButton = Button.danger("clear-mail-inbox-confirmation", "Delete")
         val cancelDeletion = Button.secondary("cancel-mail-inbox-clearing", "Cancel")
 
-        val warnMsg: YamlMap = getYML(context).yamlMap["warn_messages"]!!
+        val warnMsg: YamlMap = getYML(sender).yamlMap["warn_messages"]!!
         val mailWarn: YamlMap = warnMsg["mail"]!!
         val genericWarn: YamlMap = warnMsg["generic"]!!
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
 
-        context.user.openPrivateChannel().flatMap { privtaChannel ->
+        sender.openPrivateChannel().flatMap { privtaChannel ->
             privtaChannel.sendMessage(mailWarn.getText("clear_inbox_confirmation"))
                 .setActionRow(deleteButton, cancelDeletion)
         }.queue(null) {

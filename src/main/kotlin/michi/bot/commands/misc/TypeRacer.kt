@@ -7,8 +7,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import michi.bot.commands.CommandScope.GLOBAL_SCOPE
 import michi.bot.commands.MichiCommand
-import michi.bot.util.ReplyUtils
 import michi.bot.util.ReplyUtils.getText
+import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -33,10 +33,11 @@ object TypeRacer: MichiCommand("type-racer", GLOBAL_SCOPE) {
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         if (!canHandle(context)) return
         val user = context.user
-        val other: YamlMap = ReplyUtils.getYML(context).yamlMap["other"]!!
+        val other: YamlMap = getYML(user).yamlMap["other"]!!
         val miscOther: YamlMap = other["misc"]!!
         val wordsList = miscOther.getText("type_racer_words").split(" ")
-        val bImage = BufferedImage(2250, 100, BufferedImage.TYPE_INT_ARGB)
+        val words = wordsList.shuffled().slice(0 ..< 10).joinToString(" ")
+        val bImage = BufferedImage((words.length * 35) + 20, 100, BufferedImage.TYPE_INT_ARGB)
         val g2d = bImage.createGraphics()
 
         g2d.apply {
@@ -45,12 +46,11 @@ object TypeRacer: MichiCommand("type-racer", GLOBAL_SCOPE) {
             color = Color.WHITE
             font = font.deriveFont(font.style, 75f)
 
-            val words = wordsList.shuffled().slice(0 ..< 10).joinToString(" ")
             sessions[user] = TypeRacerText(words)
-            drawString(words, 10f, (bImage.height/2)+5.5f)
+            drawString(words, 20f, (bImage.height/2)+5.5f)
+            dispose()
         }
 
-        g2d.dispose()
         val file = File("stopLookingAndType.png")
         withContext(Dispatchers.IO) {
             ImageIO.write(bImage, "png", file)
@@ -59,8 +59,8 @@ object TypeRacer: MichiCommand("type-racer", GLOBAL_SCOPE) {
         val fileToUpload = FileUpload.fromData(file)
 
         context.replyFiles(fileToUpload)
-            .queue { it.deleteOriginal().queueAfter(30, TimeUnit.SECONDS) }
-        delay(30000L)
+            .queue()
+        delay(TimeUnit.SECONDS.toMillis(30))
         if (user in sessions && !sessions[user]!!.isAnswered && sessions[user]!!.timeElapsed >= 30000L) {
             context.channel.sendMessage("${user.asMention} took to long to type").queue { it.delete().queueAfter(10, TimeUnit.SECONDS)}
             sessions.remove(user)
@@ -70,7 +70,7 @@ object TypeRacer: MichiCommand("type-racer", GLOBAL_SCOPE) {
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
         val user = context.user
 
-        val err: YamlMap = ReplyUtils.getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(user).yamlMap["error_messages"]!!
         val miscErr: YamlMap = err["misc"]!!
 
         if (user in sessions && !sessions[user]!!.isAnswered) {

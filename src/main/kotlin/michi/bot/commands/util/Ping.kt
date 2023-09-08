@@ -32,7 +32,7 @@ object Ping: MichiCommand("ping", GLOBAL_SCOPE) {
         guild?.let {
             val bot = guild.selfMember
 
-            val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+            val err: YamlMap = getYML(context.user).yamlMap["error_messages"]!!
             val genericErr: YamlMap = err["generic"]!!
 
             if (!bot.permissions.containsAll(botPermissions)) {

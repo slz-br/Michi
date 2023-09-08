@@ -1,5 +1,6 @@
 package michi.bot.commands
 
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 /**
@@ -18,6 +19,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
  */
 data class MichiArgument(
     val name: String,
+    val descriptionLocalization: Map<DiscordLocale, String>,
     val type: OptionType,
     val isRequired: Boolean = true,
     val hasAutoCompletion: Boolean = false

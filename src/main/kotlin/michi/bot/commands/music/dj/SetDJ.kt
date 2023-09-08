@@ -6,8 +6,8 @@ import michi.bot.commands.CommandScope.GUILD_SCOPE
 import michi.bot.commands.MichiArgument
 import michi.bot.commands.MichiCommand
 import michi.bot.util.Emoji
-import michi.bot.util.ReplyUtils
 import michi.bot.util.ReplyUtils.getText
+import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
@@ -29,7 +29,17 @@ object SetDJ: MichiCommand("set-dj", GUILD_SCOPE) {
 
     override val ownerOnly = true
 
-    override val arguments = listOf(MichiArgument("user", OptionType.USER))
+    override val arguments = listOf(
+        MichiArgument(
+            name = "user",
+            descriptionLocalization = mapOf(
+                DiscordLocale.ENGLISH_US to "The user to give DJ permissions",
+                DiscordLocale.ENGLISH_UK to "The user to give DJ permissions",
+                DiscordLocale.PORTUGUESE_BRAZILIAN to "O usuário para dar permissões de DJ"
+            ),
+            type = OptionType.USER
+        )
+    )
 
     override val usage: String
         get() = "/$name <user>"
@@ -40,12 +50,14 @@ object SetDJ: MichiCommand("set-dj", GUILD_SCOPE) {
         val member = context.getOption("user")!!.asMember!!
         val guildDjMap = GuildDJMap.computeIfAbsent(guild) { mutableSetOf() }
 
-        val success: YamlMap = ReplyUtils.getYML(guild).yamlMap["success_messages"]!!
+        val success: YamlMap = getYML(guild).yamlMap["success_messages"]!!
         val musicDJSuccess: YamlMap = success["music_dj"]!!
+        val successEphemeral: YamlMap = getYML(context.user).yamlMap["success_messages"]!!
+        val musicDjSuccessEphemeral: YamlMap = successEphemeral["music_dj"]!!
 
         if (member !in guildDjMap) {
             guildDjMap + member
-            context.michiReply(String.format(musicDJSuccess.getText("dj_setted"), member.asMention))
+            context.michiReply(String.format(musicDjSuccessEphemeral.getText("dj_setted"), member.asMention))
         } else {
             guildDjMap - member
             context.michiReply(String.format(musicDJSuccess.getText("dj_removed"), member.asMention))
@@ -59,7 +71,7 @@ object SetDJ: MichiCommand("set-dj", GUILD_SCOPE) {
         val member = context.getOption("user")?.asMember
         val bot = guild.selfMember
 
-        val err: YamlMap = ReplyUtils.getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
 
         if (member == null) {

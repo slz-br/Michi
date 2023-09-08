@@ -32,7 +32,18 @@ object SetLanguage: MichiCommand("language", GLOBAL_SCOPE) {
 
     override val usage = "/$name <language-name>"
 
-    override val arguments = listOf(MichiArgument("language-name", OptionType.STRING, hasAutoCompletion = true))
+    override val arguments = listOf(
+        MichiArgument(
+            name = "language-name",
+            descriptionLocalization = mapOf(
+                DiscordLocale.ENGLISH_US to "Changes the language of the bot responses",
+                DiscordLocale.ENGLISH_UK to "Changes the language of the bot responses",
+                DiscordLocale.PORTUGUESE_BRAZILIAN to "Muda a linguagem das respostas do bot"
+            ),
+            type = OptionType.STRING,
+            hasAutoCompletion = true
+        )
+    )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         if (!canHandle(context)) return

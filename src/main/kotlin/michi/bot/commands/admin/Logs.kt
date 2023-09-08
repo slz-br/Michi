@@ -34,29 +34,32 @@ object Logs: MichiCommand("logs", GUILD_SCOPE) {
 
     override val ownerOnly = true
 
-    override val arguments: List<MichiArgument>
-        get() = listOf(
-            MichiArgument("channel", OptionType.CHANNEL, isRequired = false)
+    override val arguments = listOf(
+        MichiArgument(
+            name = "channel",
+            descriptionLocalization = mapOf(
+                DiscordLocale.ENGLISH_US to "The channel to send the logs",
+                DiscordLocale.ENGLISH_UK to "The channel to send the logs",
+                DiscordLocale.PORTUGUESE_BRAZILIAN to "O canal para enviar os registros"
+            ),
+            type = OptionType.CHANNEL,
+            isRequired = false
         )
+    )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
-        val guild = context.guild!!
-
         if (!canHandle(context)) return
+        val guild = context.guild!!
 
         val logChannel = context.getOption("channel")?.asChannel?.asGuildMessageChannel()
 
         GuildsDAO.setLogChannel(guild, logChannel)
 
-        val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
+        val success: YamlMap = getYML(context.user).yamlMap["success_messages"]!!
         val adminSuccess: YamlMap = success["admin"]!!
 
-        if (logChannel == null) {
-            context.michiReply(String.format(adminSuccess.getText("logs_wont_be_notified_anymory"), Emoji.michiThumbsUp))
-        }
-        else {
-            context.michiReply(String.format("logs_channel_setted", logChannel.asMention))
-        }
+        if (logChannel == null) context.michiReply(String.format(adminSuccess.getText("logs_wont_be_notified_anymory"), Emoji.michiThumbsUp))
+        else context.michiReply(String.format("logs_channel_setted", logChannel.asMention))
     }
 
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
@@ -65,7 +68,7 @@ object Logs: MichiCommand("logs", GUILD_SCOPE) {
         val logChannel = context.getOption("channel")?.asChannel
         val sender = context.member ?: return false
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val adminErr: YamlMap = err["admin"]!!
 

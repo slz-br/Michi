@@ -36,12 +36,11 @@ object QueueClear: MichiCommand("clear-queue", GUILD_SCOPE) {
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         if (!canHandle(context)) return
-        val guild = context.guild!!
-        val musicManager = PlayerManager[guild]
+        val musicManager = PlayerManager[context.guild!!]
 
         musicManager.scheduler.trackQueue.clear()
 
-        val warn: YamlMap = getYML(context).yamlMap["warn_messages"]!!
+        val warn: YamlMap = getYML(context.user).yamlMap["warn_messages"]!!
         val musicDJWarn: YamlMap = warn["music_dj"]!!
 
         val queueClearButton = Button.danger("clear-queue-confirmation", "Clear")
@@ -61,7 +60,7 @@ object QueueClear: MichiCommand("clear-queue", GUILD_SCOPE) {
         val queue = PlayerManager[guild].scheduler.trackQueue
         val guildDjMap = GuildDJMap.computeIfAbsent(guild) { mutableSetOf() }
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val musicErr: YamlMap = err["music"]!!
 

@@ -46,15 +46,17 @@ object ForceSkip: MichiCommand("fskip", GUILD_SCOPE) {
         val playingTrack = musicManager.playingTrack
 
         playingTrack?.let {
-            GuildsDAO.getMusicQueue(guild)?.replace(playingTrack.info.uri, "")?.let {
-                GuildsDAO.setMusicQueue(guild, it)
+            GuildDAO.getMusicQueue(guild)?.replace(playingTrack.info.uri, "")?.let {
+                GuildDAO.setMusicQueue(guild, it)
             }
         }
 
         val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
         val musicDjSuccess: YamlMap = success["music_dj"]!!
+        val successEphemeral: YamlMap = getYML(sender).yamlMap["success_messages"]!!
+        val musicDjSuccessEphemeral: YamlMap = successEphemeral["music_dj"]!!
 
-        context.michiReply(String.format(musicDjSuccess.getText("force_skip_ephemeral_message"), Emoji.michiThumbsUp))
+        context.michiReply(String.format(musicDjSuccessEphemeral.getText("force_skip_ephemeral_message"), Emoji.michiThumbsUp))
         channel.sendMessage(String.format(musicDjSuccess.getText("force_skip_public_message"), sender.asMention))
             .queue()
     }
@@ -67,7 +69,7 @@ object ForceSkip: MichiCommand("fskip", GUILD_SCOPE) {
         val senderVoiceState = sender.voiceState!!
         val guildDjMap = GuildDJMap.computeIfAbsent(guild) { mutableSetOf() }
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val musicErr: YamlMap = err["music"]!!
         

@@ -24,14 +24,16 @@ object ServerIcon: MichiCommand("server-icon", GUILD_SCOPE) {
         )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
-        val guild = context.guild ?: return
-
         if (!canHandle(context)) return
+        val guild = context.guild!!
+
+        val success: YamlMap = getYML(context.user).yamlMap["success_messages"]!!
+        val utilSuccess: YamlMap = success["util"]!!
 
         EmbedBuilder().apply {
             setColor(Color.WHITE)
             setImage(guild.iconUrl)
-            setDescription("${guild.name}'s Icon")
+            setDescription(String.format(utilSuccess.getText("guild_icon"), guild.name))
         }.build().let { context.michiReply(it) }
     }
 
@@ -39,7 +41,7 @@ object ServerIcon: MichiCommand("server-icon", GUILD_SCOPE) {
         val guild = context.guild ?: return false
         val bot = guild.selfMember
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(context.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
 
         if (guild.icon == null) {

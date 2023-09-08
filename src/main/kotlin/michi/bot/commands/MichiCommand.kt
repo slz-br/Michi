@@ -2,6 +2,7 @@ package michi.bot.commands
 
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -27,7 +28,7 @@ abstract class MichiCommand(val name: String, val scope: CommandScope) {
     abstract val descriptionLocalization: Map<DiscordLocale, String>
 
     /**
-     * A list of permissions that the user need to execute the command.
+     * A list of permissions that the user needs to execute the command.
      * Default = empty list.
      * @see botPermissions
      */
@@ -41,6 +42,7 @@ abstract class MichiCommand(val name: String, val scope: CommandScope) {
      */
     protected open val botPermissions = listOf(
         Permission.MESSAGE_SEND,
+        Permission.MESSAGE_EXT_EMOJI,
         Permission.MESSAGE_EXT_EMOJI,
         Permission.MESSAGE_SEND_IN_THREADS
     )

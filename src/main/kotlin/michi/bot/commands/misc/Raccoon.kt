@@ -65,7 +65,7 @@ object Raccoon: MichiCommand("raccoon", GLOBAL_SCOPE) {
 
         if (!canHandle(context)) return
 
-        val raccoonMediaType = getYML(context).yamlMap.get<YamlMap>("success_messages")!!.get<YamlMap>("misc")!!
+        val raccoonMediaType = getYML(context.user).yamlMap.get<YamlMap>("success_messages")!!.get<YamlMap>("misc")!!
             .getText("raccoon_media")
             .split("\n") // I know, this looks confusing, but this is just a list with the elements "Raccoon Pic" or "Raccoon GIF"
                                   //  I couldn't think of a better name for the variable
@@ -90,19 +90,16 @@ object Raccoon: MichiCommand("raccoon", GLOBAL_SCOPE) {
      * @see execute
      */
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
-        val guild = context.guild
-
-        guild?.let {
+        context.guild?.let { guild ->
             val bot = guild.selfMember
 
-            val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+            val err: YamlMap = getYML(context.user).yamlMap["error_messages"]!!
             val genericErr: YamlMap = err["generic"]!!
 
             if (!bot.permissions.containsAll(botPermissions)) {
                 context.michiReply(String.format(genericErr.getText("bot_missing_perms"), Emoji.michiSad))
                 return false
             }
-
         }
         return true
     }

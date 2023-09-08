@@ -38,7 +38,17 @@ object QueueRemove: MichiCommand("queue-remove", GUILD_SCOPE) {
             Permission.MESSAGE_SEND_IN_THREADS
         )
 
-    override val arguments = listOf(MichiArgument("position", OptionType.INTEGER))
+    override val arguments = listOf(
+        MichiArgument(
+            name = "position",
+            descriptionLocalization = mapOf(
+                DiscordLocale.ENGLISH_US to "The position of the track to remove in the queue",
+                DiscordLocale.ENGLISH_UK to "The position of the track to remove in the queue",
+                DiscordLocale.PORTUGUESE_BRAZILIAN to "A posição na fila da música para remover."
+            ),
+            type = OptionType.INTEGER
+        )
+    )
 
     override val usage: String
         get() = "/$name <position>"
@@ -62,8 +72,10 @@ object QueueRemove: MichiCommand("queue-remove", GUILD_SCOPE) {
 
         val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
         val musicDjSuccess: YamlMap = success["music_dj"]!!
+        val successEphemeral: YamlMap = getYML(sender).yamlMap["success_messages"]!!
+        val musicDjSuccessEphemeral: YamlMap = successEphemeral["music_dj"]!!
 
-        context.michiReply(String.format(musicDjSuccess.getText("queue_remove_ephemeral_message"), trackToRemove.info.title, formatTrackLength(trackToRemove), position + 1))
+        context.michiReply(String.format(musicDjSuccessEphemeral.getText("queue_remove_ephemeral_message"), trackToRemove.info.title, formatTrackLength(trackToRemove), position + 1))
         channel?.sendMessage(String.format(musicDjSuccess.getText("queue_remove_public_message"), sender.asMention, trackToRemove.info.title, formatTrackLength(trackToRemove)))?.queue()
     }
 
@@ -78,7 +90,7 @@ object QueueRemove: MichiCommand("queue-remove", GUILD_SCOPE) {
         val position = context.getOption("position")!!.asInt - 1
         val guildDjMap = GuildDJMap.computeIfAbsent(guild) { mutableSetOf() }
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val musicErr: YamlMap = err["music"]!!
 

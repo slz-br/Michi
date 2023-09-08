@@ -39,11 +39,13 @@ object Skip: MichiCommand("skip", GUILD_SCOPE) {
 
         val usersInTheVC = guild.selfMember.voiceState!!.channel!!.members.size
 
-        poll.add(sender)
+        poll += sender
 
         val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
         val musicSuccess: YamlMap = success["music"]!!
-        val skipPollMessage = musicSuccess.getText("skip_poll").split("\n")
+        val successEphemeral: YamlMap = getYML(sender).yamlMap["success_messages"]!!
+        val musicSuccessEphemeral: YamlMap = successEphemeral["music"]!!
+        val skipPollMessage = musicSuccessEphemeral.getText("skip_poll").split("\n")
 
         EmbedBuilder().apply {
             setColor(Color.MAGENTA)
@@ -70,7 +72,7 @@ object Skip: MichiCommand("skip", GUILD_SCOPE) {
         val senderVoiceState = sender.voiceState!!
         val botVoiceState = bot.voiceState!!
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val musicErr: YamlMap = err["music"]!!
 

@@ -43,7 +43,17 @@ object Play: MichiCommand("play", GUILD_SCOPE) {
             Permission.MESSAGE_SEND_IN_THREADS
         )
 
-    override val arguments = listOf(MichiArgument("search", OptionType.STRING))
+    override val arguments = listOf(
+        MichiArgument(
+            name = "search",
+            descriptionLocalization = mapOf(
+                DiscordLocale.ENGLISH_US to "The name/link of the track/playlist to play",
+                DiscordLocale.ENGLISH_UK to "The name/link of the track/playlist to play",
+                DiscordLocale.PORTUGUESE_BRAZILIAN to "O nome/link da música/playlist para tocar"
+            ),
+            type = OptionType.STRING
+        )
+    )
 
     override val usage: String
         get() = "/$name <search(the name or link of a song/playlist)>"
@@ -66,7 +76,7 @@ object Play: MichiCommand("play", GUILD_SCOPE) {
         val senderVoiceState = sender.voiceState!!
         val search = context.getOption("search")!!.asString
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val musicErr: YamlMap = err["music"]!!
 

@@ -48,8 +48,10 @@ object ForcePause: MichiCommand("fpause", GUILD_SCOPE) {
 
         val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
         val musicDjSuccess: YamlMap = success["music_dj"]!!
+        val successEphemeral: YamlMap = getYML(sender).yamlMap["success_messages"]!!
+        val musicDjSuccessEphemeral: YamlMap = successEphemeral["music_dj"]!!
 
-        context.michiReply(String.format(musicDjSuccess.getText("track_paused_ephemeral_message"), Emoji.michiThumbsUp))
+        context.michiReply(String.format(musicDjSuccessEphemeral.getText("track_paused_ephemeral_message"), Emoji.michiThumbsUp))
         channel.sendMessage(String.format(musicDjSuccess.getText("track_paused_public_message"), sender.asMention)).queue()
 
         delay(TimeUnit.MINUTES.toMillis(3))
@@ -68,7 +70,7 @@ object ForcePause: MichiCommand("fpause", GUILD_SCOPE) {
             mutableSetOf()
         }
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val musicErr: YamlMap = err["music"]!!
         val musicDjErr: YamlMap = err["music_dj"]!!

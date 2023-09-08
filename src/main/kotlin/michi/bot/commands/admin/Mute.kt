@@ -23,6 +23,14 @@ import java.time.Duration
  */
 @Suppress("Unused")
 object Mute: MichiCommand("mute", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Mutes a user for a period of time",
+            DiscordLocale.ENGLISH_UK to "Mutes a user for a period of time",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Silencia um usuário por um período de tempo"
+        )
+
     override val userPermissions: List<Permission>
         get() = listOf(
             Permission.ADMINISTRATOR,
@@ -33,17 +41,34 @@ object Mute: MichiCommand("mute", GUILD_SCOPE) {
         get() = listOf(
             Permission.MODERATE_MEMBERS,
             Permission.MESSAGE_SEND,
+            Permission.MESSAGE_SEND,
             Permission.MESSAGE_EXT_EMOJI,
             Permission.MESSAGE_SEND_IN_THREADS
         )
 
-    override val usage: String
-        get() = "/$name <user> <how much time>"
+    override val usage: String = "/$name <user> <how much time>"
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("user", OptionType.USER),
-            MichiArgument("time", OptionType.STRING, hasAutoCompletion = true)
+            MichiArgument(
+                name = "user",
+                descriptionLocalization = mapOf(
+                    DiscordLocale.ENGLISH_US to "The user to mute",
+                    DiscordLocale.ENGLISH_UK to "The user to mute",
+                    DiscordLocale.PORTUGUESE_BRAZILIAN to "O usuário para silenciar"
+                ),
+                type = OptionType.USER
+            ),
+            MichiArgument(
+                name ="time",
+                descriptionLocalization = mapOf(
+                    DiscordLocale.ENGLISH_US to "The time to mute the user",
+                    DiscordLocale.ENGLISH_UK to "The time to mute the user",
+                    DiscordLocale.PORTUGUESE_BRAZILIAN to "O tempo para silenciar o usuário"
+                ),
+                type = OptionType.STRING,
+                hasAutoCompletion = true
+            )
         )
 
     /**
@@ -109,7 +134,7 @@ object Mute: MichiCommand("mute", GUILD_SCOPE) {
         val senderTopRole = sender.roles.sortedDescending()[0].position
         val botTopRole = bot.roles.sortedDescending()[0].position
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val adminErr: YamlMap = err["admin"]!!
 

@@ -2,10 +2,8 @@ package michi.bot.commands.misc
 
 import com.charleskorn.kaml.YamlMap
 import com.charleskorn.kaml.yamlMap
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import michi.bot.commands.CommandScope.GLOBAL_SCOPE
 import michi.bot.commands.MichiCommand
 import michi.bot.util.Emoji
@@ -51,9 +49,8 @@ object Math: MichiCommand("math", GLOBAL_SCOPE) {
      */
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
         val sender = context.user
-        val guild = context.guild
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val miscErr: YamlMap = err["misc"]!!
 
@@ -64,14 +61,13 @@ object Math: MichiCommand("math", GLOBAL_SCOPE) {
             return false
         }
 
-        guild?.run {
+        context.guild?.let { guild ->
             val bot = guild.selfMember
 
             if (!bot.permissions.containsAll(botPermissions)) {
                 context.michiReply(String.format(genericErr.getText("bot_missing_perms"), Emoji.michiSad))
                 return false
             }
-
         }
 
         return true
@@ -164,12 +160,10 @@ class MathProblemManager(problem: MathProblem, event: SlashCommandInteractionEve
     }
 
     init {
-
         // making the embed
         val embed = EmbedBuilder()
         embed.setColor(Color.GREEN)
             .setTitle("**${problem.problemAsString}**")
-            .setFooter("Solve the problem as quickly as you can!")
 
         // sending the embed
         context.michiReply(embed.build())
@@ -204,20 +198,24 @@ class MathProblemManager(problem: MathProblem, event: SlashCommandInteractionEve
      * @param mathLogicInstance the user's math problem instance.
      * @author Slz
      */
-    fun checkAnswer(event: MessageReceivedEvent, mathLogicInstance: MathProblemManager) {
+    suspend fun checkAnswer(event: MessageReceivedEvent, mathLogicInstance: MathProblemManager) {
         val channel = event.channel
         val answer = event.message.contentRaw.toInt()
         val user = event.author.asMention
+        val user = event.author
+
+        val success = getYML(user).yamlMap
+        val successMisc: YamlMap = success["misc"]!!
 
         // guard clause
         if (this.problemInstance.isAnswered || this.timeEndedUp) return
 
         if (answer == this.problemInstance.result) {
             val finalTime = (System.currentTimeMillis() - mathLogicInstance.initialTime) / 1000
-            channel.sendMessage("**Correct** $user ${Emoji.michiYesCushion}\nTime: ${finalTime}s").queue()
+            channel.sendMessage(String.format(successMisc.getText("math_correct_answer"), user.asMention, Emoji.michiYesCushion, finalTime)).queue()
             this.problemInstance.isAnswered = true
         } else {
-            channel.sendMessage("**Wrong** $user ${Emoji.michiGlare}\nAnswer: ${this.problemInstance.result}").queue()
+            channel.sendMessage(String.format(successMisc.getText("math_wrong_answer"), user.asMention, Emoji.michiYesCushion, this.problemInstance.result)).queue()
             this.problemInstance.isAnswered = true
         }
 

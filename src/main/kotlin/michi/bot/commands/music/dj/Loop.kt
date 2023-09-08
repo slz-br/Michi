@@ -38,22 +38,24 @@ object Loop: MichiCommand("loop", GUILD_SCOPE) {
         val guild = context.guild!!
         val scheduler = PlayerManager[guild].scheduler
         val channel = guild.selfMember.voiceState!!.channel?.asGuildMessageChannel()
-        val senderAsMention = context.user.asMention
+        val sender = context.user
 
         val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
         val musicDjSuccess: YamlMap = success["music_dj"]!!
+        val successEphemeral: YamlMap = getYML(sender).yamlMap["success_messages"]!!
+        val musicDjSuccessEphemeral: YamlMap = successEphemeral["music_dj"]!!
 
         scheduler.isLooping = !scheduler.isLooping
 
         if (scheduler.isLooping) {
-            context.michiReply(String.format(musicDjSuccess.getText("loop_enabled_ephemeral_message"), Emoji.michiThumbsUp)) // "now Looping {s}", current playing track
-            channel?.sendMessage(String.format(musicDjSuccess.getText("loop_enabled_public_message"), senderAsMention))
+            context.michiReply(String.format(musicDjSuccessEphemeral.getText("loop_enabled_ephemeral_message"), Emoji.michiThumbsUp)) // "now Looping {s}", current playing track
+            channel?.sendMessage(String.format(musicDjSuccess.getText("loop_enabled_public_message"), sender.asMention))
                 ?.queue()
             return
         }
 
         context.michiReply(musicDjSuccess.getText("loop_disabled_ephemeral_message")) // "loop disabled"
-        channel?.sendMessage(String.format(musicDjSuccess.getText("loop_disabled_public_message"), senderAsMention))?.queue()
+        channel?.sendMessage(String.format(musicDjSuccess.getText("loop_disabled_public_message"), sender.asMention))?.queue()
     }
 
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
@@ -65,7 +67,7 @@ object Loop: MichiCommand("loop", GUILD_SCOPE) {
         val player = PlayerManager[guild].player
         val guildDjMap = GuildDJMap.computeIfAbsent(guild) { mutableSetOf() }
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val musicDJErr: YamlMap = err["music_dj"]!!
 

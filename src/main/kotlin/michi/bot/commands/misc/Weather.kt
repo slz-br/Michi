@@ -43,21 +43,32 @@ object Weather: MichiCommand("weather", GLOBAL_SCOPE) {
         }
     }
 
-    override val arguments = listOf(MichiArgument("city", OptionType.STRING))
+    override val arguments = listOf(
+        MichiArgument(
+            name = "city",
+            descriptionLocalization = mapOf(
+                DiscordLocale.ENGLISH_US to "The name of the city to look the weather",
+                DiscordLocale.ENGLISH_UK to "The name of the city to look the weather",
+                DiscordLocale.PORTUGUESE_BRAZILIAN to "O nome da cidade para ver o clima"
+            ),
+            type = OptionType.STRING
+        )
+    )
 
     override val usage: String
         get() = "/$name <city>"
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         val hook = context.hook
+        val sender = context.user
         val city = context.getOption("city")!!.asString
         val cityNormalized = StringUtils.stripAccents(city)
             .replace(' ', '_')
-            .split("_")
+            .split('_')
             .joinToString("_") {
                 it.replaceFirstChar(Char::uppercase)
             }
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender).yamlMap["error_messages"]!!
         val miscErr: YamlMap = err["misc"]!!
         context.deferReply(true).queue()
 
@@ -76,32 +87,32 @@ object Weather: MichiCommand("weather", GLOBAL_SCOPE) {
             val icon = "https:${condition.jsonObject["icon"].toString().removeSurrounding("\"")}"
 
             val wind = hashMapOf(
-                Pair("kilometer", current.jsonObject["wind_kph"]),
-                Pair("mile", current.jsonObject["wind_mph"])
+                "kilometer" to current.jsonObject["wind_kph"],
+                "mile" to current.jsonObject["wind_mph"]
             )
 
             val temperature = hashMapOf(
-                Pair("celsius", current.jsonObject["temp_c"]),
-                Pair("fahrenheit", current.jsonObject["temp_f"]),
-                Pair("feelslike_celsius", current.jsonObject["feelslike_c"]),
-                Pair("feelslike_fahrenheit", current.jsonObject["feelslike_f"])
+                "celsius" to current.jsonObject["temp_c"],
+                "fahrenheit" to current.jsonObject["temp_f"],
+                "feelslike_celsius" to current.jsonObject["feelslike_c"],
+                "feelslike_fahrenheit" to current.jsonObject["feelslike_f"]
             )
 
             val time = hashMapOf(
-                Pair("localTime", location.jsonObject["localtime"].toString().removeSurrounding("\"")),
-                Pair("lastUpdated", current.jsonObject["last_updated"].toString().removeSurrounding("\""))
+                "localTime" to location.jsonObject["localtime"].toString().removeSurrounding("\""),
+                "lastUpdated" to current.jsonObject["last_updated"].toString().removeSurrounding("\"")
             )
 
-            val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
+            val success: YamlMap = getYML(sender).yamlMap["success_messages"]!!
             val miscSuccess: YamlMap = success["misc"]!!
 
             EmbedBuilder().apply {
                 setTitle("$country/${cityNormalized.replace('_', ' ')}'s Weather")
                 setThumbnail(icon)
                 addField(
-                    miscSuccess.getText("weather_temperature_info").split("\n")[0],
+                    miscSuccess.getText("weather_temperature_info").split('\n')[0],
                     String.format(
-                        "${miscSuccess.getText("weather_temperature_info").split("\n")[1]} ${miscSuccess.getText("weather_temperature_info").split("\n")[2]}",
+                        "${miscSuccess.getText("weather_temperature_info").split("\n")[1]}\n${miscSuccess.getText("weather_temperature_info").split('\n')[2]}",
                         temperature["celsius"].toString(),
                         temperature["fahrenheit"].toString()
                     ),
@@ -109,10 +120,9 @@ object Weather: MichiCommand("weather", GLOBAL_SCOPE) {
                 )
                 addBlankField(true)
                 addField(
-                    miscSuccess.getText("weather_feels_like_info").split("\n")[0],
+                    miscSuccess.getText("weather_feels_like_info").split('\n')[0],
                     String.format(
-                        miscSuccess.getText("weather_feels_like_info").split("\n")[1] +
-                        miscSuccess.getText("weather_feels_like_info").split("\n")[2],
+                        "${miscSuccess.getText("weather_feels_like_info").split('\n')[1]}\n${miscSuccess.getText("weather_feels_like_info").split('\n')[2]}",
                         temperature["feelslike_celsius"].toString(),
                         temperature["feelslike_fahrenheit"].toString()
                     ),
@@ -121,8 +131,8 @@ object Weather: MichiCommand("weather", GLOBAL_SCOPE) {
                 addField(
                     miscSuccess.getText("weather_wind_info").split("\n")[0],
                     String.format(
-                        miscSuccess.getText("weather_feels_like_info").split("\n")[1] +
-                        miscSuccess.getText("weather_feels_like_info").split("\n")[2],
+                        "${miscSuccess.getText("weather_feels_like_info").split('\n')[1]}\n" +
+                        miscSuccess.getText("weather_feels_like_info").split('\n')[2],
                         wind["kilometer"].toString(),
                         wind["mile"].toString()
                     ),
@@ -140,14 +150,16 @@ object Weather: MichiCommand("weather", GLOBAL_SCOPE) {
     }
 
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
-        val bot = context.guild!!.selfMember
+        val bot = context.guild?.selfMember
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(context.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
 
-        if (!bot.permissions.containsAll(super.botPermissions)) {
-            context.michiReply(String.format(genericErr.getText("bot_missing_perms"), Emoji.michiSad))
-            return false
+        bot?.let {
+            if (!bot.permissions.containsAll(super.botPermissions)) {
+                context.michiReply(String.format(genericErr.getText("bot_missing_perms"), Emoji.michiSad))
+                return false
+            }
         }
 
         return true

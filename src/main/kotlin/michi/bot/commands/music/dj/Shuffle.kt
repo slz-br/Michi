@@ -44,11 +44,13 @@ object Shuffle: MichiCommand("queue-shuffle", GUILD_SCOPE) {
 
         val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
         val musicDjSuccess: YamlMap = success["music_dj"]!!
+        val successEphemeral: YamlMap = getYML(sender).yamlMap["success_messages"]!!
+        val musicDjSuccessEphemeral: YamlMap = successEphemeral["music_dj"]!!
 
         val newQueue = queue.shuffled()
         queue.clear()
         newQueue.toCollection(queue)
-        context.michiReply(String.format(musicDjSuccess.getText("queue_shuffle_ephemeral_message"), Emoji.michiThumbsUp))
+        context.michiReply(String.format(musicDjSuccessEphemeral.getText("queue_shuffle_ephemeral_message"), Emoji.michiThumbsUp))
         channel?.sendMessage(String.format(musicDjSuccess.getText("queue_shuffle_public_message"), sender.asMention))?.queue()
     }
 
@@ -62,7 +64,7 @@ object Shuffle: MichiCommand("queue-shuffle", GUILD_SCOPE) {
         val botVoiceState = bot.voiceState!!
         val guildDjMap = GuildDJMap.computeIfAbsent(guild) { mutableSetOf() }
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val musicErr: YamlMap = err["music"]!!
 
