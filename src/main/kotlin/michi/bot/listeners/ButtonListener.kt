@@ -13,10 +13,9 @@ import java.util.concurrent.TimeUnit
 
 import michi.bot.commands.mail.inboxMap
 import michi.bot.config
-import michi.bot.database.dao.GuildsDAO
+import michi.bot.database.dao.GuildDAO
 import michi.bot.lavaplayer.PlayerManager
 import michi.bot.util.Emoji
-import michi.bot.util.Language
 import michi.bot.util.ReplyUtils.getText
 import michi.bot.util.ReplyUtils.getYML
 
@@ -34,6 +33,7 @@ object ButtonListener: ListenerAdapter() {
         CoroutineScope(IO).launch {
             val message = event.message
             val messageEmbeds = message.embeds
+            val sender = event.user
 
             when (event.button.id) {
 
@@ -44,7 +44,7 @@ object ButtonListener: ListenerAdapter() {
                     val allowedUser = message.interaction!!.user
 
                     if (author != allowedUser) {
-                        val err: YamlMap = getYML(Language.EN_US).yamlMap["error_messages"]!!
+                        val err: YamlMap = getYML(sender).yamlMap["error_messages"]!!
                         val genericErr: YamlMap = err["generic"]!!
 
                         event.reply(String.format(genericErr.getText("unauthorized_user_interaction"), Emoji.michiGlare))
@@ -57,7 +57,7 @@ object ButtonListener: ListenerAdapter() {
 
                     message.delete().queue()
 
-                    val success: YamlMap = getYML(Language.EN_US).yamlMap["success_messages"]!!
+                    val success: YamlMap = getYML(event.guild!!).yamlMap["success_messages"]!!
                     val adminSuccess: YamlMap = success["admin"]!!
                     val banMessage = adminSuccess.getText("ban_applied").split("\n")
 
@@ -82,7 +82,7 @@ object ButtonListener: ListenerAdapter() {
                     val allowedUser = message.interaction!!.user
 
                     if (author != allowedUser) {
-                        val err: YamlMap = getYML(Language.EN_US).yamlMap["error_messages"]!!
+                        val err: YamlMap = getYML(sender).yamlMap["error_messages"]!!
                         val genericErr: YamlMap = err["generic"]!!
 
                         event.reply(String.format(genericErr.getText("unauthorized_user_interaction"), Emoji.michiGlare))
@@ -91,14 +91,16 @@ object ButtonListener: ListenerAdapter() {
                         return@launch
                     }
 
-                    val success: YamlMap = getYML(Language.EN_US).yamlMap["success_messages"]!!
+                    val success: YamlMap = getYML(event.guild!!).yamlMap["success_messages"]!!
                     val musicDJSuccess: YamlMap = success["music_dj"]!!
+                    val successEphemeral: YamlMap = getYML(sender).yamlMap["success_messages"]!!
+                    val musicDJSuccessEphemeral: YamlMap = successEphemeral["music_dj"]!!
 
                     trackQueue.clear()
 
-                    GuildsDAO.setMusicQueue(guild, "")
+                    GuildDAO.setMusicQueue(guild, "")
 
-                    event.reply(String.format(musicDJSuccess.getText("clear_queue_ephemeral_message"), Emoji.michiThumbsUp))
+                    event.reply(String.format(musicDJSuccessEphemeral.getText("clear_queue_ephemeral_message"), Emoji.michiThumbsUp))
                         .setEphemeral(true)
                         .queue()
                     botVoiceChannel?.sendMessage(String.format(musicDJSuccess.getText("clear_queue_public_message"), author.asMention))
@@ -108,7 +110,7 @@ object ButtonListener: ListenerAdapter() {
                 "clear-queue-cancel" -> {
                     message.delete().queue()
 
-                    val success: YamlMap = getYML(Language.EN_US).yamlMap["success_messages"]!!
+                    val success: YamlMap = getYML(sender).yamlMap["success_messages"]!!
                     val musicDJSuccess: YamlMap = success["music_dj"]!!
                     event.reply(String.format(musicDJSuccess.getText("clear_queue_cancelled"), Emoji.michiThumbsUp))
                         .queue()
@@ -117,7 +119,7 @@ object ButtonListener: ListenerAdapter() {
                 "clear-mail-inbox-confirmation" -> {
                     message.delete().queue()
 
-                    val success: YamlMap = getYML(Language.EN_US).yamlMap["success_messages"]!!
+                    val success: YamlMap = getYML(sender).yamlMap["success_messages"]!!
                     val mailSuccess: YamlMap = success["mail"]!!
                     event.reply(String.format(mailSuccess.getText("inbox_cleared"), Emoji.michiThumbsUp))
                         .setEphemeral(true)
@@ -129,7 +131,7 @@ object ButtonListener: ListenerAdapter() {
                 "cancel-mail-inbox-clearing" -> {
                     message.delete().queue()
 
-                    val success: YamlMap = getYML(Language.EN_US).yamlMap["success_messages"]!!
+                    val success: YamlMap = getYML(sender).yamlMap["success_messages"]!!
                     val mailSuccess: YamlMap = success["mail"]!!
                     event.reply(String.format(mailSuccess.getText("clear_inbox_cancelled"), Emoji.michiThumbsUp))
                         .setEphemeral(true)
@@ -150,7 +152,7 @@ object ButtonListener: ListenerAdapter() {
                     reportChannel.sendMessage("$mailToReport\nsender: ${mailToReport.sender.asMention}\nreceiver: ${user.asMention}\nthis is a manual report.")
                         .queue()
 
-                    val success: YamlMap = getYML(Language.EN_US).yamlMap["success_messages"]!!
+                    val success: YamlMap = getYML(sender).yamlMap["success_messages"]!!
                     val mailSuccess: YamlMap = success["mail"]!!
 
                     event.reply(String.format(mailSuccess.getText("mail_reported"), Emoji.michiThumbsUp))
@@ -163,7 +165,7 @@ object ButtonListener: ListenerAdapter() {
                 "cancel-report" -> {
                     message.delete().queue()
 
-                    val success: YamlMap = getYML(event).yamlMap["success_messages"]!!
+                    val success: YamlMap = getYML(sender).yamlMap["success_messages"]!!
                     val mailSuccess: YamlMap = success["mail"]!!
 
                     if (event.message.components.isNotEmpty()) {
@@ -190,7 +192,7 @@ object ButtonListener: ListenerAdapter() {
                 "cancel-reading" -> {
                     message.delete().queue()
 
-                    val success: YamlMap = getYML(event).yamlMap["success_messages"]!!
+                    val success: YamlMap = getYML(sender).yamlMap["success_messages"]!!
                     val mailSuccess: YamlMap = success["mail"]!!
 
                     event.reply(mailSuccess.getText("read_cancel"))

@@ -12,9 +12,17 @@ import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.channel.concrete.StageChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 
 @Suppress("Unused")
 object Join: MichiCommand("join", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Michi joins the audio channel that you're in",
+            DiscordLocale.ENGLISH_UK to "Michi joins the audio channel that you're in",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Michi entra no canal de voz que você está"
+        )
 
     override val botPermissions: List<Permission>
         get() = listOf(
@@ -27,15 +35,14 @@ object Join: MichiCommand("join", GUILD_SCOPE) {
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         if (!canHandle(context)) return
         val sender = context.member!!
-        val guild = context.guild!!
 
-        val audioManager = guild.audioManager
+        val audioManager = context.guild!!.audioManager
         val channelToJoin = sender.voiceState?.channel ?: return
 
         audioManager.openAudioConnection(channelToJoin)
         audioManager.isSelfDeafened = true
 
-        val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
+        val success: YamlMap = getYML(sender.user).yamlMap["success_messages"]!!
         val musicSuccess: YamlMap = success["music"]!!
 
         context.michiReply(String.format(musicSuccess.getText("join"), channelToJoin.asMention, Emoji.michiMusic))
@@ -54,7 +61,7 @@ object Join: MichiCommand("join", GUILD_SCOPE) {
         val senderVoiceState = sender.voiceState ?: return false
         val botVoiceState = bot.voiceState ?: return false
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val musicErr: YamlMap = err["music"]!!
 

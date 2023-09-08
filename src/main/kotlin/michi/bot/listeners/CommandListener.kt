@@ -9,7 +9,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 import michi.bot.Michi.Companion.commandList
 import michi.bot.database.dao.BlacklistDAO
-import michi.bot.database.dao.GuildsDAO
+import michi.bot.database.dao.GuildDAO
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText
 import michi.bot.util.ReplyUtils.getYML
@@ -55,7 +55,7 @@ object CommandListener: ListenerAdapter() {
             }
 
             // If the guild somehow isn't in the database, put it in the database
-            if (GuildsDAO.get(event.guild) == null) guild?.let { GuildsDAO.post(it) }
+            if (GuildDAO.get(event.guild) == null) guild?.let { GuildDAO.post(it) }
 
             guild?.let {
 

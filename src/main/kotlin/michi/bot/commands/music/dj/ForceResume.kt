@@ -11,9 +11,17 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 
 @Suppress("Unused")
 object ForceResume: MichiCommand("fresume", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Forces the current track to be resumed if it was paused",
+            DiscordLocale.ENGLISH_UK to "Forces the current track to be resumed if it was paused",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Força que a música seja despausada caso ela estivesse pausada"
+        )
 
     override val userPermissions = listOf(Permission.ADMINISTRATOR)
 
@@ -37,8 +45,10 @@ object ForceResume: MichiCommand("fresume", GUILD_SCOPE) {
 
         val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
         val musicDjSuccess: YamlMap = success["music_dj"]!!
+        val successEphemeral: YamlMap = getYML(sender).yamlMap["success_messages"]!!
+        val musicDjSuccessEphemeral: YamlMap = successEphemeral["music_dj"]!!
 
-        context.michiReply(String.format(musicDjSuccess.getText("force_resume_ephemeral_message"), Emoji.michiThumbsUp))
+        context.michiReply(String.format(musicDjSuccessEphemeral.getText("force_resume_ephemeral_message"), Emoji.michiThumbsUp))
         channel.sendMessage(String.format(musicDjSuccess.getText("force_resume_public_message"), sender.asMention)).queue()
     }
 
@@ -51,7 +61,7 @@ object ForceResume: MichiCommand("fresume", GUILD_SCOPE) {
         val player = PlayerManager[guild].player
         val guildDjMap = GuildDJMap.computeIfAbsent(guild) { mutableSetOf() }
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val musicErr: YamlMap = err["music"]!!
         val musicDjErr: YamlMap = err["music_dj"]!!

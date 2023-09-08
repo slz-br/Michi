@@ -10,6 +10,7 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.awt.Color
 
 private val raccoonImages = listOf(
@@ -46,6 +47,13 @@ private val raccoonImages = listOf(
 @Suppress("Unused")
 object Raccoon: MichiCommand("raccoon", GLOBAL_SCOPE) {
 
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Sends you a random raccoon pic or gif",
+            DiscordLocale.ENGLISH_UK to "Sends you a random raccoon pic or gif",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Te envia um gif ou foto aleatória de um guaxinim"
+        )
+
     /**
      * Sends a random picture or gif of a raccoon.
      * @param context The interaction to reply to.
@@ -57,7 +65,7 @@ object Raccoon: MichiCommand("raccoon", GLOBAL_SCOPE) {
 
         if (!canHandle(context)) return
 
-        val raccoonMediaType = getYML(context).yamlMap.get<YamlMap>("success_messages")!!.get<YamlMap>("misc")!!
+        val raccoonMediaType = getYML(context.user).yamlMap.get<YamlMap>("success_messages")!!.get<YamlMap>("misc")!!
             .getText("raccoon_media")
             .split("\n") // I know, this looks confusing, but this is just a list with the elements "Raccoon Pic" or "Raccoon GIF"
                                   //  I couldn't think of a better name for the variable
@@ -82,19 +90,16 @@ object Raccoon: MichiCommand("raccoon", GLOBAL_SCOPE) {
      * @see execute
      */
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
-        val guild = context.guild
-
-        guild?.let {
+        context.guild?.let { guild ->
             val bot = guild.selfMember
 
-            val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+            val err: YamlMap = getYML(context.user).yamlMap["error_messages"]!!
             val genericErr: YamlMap = err["generic"]!!
 
             if (!bot.permissions.containsAll(botPermissions)) {
                 context.michiReply(String.format(genericErr.getText("bot_missing_perms"), Emoji.michiSad))
                 return false
             }
-
         }
         return true
     }

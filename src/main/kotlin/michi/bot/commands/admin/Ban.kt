@@ -14,6 +14,7 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 
@@ -24,6 +25,12 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
  */
 @Suppress("Unused")
 object Ban: MichiCommand("ban", GUILD_SCOPE) {
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Bans a user",
+            DiscordLocale.ENGLISH_UK to "Bans a user",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Bane um usuário"
+        )
 
     override val userPermissions: List<Permission>
         get() = listOf(
@@ -44,8 +51,25 @@ object Ban: MichiCommand("ban", GUILD_SCOPE) {
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("user", OptionType.USER),
-            MichiArgument("reason", OptionType.STRING, isRequired = false)
+            MichiArgument(
+                name = "user",
+                descriptionLocalization = mapOf(
+                    DiscordLocale.ENGLISH_US to "User to ban",
+                    DiscordLocale.ENGLISH_UK to "User to ban",
+                    DiscordLocale.PORTUGUESE_BRAZILIAN to "Usuário para banir"
+                ),
+                type = OptionType.USER
+            ),
+            MichiArgument(
+                "reason",
+                mapOf(
+                    DiscordLocale.ENGLISH_US to "Reason for the ban",
+                    DiscordLocale.ENGLISH_UK to "Reason for the ban",
+                    DiscordLocale.PORTUGUESE_BRAZILIAN to "Motivo para o banimento"
+                ),
+                OptionType.STRING,
+                isRequired = false
+            )
         )
 
     /**
@@ -74,12 +98,13 @@ object Ban: MichiCommand("ban", GUILD_SCOPE) {
 
         val subject = context.getOption("user")!!.asMember!!
         var reason = context.getOption("reason")?.asString
+        val sender = context.user
 
         if (reason != null && reason.length > 1750) reason = null
 
-        val errMsg: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val errMsg: YamlMap = getYML(sender).yamlMap["error_messages"]!!
         val adminErr: YamlMap = errMsg["admin"]!!
-        val warnMsg: YamlMap = getYML(context).yamlMap["warn_messages"]!!
+        val warnMsg: YamlMap = getYML(sender).yamlMap["warn_messages"]!!
         val adminWarn: YamlMap = warnMsg["admin"]!!
 
         // ban confirmation
@@ -101,7 +126,7 @@ object Ban: MichiCommand("ban", GUILD_SCOPE) {
         val senderTopRole = sender.roles.sortedDescending()[0].position
         val botTopRole = bot.roles.sortedDescending()[0].position
 
-        val errMsg: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val errMsg: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = errMsg["generic"]!!
         val adminErr: YamlMap = errMsg["admin"]!!
 

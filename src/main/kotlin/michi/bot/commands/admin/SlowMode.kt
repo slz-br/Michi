@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 /**
@@ -23,6 +24,13 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
  */
 @Suppress("Unused")
 object SlowMode: MichiCommand("slowmode", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Sets the channel's slowmode",
+            DiscordLocale.ENGLISH_UK to "Sets the channel's slowmode",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Define o slowmode do canal"
+        )
 
     override val userPermissions: List<Permission>
         get() = listOf(
@@ -43,7 +51,16 @@ object SlowMode: MichiCommand("slowmode", GUILD_SCOPE) {
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("time", OptionType.STRING, hasAutoCompletion = true)
+            MichiArgument(
+                name = "time",
+                descriptionLocalization = mapOf(
+                    DiscordLocale.ENGLISH_US to "The slowmode time to apply to this channel",
+                    DiscordLocale.ENGLISH_UK to "The slowmode time to apply to this channel",
+                    DiscordLocale.PORTUGUESE_BRAZILIAN to "O tempo de slowmode para aplicar nesse canal"
+                ),
+                type = OptionType.STRING,
+                hasAutoCompletion = true
+            )
         )
 
     /**
@@ -52,10 +69,9 @@ object SlowMode: MichiCommand("slowmode", GUILD_SCOPE) {
      * @author Slz
      */
     override suspend fun execute(context: SlashCommandInteractionEvent) {
-        val sender = context.member!!
-
         if (!canHandle(context)) return
 
+        val sender = context.member!!
         val channel = context.channel.asTextChannel()
 
         val errMsg: YamlMap = getYML(context).yamlMap["error_messages"]!!
@@ -182,8 +198,6 @@ object SlowMode: MichiCommand("slowmode", GUILD_SCOPE) {
         val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
         val adminSuccess: YamlMap = success["admin"]!!
 
-        context.michiReply(adminSuccess.getText(String.format(adminSuccess.getText("slowmode_applied_ephemeral_message"), channel.asMention)))
-
         if (slowTime == "0") channel.sendMessage(String.format(adminSuccess.getText("slowmode_removed"), sender.asMention, Emoji.michiJoy)).queue()
         else channel.sendMessage(String.format(adminSuccess.getText("slowmode_applied_public_message"), sender.asMention)).queue()
     }
@@ -195,7 +209,7 @@ object SlowMode: MichiCommand("slowmode", GUILD_SCOPE) {
         val bot = guild.selfMember
         val channel = context.channel
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val adminErr: YamlMap = err["admin"]!!
 

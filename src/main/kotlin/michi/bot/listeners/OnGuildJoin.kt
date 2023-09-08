@@ -2,7 +2,7 @@ package michi.bot.listeners
 
 import kotlinx.coroutines.*
 import michi.bot.database.dao.BlacklistDAO
-import michi.bot.database.dao.GuildsDAO
+import michi.bot.database.dao.GuildDAO
 import michi.bot.util.updateGuildCommands
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
@@ -36,7 +36,7 @@ object OnGuildJoin: ListenerAdapter() {
             updateGuildCommands(guild)
 
             // add the guild to the database
-            GuildsDAO.post(guild)
+            GuildDAO.post(guild)
         }
     }
 

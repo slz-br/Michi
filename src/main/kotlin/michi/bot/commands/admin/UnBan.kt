@@ -11,9 +11,8 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.awt.Color
 
@@ -25,7 +24,12 @@ import java.awt.Color
  */
 @Suppress("Unused")
 object UnBan: MichiCommand("unban", GUILD_SCOPE) {
-
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Unbans a user",
+            DiscordLocale.ENGLISH_UK to "Unbans a user",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Desbane um usuário"
+        )
     override val userPermissions: List<Permission>
         get() = listOf(
             Permission.ADMINISTRATOR,
@@ -45,7 +49,15 @@ object UnBan: MichiCommand("unban", GUILD_SCOPE) {
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("user", OptionType.USER)
+            MichiArgument(
+                name = "user",
+                descriptionLocalization = mapOf(
+                    DiscordLocale.ENGLISH_US to "The user to unban",
+                    DiscordLocale.ENGLISH_UK to "The user to unban",
+                    DiscordLocale.PORTUGUESE_BRAZILIAN to "O usuário para desbanir"
+                ),
+                type = OptionType.USER
+            )
         )
 
     /**
@@ -81,21 +93,21 @@ object UnBan: MichiCommand("unban", GUILD_SCOPE) {
     }
 
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
-        val agent = context.member!!
+        val sender = context.member!!
         val subject = context.getOption("user")?.asUser ?: return false
         val guild = context.guild!!
         val bot = guild.selfMember
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val adminErr: YamlMap = err["admin"]!!
 
-        if (locateUserInGuild(guild, subject)) {
+        if (guild.getMemberById(subject.idLong) == null) {
             context.michiReply(String.format(adminErr.getText("user_not_banned"), subject.asMention, Emoji.michiHuh))
             return false
         }
 
-        if (!agent.permissions.any(userPermissions::contains)) {
+        if (!sender.permissions.any(userPermissions::contains)) {
             context.michiReply(String.format(genericErr.getText("user_missing_perms"), Emoji.michiBlep))
             return false
         }
@@ -106,20 +118,6 @@ object UnBan: MichiCommand("unban", GUILD_SCOPE) {
         }
 
         return true
-    }
-
-    /**
-     * Searches for a member in the guild.
-     * @param guild The guild to look for the user;
-     * @param user The user to search on the guild.
-     * @return True if the user was found in the guild, false if not.
-     * @author Slz
-     */
-    private fun locateUserInGuild(guild: Guild, user: User): Boolean {
-        var userNotFound = false
-
-        guild.retrieveMember(user).queue(null) { userNotFound = true }
-        return !userNotFound
     }
 
 }

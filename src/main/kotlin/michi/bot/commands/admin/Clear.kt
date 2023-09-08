@@ -11,6 +11,7 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 /**
@@ -19,6 +20,13 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
  */
 @Suppress("Unused")
 object Clear: MichiCommand("clear", GUILD_SCOPE) {
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Deletes an amount of messages from this chat",
+            DiscordLocale.ENGLISH_UK to "Deletes an amount of messages from this chat",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Deleta uma quantidade de mensagens desse canal"
+        )
+
     override val userPermissions: List<Permission>
         get() = listOf(
             Permission.ADMINISTRATOR,
@@ -34,7 +42,17 @@ object Clear: MichiCommand("clear", GUILD_SCOPE) {
             Permission.MESSAGE_HISTORY
         )
 
-    override val arguments = listOf(MichiArgument("amount", OptionType.INTEGER))
+    override val arguments = listOf(
+        MichiArgument(
+            name = "amount",
+            descriptionLocalization = mapOf(
+                DiscordLocale.ENGLISH_US to "Amount of messages to delete",
+                DiscordLocale.ENGLISH_UK to "Amount of messages to delete",
+                DiscordLocale.PORTUGUESE_BRAZILIAN to "Quantidade de mensagens para apagar"
+            ),
+            type = OptionType.INTEGER
+        )
+    )
 
     override val usage: String
         get() = "/$name <amount of messages(between 1 and 100)>"
@@ -56,10 +74,9 @@ object Clear: MichiCommand("clear", GUILD_SCOPE) {
         val adminSuccess: YamlMap = success["admin"]!!
 
         channel.iterableHistory.takeAsync(amountOfMessages).thenAccept(channel::purgeMessages)
-
-        context.channel.sendMessage(String.format(adminSuccess.getText("clear_applied_public_message"), sender.asMention, amountOfMessages))
+        context.channel
+            .sendMessage(String.format(adminSuccess.getText("clear_applied_public_message"), sender.asMention, amountOfMessages))
             .queue()
-        context.michiReply(adminSuccess.getText("clear_applied_ephemeral_message"))
     }
 
     /**
@@ -74,7 +91,7 @@ object Clear: MichiCommand("clear", GUILD_SCOPE) {
         val amountOfMessages = context.options[0].asInt
         val bot = context.guild!!.selfMember
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val adminErr: YamlMap = err["admin"]!!
 

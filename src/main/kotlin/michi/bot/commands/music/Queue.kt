@@ -14,12 +14,20 @@ import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.awt.Color
 import java.util.concurrent.TimeUnit
 
 @Suppress("Unused")
 object Queue: MichiCommand("queue", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Gives you the queue of tracks that will play",
+            DiscordLocale.ENGLISH_UK to "Gives you the queue of tracks that will play",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Mostra a fila de músicas que irão tocar"
+        )
 
     private const val TRACKS_PER_PAGE = 5
 
@@ -33,19 +41,31 @@ object Queue: MichiCommand("queue", GUILD_SCOPE) {
     override val usage: String
         get() = "/$name <page(optional)>"
 
-    override val arguments = listOf(MichiArgument("page", OptionType.INTEGER, isRequired = false))
+    override val arguments = listOf(
+        MichiArgument(
+            name = "page",
+            descriptionLocalization = mapOf(
+                DiscordLocale.ENGLISH_US to "The page of the queue to see",
+                DiscordLocale.ENGLISH_UK to "The page of the queue to see",
+                DiscordLocale.PORTUGUESE_BRAZILIAN to "A página da fila para ver"
+            ),
+            type = OptionType.INTEGER,
+            isRequired = false
+        )
+    )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         val page = if (context.getOption("page") != null) context.getOption("page")!!.asInt - 1 else 0
         val guild = context.guild ?: return
+        val sender = context.user
         val musicManager = PlayerManager[guild]
         val queue = musicManager.scheduler.trackQueue
         val player = musicManager.player
         val pagesCount = if (queue.size != 0 && queue.size / TRACKS_PER_PAGE != 0) queue.size / TRACKS_PER_PAGE else 1
 
-        val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
+        val success: YamlMap = getYML(sender).yamlMap["success_messages"]!!
         val musicSuccess: YamlMap = success["music"]!!
-        val other: YamlMap = getYML(context).yamlMap["other"]!!
+        val other: YamlMap = getYML(sender).yamlMap["other"]!!
         val musicOther: YamlMap = other["music"]!!
         val otherGeneric: YamlMap = other["generic"]!!
 
@@ -111,7 +131,7 @@ object Queue: MichiCommand("queue", GUILD_SCOPE) {
         val page = if (context.getOption("page") != null) context.getOption("page")!!.asInt - 1 else 0
         val pagesCount = if (queue.size != 0 && queue.size / TRACKS_PER_PAGE != 0) queue.size / TRACKS_PER_PAGE else 1
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val musicErr: YamlMap = err["music"]!!
 

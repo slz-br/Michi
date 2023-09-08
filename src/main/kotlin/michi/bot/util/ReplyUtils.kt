@@ -2,9 +2,11 @@ package michi.bot.util
 
 import com.charleskorn.kaml.*
 
-import michi.bot.database.dao.GuildsDAO
+import michi.bot.database.dao.GuildDAO
+import michi.bot.database.dao.UserDAO
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -18,17 +20,15 @@ object ReplyUtils {
 
     /**
      * Gets the [YamlNode] of the Guild's language. For example: If the owner set that the preferred for the bot
-     * is Portuguese, this function will get this preferred language, look for the "pt-br.yml" file and return a
-     * [YamlNode] out of its content.
+     * responses in the guild is Portuguese, this function will get this preferred language, look for the "pt-br.yml"
+     * file and return a [YamlNode] out of its content.
      * @param context The [SlashCommandInteractionEvent]
      * @return [YamlNode]
      * @author Slz
      */
     suspend fun getYML(context: SlashCommandInteractionEvent): YamlNode {
         val guild = context.guild ?: return Yaml.default.parseToYamlNode(javaClass.classLoader.getResource("langs/en-us.yml")!!.readText())
-
-        val lang = GuildsDAO.getLanguage(guild).value
-
+        val lang = GuildDAO.getLanguage(guild).value
         val yamlAsString = javaClass.classLoader.getResource("langs/$lang.yml")!!.readText()
 
         return Yaml.default.parseToYamlNode(yamlAsString)
@@ -40,8 +40,8 @@ object ReplyUtils {
 
     /**
      * Gets the [YamlNode] of the Guild's language. For example: If the owner set that the preferred for the bot
-     * is Portuguese, this function will get this preferred language, look for the "pt-br.yml" file and return a
-     * [YamlNode] out of its content.
+     * responses in the guild is Portuguese, this function will get this preferred language, look for the "pt-br.yml"
+     * file and return a [YamlNode] out of its content.
      * @param context The [MessageReceivedEvent]
      * @return [YamlNode]
      * @author Slz
@@ -49,7 +49,7 @@ object ReplyUtils {
     suspend fun getYML(context: MessageReceivedEvent): YamlNode {
         if (!context.isFromGuild) return Yaml.default.parseToYamlNode(javaClass.classLoader.getResource("langs/en-us.yml")!!.readText())
         val guild = context.guild
-        val lang = GuildsDAO.getLanguage(guild).value
+        val lang = GuildDAO.getLanguage(guild).value
         val yamlAsString = javaClass.classLoader.getResource("langs/$lang.yml")!!.readText()
 
         return Yaml.default.parseToYamlNode(yamlAsString)
@@ -57,15 +57,15 @@ object ReplyUtils {
 
     /**
      * Gets the [YamlNode] of the Guild's language. For example: If the owner set that the preferred for the bot
-     * is Portuguese, this function will get this preferred language, look for the "pt-br.yml" file and return a
-     * [YamlNode] out of its content.
+     * responses in the guild is Portuguese, this function will get this preferred language, look for the "pt-br.yml"
+     * file and return a [YamlNode] out of its content.
      * @param context The [ButtonInteractionEvent]
      * @return [YamlNode]
      * @author Slz
      */
     suspend fun getYML(context: ButtonInteractionEvent): YamlNode {
         val guild = context.guild ?: return Yaml.default.parseToYamlNode(javaClass.classLoader.getResource("langs/en-us.yml")!!.readText())
-        val lang = GuildsDAO.getLanguage(guild).value
+        val lang = GuildDAO.getLanguage(guild).value
         val yamlAsString = javaClass.classLoader.getResource("langs/$lang.yml")!!.readText()
 
         return Yaml.default.parseToYamlNode(yamlAsString)
@@ -73,14 +73,21 @@ object ReplyUtils {
 
     /**
      * Gets the [YamlNode] of the Guild's language. For example: If the owner set that the preferred for the bot
-     * is Portuguese, this function will get this preferred language, look for the "pt-br.yml" file and return a
-     * [YamlNode] out of its content.
+     * responses in the guild is Portuguese, this function will get this preferred language, look for the "pt-br.yml"
+     * file and return a [YamlNode] out of its content.
      * @param guild The [Guild]
      * @return [YamlNode]
      * @author Slz
      */
     suspend fun getYML(guild: Guild): YamlNode {
-        val lang = GuildsDAO.getLanguage(guild).value
+        val lang = GuildDAO.getLanguage(guild).value
+        val yamlAsString = javaClass.classLoader.getResource("langs/$lang.yml")!!.readText()
+
+        return Yaml.default.parseToYamlNode(yamlAsString)
+    }
+
+    suspend fun getYML(user: User): YamlNode {
+        val lang = UserDAO.postIfAbsent(user).preferredLanguage
         val yamlAsString = javaClass.classLoader.getResource("langs/$lang.yml")!!.readText()
 
         return Yaml.default.parseToYamlNode(yamlAsString)
@@ -105,9 +112,10 @@ object ReplyUtils {
      * If the interaction has already been acknowledged or timed out
      * - MESSAGE_BLOCKED_BY_AUTOMOD
      *
+     * - MESSAGE_BLOCKED_BY_AUTOMOD
      * If this message was blocked by an [net.dv8tion.jda.api.entities.automod.AutoModRule]
-     * - MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER
      *
+     * - MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER
      * If this message was blocked by the harmful link filter
      *
      * @param message The text message to reply. Default = ""

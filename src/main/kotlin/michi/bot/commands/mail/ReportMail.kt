@@ -11,6 +11,7 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import java.awt.Color
@@ -18,25 +19,42 @@ import java.awt.Color
 @Suppress("Unused")
 object ReportMail: MichiCommand("report-mail", GLOBAL_SCOPE) {
 
-    override val arguments = listOf(MichiArgument("position", OptionType.INTEGER))
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Reports a mail from your inbox",
+            DiscordLocale.ENGLISH_UK to "Reports a mail from your inbox",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Reporta uma carta do seu inbox"
+        )
+
+
+    override val arguments = listOf(
+        MichiArgument(
+            name = "position",
+            descriptionLocalization = mapOf(
+                DiscordLocale.ENGLISH_US to "The position in your inbox of the mail to report",
+                DiscordLocale.ENGLISH_UK to "The position in your inbox of the mail to report",
+                DiscordLocale.PORTUGUESE_BRAZILIAN to "A posição na sua inbox da carta para reportar"
+            ),
+            type = OptionType.INTEGER
+        )
+    )
 
     override val usage: String
         get() = "/$name <position>"
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
-        val sender = context.user
-
         if (!canHandle(context)) return
 
+        val sender = context.user
         val position = context.getOption("position")!!.asInt - 1
         val inbox = inboxMap[sender]!!
 
         val reportButton = Button.danger("report-confirmation", "Report")
         val cancelButton = Button.secondary("cancel-report", "Cancel")
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
-        val warnMsg: YamlMap = getYML(context).yamlMap["warn_messages"]!!
+        val warnMsg: YamlMap = getYML(sender).yamlMap["warn_messages"]!!
         val mailWarn: YamlMap = warnMsg["mail"]!!
         val genericWarn: YamlMap = warnMsg["generic"]!!
         val reportConfirmation = mailWarn.getText("mail_report_confirmation").split("\n")
@@ -65,7 +83,7 @@ object ReportMail: MichiCommand("report-mail", GLOBAL_SCOPE) {
             userInbox
         }
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val mailErr: YamlMap = err["mail"]!!
 

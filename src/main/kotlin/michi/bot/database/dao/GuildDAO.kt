@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.interactions.DiscordLocale
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object GuildsDAO {
+object GuildDAO {
 
     /**
      * Adds a guild to the database.

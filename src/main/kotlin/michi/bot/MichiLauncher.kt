@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
-import org.slf4j.LoggerFactory
+import org.slf4j.*
 import java.io.File
 import kotlin.system.exitProcess
 import java.util.concurrent.LinkedBlockingDeque
@@ -18,6 +18,7 @@ import michi.bot.commands.CommandDeactivated
 import michi.bot.listeners.*
 import michi.bot.database.DataBaseFactory
 import michi.bot.commands.MichiCommand
+import net.dv8tion.jda.api.utils.MemberCachePolicy
 
 val config: Dotenv = Dotenv.configure().load()
 val perspectiveAPI: PerspectiveAPI = PerspectiveAPI.create(config["PERSPECTIVE_API_TOKEN"])

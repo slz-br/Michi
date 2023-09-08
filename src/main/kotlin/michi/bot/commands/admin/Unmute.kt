@@ -11,6 +11,7 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 /**
@@ -21,6 +22,13 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
  */
 @Suppress("Unused")
 object Unmute: MichiCommand("unmute", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Unmute a user if the user is muted",
+            DiscordLocale.ENGLISH_UK to "Unmute a user if the user is muted",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Desilencia um usuário se ele estiver silenciado"
+        )
 
     override val userPermissions: List<Permission>
         get() = listOf(
@@ -38,7 +46,15 @@ object Unmute: MichiCommand("unmute", GUILD_SCOPE) {
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("user", OptionType.USER)
+            MichiArgument(
+                "user",
+                mapOf(
+                    DiscordLocale.ENGLISH_US to "The user to unmute",
+                    DiscordLocale.ENGLISH_UK to "The user to unmute",
+                    DiscordLocale.PORTUGUESE_BRAZILIAN to "O usuário para dessilenciar"
+                ),
+                OptionType.USER
+            )
         )
 
     override val usage: String
@@ -62,7 +78,7 @@ object Unmute: MichiCommand("unmute", GUILD_SCOPE) {
         val guild = context.guild ?: return false
         val bot = guild.selfMember
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val adminErr: YamlMap = err["admin"]!!
 

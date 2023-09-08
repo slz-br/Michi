@@ -15,6 +15,7 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 val inboxMap = HashMap<User, MutableList<MailMessage>>()
@@ -27,15 +28,45 @@ val inboxMap = HashMap<User, MutableList<MailMessage>>()
 @Suppress("Unused")
 object Mail: MichiCommand("mail", GLOBAL_SCOPE) {
     private val inMailCooldown = mutableSetOf<User>()
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Sends an anonymous message to someone",
+            DiscordLocale.ENGLISH_UK to "Sends an anonymous message to someone",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Envia uma carta anônima para alguém"
+        )
 
     override val usage: String
         get() = "/$name <title> <message> <receiver(the person to receive the mail)>"
 
     override val arguments: List<MichiArgument>
         get() = listOf(
-            MichiArgument("title", OptionType.STRING),
-            MichiArgument("message", OptionType.STRING),
-            MichiArgument("receiver", OptionType.USER)
+            MichiArgument(
+                name = "title",
+                descriptionLocalization = mapOf(
+                    DiscordLocale.ENGLISH_US to "What is the mail about?",
+                    DiscordLocale.ENGLISH_UK to "What is the mail about?",
+                    DiscordLocale.PORTUGUESE_BRAZILIAN to "Sobre o que é a carta?"
+                ),
+                type = OptionType.STRING
+            ),
+            MichiArgument(
+                name = "message",
+                descriptionLocalization = mapOf(
+                    DiscordLocale.ENGLISH_US to "The body of the mail",
+                    DiscordLocale.ENGLISH_UK to "The body of the mail",
+                    DiscordLocale.PORTUGUESE_BRAZILIAN to "O corpo da carta"
+                ),
+                type = OptionType.STRING
+            ),
+            MichiArgument(
+                name = "receiver",
+                descriptionLocalization = mapOf(
+                    DiscordLocale.ENGLISH_US to "Who is this mail for?",
+                    DiscordLocale.ENGLISH_UK to "Who is this mail for?",
+                    DiscordLocale.PORTUGUESE_BRAZILIAN to "Para quem é essa carta?"
+                ),
+                type = OptionType.USER
+            )
         )
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -46,9 +77,9 @@ object Mail: MichiCommand("mail", GLOBAL_SCOPE) {
 
         if (!canHandle(context)) return
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
-        val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
+        val success: YamlMap = getYML(sender).yamlMap["success_messages"]!!
         val mailSuccess: YamlMap = success["mail"]!!
 
         val receiver = context.getOption("receiver")!!.asUser
@@ -94,7 +125,7 @@ object Mail: MichiCommand("mail", GLOBAL_SCOPE) {
         val title = context.getOption("title")?.asString!!
         val message = context.getOption("message")?.asString!!
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender).yamlMap["error_messages"]!!
         val mailErr: YamlMap = err["mail"]!!
 
         if (sender == receiver) {

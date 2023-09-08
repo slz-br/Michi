@@ -11,10 +11,18 @@ import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.awt.Color
 
 @Suppress("Unused")
 object ServerInfo: MichiCommand("server-info", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Gives you info about the server",
+            DiscordLocale.ENGLISH_UK to "Gives you info about the server",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Dá informações sobre o servidor"
+        )
 
     override val botPermissions: List<Permission>
         get() = listOf(
@@ -24,24 +32,26 @@ object ServerInfo: MichiCommand("server-info", GUILD_SCOPE) {
             Permission.MESSAGE_SEND_IN_THREADS
         )
 
-    override val usage: String
-        get() = "/server-info"
-
     override suspend fun execute(context: SlashCommandInteractionEvent) {
-        val guild = context.guild ?: return
-
         if (!canHandle(context)) return
+        val guild = context.guild!!
 
         val timeCreated = guild.timeCreated
+
+        val success: YamlMap = getYML(context.user).yamlMap["success_messages"]!!
+        val utilSuccess: YamlMap = success["util"]!!
+        val guildInfoMessage = utilSuccess.getText("guild_info").split('\n')
 
         val embed = EmbedBuilder().apply {
             setColor(Color.WHITE)
             setTitle(guild.name)
-            setDescription("Description:\n ${guild.description ?: "No description provided ${Emoji.michiShrug}"}")
-            addField("Guild Owner:", "<@${guild.ownerId}>", false)
-            addField("Members count:", "${guild.memberCount}",false)
-            addField("Guild language:", guild.locale.languageName, false)
-            addField("Creation date:", "${timeCreated.year}/${timeCreated.monthValue}/${timeCreated.dayOfMonth}`(yyyy/mm/dd format)`", false)
+            guild.description?.let {
+                setDescription("${guildInfoMessage[0]}\n$it")
+            }
+            addField(guildInfoMessage[1], "<@${guild.ownerId}>", true)
+            addField(guildInfoMessage[2], "${guild.memberCount}",true)
+            addField(guildInfoMessage[3], guild.locale.languageName, true)
+            addField(guildInfoMessage[4], "${timeCreated.year}/${timeCreated.monthValue}/${timeCreated.dayOfMonth}`(yyyy/mm/dd)`", false)
             setThumbnail(guild.iconUrl)
             setFooter(guild.name, guild.iconUrl)
         }
@@ -50,10 +60,10 @@ object ServerInfo: MichiCommand("server-info", GUILD_SCOPE) {
     }
 
     override suspend fun canHandle(context: SlashCommandInteractionEvent): Boolean {
-        val guild = context.guild ?: return false
+        val guild = context.guild!!
         val bot = guild.selfMember
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(context.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err[("generic")]!!
         
         if (!bot.permissions.containsAll(botPermissions)) {

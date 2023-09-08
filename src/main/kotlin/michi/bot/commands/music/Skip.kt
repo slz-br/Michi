@@ -4,7 +4,7 @@ import com.charleskorn.kaml.YamlMap
 import com.charleskorn.kaml.yamlMap
 import michi.bot.commands.CommandScope.GUILD_SCOPE
 import michi.bot.commands.MichiCommand
-import michi.bot.database.dao.GuildsDAO
+import michi.bot.database.dao.GuildDAO
 import michi.bot.lavaplayer.PlayerManager
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText
@@ -14,11 +14,19 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.awt.Color
 
 val guildSkipPoll = HashMap<Guild, MutableSet<User>>()
 
 object Skip: MichiCommand("skip", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Starts a poll to skip the current music(skips right away if possible)",
+            DiscordLocale.ENGLISH_UK to "Starts a poll to skip the current music(skips right away if possible)",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Cria uma votação para pular a música atual(pula direto caso possível)"
+        )
 
     override suspend fun execute(context: SlashCommandInteractionEvent) {
         val sender = context.user
@@ -31,11 +39,13 @@ object Skip: MichiCommand("skip", GUILD_SCOPE) {
 
         val usersInTheVC = guild.selfMember.voiceState!!.channel!!.members.size
 
-        poll.add(sender)
+        poll += sender
 
         val success: YamlMap = getYML(context).yamlMap["success_messages"]!!
         val musicSuccess: YamlMap = success["music"]!!
-        val skipPollMessage = musicSuccess.getText("skip_poll").split("\n")
+        val successEphemeral: YamlMap = getYML(sender).yamlMap["success_messages"]!!
+        val musicSuccessEphemeral: YamlMap = successEphemeral["music"]!!
+        val skipPollMessage = musicSuccessEphemeral.getText("skip_poll").split("\n")
 
         EmbedBuilder().apply {
             setColor(Color.MAGENTA)
@@ -45,8 +55,8 @@ object Skip: MichiCommand("skip", GUILD_SCOPE) {
         if (isSkippable(guild)) {
             poll.clear()
 
-            GuildsDAO.getMusicQueue(guild)?.replace(playingTrack.info.uri, "")?.let {
-                GuildsDAO.setMusicQueue(guild, it)
+            GuildDAO.getMusicQueue(guild)?.replace(playingTrack.info.uri, "")?.let {
+                GuildDAO.setMusicQueue(guild, it)
             }
 
             context.channel.sendMessage(String.format(musicSuccess.getText("skip"), playingTrack.info.title, Emoji.michiThumbsUp))
@@ -62,7 +72,7 @@ object Skip: MichiCommand("skip", GUILD_SCOPE) {
         val senderVoiceState = sender.voiceState!!
         val botVoiceState = bot.voiceState!!
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val musicErr: YamlMap = err["music"]!!
 

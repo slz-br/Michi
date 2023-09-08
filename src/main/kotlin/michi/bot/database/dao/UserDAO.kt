@@ -3,6 +3,7 @@ package michi.bot.database.dao
 import michi.bot.database.DataBaseFactory
 import michi.bot.database.rows.UserRow
 import michi.bot.database.tables.UserTable
+import michi.bot.util.Language
 import net.dv8tion.jda.api.entities.User
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
@@ -10,17 +11,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object UserDAO {
 
-    suspend fun post(user: User) {
-        if (get(user) != null) return
-        transaction {
-            UserRow.new {
-                userId = user.idLong
-            }
-        }
-    }
-
     suspend fun remove(user: User) {
-        if (get(user) == null) return
+        get(user) ?: return
         transaction {
             UserTable.deleteWhere { userId eq user.idLong }
         }
@@ -32,10 +24,11 @@ object UserDAO {
         }
     }
 
-    suspend fun computeIfAbsent(user: User): UserRow {
+    suspend fun postIfAbsent(user: User): UserRow {
         return get(user) ?: transaction {
-             UserRow.new {
+            UserRow.new {
                 userId = user.idLong
+                preferredLanguage = Language.EN_US.value
             }
         }
     }

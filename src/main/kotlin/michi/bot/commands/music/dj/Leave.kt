@@ -10,9 +10,17 @@ import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 
 @Suppress("Unused")
 object Leave: MichiCommand("leave", GUILD_SCOPE) {
+
+    override val descriptionLocalization: Map<DiscordLocale, String>
+        get() = mapOf(
+            DiscordLocale.ENGLISH_US to "Disconnects Michi from the voice channel",
+            DiscordLocale.ENGLISH_UK to "Disconnects Michi from the voice channel",
+            DiscordLocale.PORTUGUESE_BRAZILIAN to "Disconecta a Michi do canal de voz"
+        )
 
     override val userPermissions = listOf(Permission.ADMINISTRATOR)
 
@@ -25,10 +33,12 @@ object Leave: MichiCommand("leave", GUILD_SCOPE) {
 
         val success: YamlMap = getYML(guild).yamlMap["success_messages"]!!
         val musicDJSuccess: YamlMap = success["music_dj"]!!
+        val successEphemeral: YamlMap = getYML(sender).yamlMap["success_messages"]!!
+        val musicDjSuccessEphemeral: YamlMap = successEphemeral["music_dj"]!!
 
         guild.audioManager.closeAudioConnection()
 
-        context.michiReply(String.format(musicDJSuccess.getText("leave_ephemeral_message"), Emoji.michiBlep))
+        context.michiReply(String.format(musicDjSuccessEphemeral.getText("leave_ephemeral_message"), Emoji.michiBlep))
         channel.sendMessage(String.format(musicDJSuccess.getText("leave_public_message"), sender.asMention)).queue()
     }
 
@@ -40,7 +50,7 @@ object Leave: MichiCommand("leave", GUILD_SCOPE) {
         val botVoiceState = bot.voiceState!!
         val guildDjMap = GuildDJMap.computeIfAbsent(guild) { mutableSetOf() }
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender.user).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val musicErr: YamlMap = err["music"]!!
 
