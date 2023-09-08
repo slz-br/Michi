@@ -17,17 +17,20 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import java.awt.Color
 import java.util.concurrent.TimeUnit
 
-import michi.bot.database.dao.GuildsDAO
+import michi.bot.database.dao.GuildDAO
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText
 import michi.bot.util.ReplyUtils.getYML
 import michi.bot.util.ReplyUtils.michiReply
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 object PlayerManager {
 
     private val musicManagers: MutableMap<Long, GuildMusicManager>
     private val playerManager: DefaultAudioPlayerManager
     const val SOUNDCLOUD_LOGO_URL = "https://developers.soundcloud.com/assets/logo_white-af5006050dd9cba09b0c48be04feac57.png"
+    val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
     init {
         musicManagers = HashMap()
@@ -49,7 +52,7 @@ object PlayerManager {
     }
 
     /**
-     * Function actually start streaming the track. This function must be invoked when someone successfully calls the play command.
+     * Function that actually starts streaming the track. This function must be invoked when someone successfully calls the play command.
      * @param context The [SlashCommandInteractionEvent]
      * @param trackURL The string containing the URL or Name of the track
      * @author Slz
@@ -59,12 +62,16 @@ object PlayerManager {
         val musicManager = synchronized("") { PlayerManager[guild] }
         val botVoiceChannel = guild.selfMember.voiceState!!.channel?.asGuildMessageChannel()
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(context.user).yamlMap["error_messages"]!!
         val musicErr: YamlMap = err["music"]!!
         val success: YamlMap = getYML(guild).yamlMap["success_messages"]!!
         val musicSuccess: YamlMap = success["music"]!!
+        val successEphemeral: YamlMap = getYML(guild).yamlMap["success_messages"]!!
+        val musicSuccessEphemeral: YamlMap = successEphemeral["music"]!!
         val other: YamlMap = getYML(guild).yamlMap["other"]!!
+        val otherEphemeral: YamlMap = getYML(context.user).yamlMap["other"]!!
         val musicOther: YamlMap = other.yamlMap["music"]!!
+        val musicOtherEphemeral: YamlMap = otherEphemeral.yamlMap["music"]!!
 
         playerManager.loadItemOrdered(musicManager, trackURL, object : AudioLoadResultHandler {
 
@@ -82,8 +89,8 @@ object PlayerManager {
                 val scheduler = musicManager.scheduler
 
                 CoroutineScope(IO).launch {
-                    GuildsDAO.getMusicQueue(guild)?.plus("${track.info.uri},")?.let {
-                        GuildsDAO.setMusicQueue(guild, it)
+                    GuildDAO.getMusicQueue(guild)?.plus("${track.info.uri},")?.let {
+                        GuildDAO.setMusicQueue(guild, it)
                     }
                 }
 
@@ -103,7 +110,7 @@ object PlayerManager {
                     embed.setImage(SOUNDCLOUD_LOGO_URL)
                 }
 
-                context.michiReply(embed.build(), message = musicSuccess.getText("added_to_the_queue"))
+                context.michiReply(embed.build(), message = musicSuccessEphemeral.getText("added_to_the_queue"))
                 botVoiceChannel?.sendMessageEmbeds(embed.addField(String.format(musicOther.getText("requested_by")), context.user.asMention, false).build())
                     ?.queue()
                 return
@@ -126,23 +133,23 @@ object PlayerManager {
                     musicManager.scheduler.queue(firstTrack)
 
                     CoroutineScope(IO).launch {
-                        GuildsDAO.getMusicQueue(guild)?.plus("${firstTrack.info.uri},")?.let {
-                            GuildsDAO.setMusicQueue(guild, it)
+                        GuildDAO.getMusicQueue(guild)?.plus("${firstTrack.info.uri},")?.let {
+                            GuildDAO.setMusicQueue(guild, it)
                         }
                     }
 
                     if (trackTitle == "「NIGHT RUNNING」") {
                         embed.setTitle("**$trackTitle**`[${formatTrackLength(firstTrack)}]` ${Emoji.nightRunning}", firstTrack.info.uri)
-                        embed.setDescription("${String.format(musicOther.getText("uploaded_by"), trackAuthor)} | ${String.format(musicOther.getText("position"), queue.size)}")
+                        embed.setDescription("${String.format(musicOtherEphemeral.getText("uploaded_by"), trackAuthor)} | ${String.format(musicOther.getText("position"), queue.size)}")
                         embed.setImage(SOUNDCLOUD_LOGO_URL)
                     }
                     else {
                         embed.setTitle("**$trackTitle**`[${formatTrackLength(firstTrack)}]`", firstTrack.info.uri)
-                        embed.setDescription("${String.format(musicOther.getText("uploaded_by"), trackAuthor)} | ${String.format(musicOther.getText("position"), queue.size)}")
+                        embed.setDescription("${String.format(musicOtherEphemeral.getText("uploaded_by"), trackAuthor)} | ${String.format(musicOther.getText("position"), queue.size)}")
                         embed.setImage(SOUNDCLOUD_LOGO_URL)
                     }
 
-                    context.michiReply(embed.build(), message = musicSuccess.getText("added_to_the_queue"))
+                    context.michiReply(embed.build(), message = musicSuccessEphemeral.getText("added_to_the_queue"))
                     botVoiceChannel?.sendMessageEmbeds(embed.addField(String.format(musicOther.getText("requested_by")), context.user.asMention, false).build())
                         ?.queue()
                     return
@@ -151,41 +158,48 @@ object PlayerManager {
                 playlist.tracks.forEach { track ->
                     musicManager.scheduler.queue(track)
                     CoroutineScope(IO).launch {
-                        GuildsDAO.getMusicQueue(guild)
+                        GuildDAO.getMusicQueue(guild)
                             ?.plus("${track.info.uri},")
                             ?.let {
-                                GuildsDAO.setMusicQueue(guild, it)
+                                GuildDAO.setMusicQueue(guild, it)
                             }
                     }
                 }
 
+                val playlistAddedMessageEphemeral = musicSuccessEphemeral.getText("playlist_added_to_the_queue").split("\n")
                 val playlistAddedMessage = musicSuccess.getText("playlist_added_to_the_queue").split("\n")
 
-                embed.apply {
+                val ephemeralEmbed = embed.apply {
                     setTitle(playlist.name)
-                    setDescription(String.format(playlistAddedMessage[1], playlist.tracks.size))
+                    setDescription(String.format(playlistAddedMessageEphemeral[1], playlist.tracks.size))
                     setImage(SOUNDCLOUD_LOGO_URL)
                 }
 
-                context.michiReply(embed.build(), isEphemeral = true, message = playlistAddedMessage[0])
-                botVoiceChannel?.sendMessageEmbeds(embed.addField(String.format(musicOther.getText("requested_by")), context.user.asMention, false).build())
-                    ?.queue()
+                context.michiReply(ephemeralEmbed.build(), isEphemeral = true, message = playlistAddedMessageEphemeral[0])
+                botVoiceChannel?.sendMessageEmbeds(
+                    EmbedBuilder().apply {
+                        setTitle(playlist.name)
+                        setDescription(String.format(playlistAddedMessage[1], playlist.tracks.size))
+                        setImage(SOUNDCLOUD_LOGO_URL)
+                        addField(String.format(musicOther.getText("requested_by")), context.user.asMention, false)
+                    }.build()
+                )?.queue()
                 return
             }
 
             override fun noMatches() =
-                context.michiReply(String.format("couldnt_find_track", Emoji.michiSad))
+                context.michiReply(String.format(musicErr.getText("couldnt_find_track"), Emoji.michiSad))
 
             override fun loadFailed(exception: FriendlyException?) =
-                context.michiReply(String.format("couldnt_load_track", Emoji.michiSad))
+                context.michiReply(String.format(musicErr.getText("couldnt_load_track"), Emoji.michiSad))
         })
 
     }
 
-    private fun loadAndPlay(guild: Guild, trackURL: String) {
+    private fun loadAndPlay(guild: Guild, trackUrl: String) {
         val musicManager = synchronized("") { this[guild] }
 
-        playerManager.loadItemOrdered(musicManager, trackURL, object : AudioLoadResultHandler {
+        playerManager.loadItemOrdered(musicManager, trackUrl, object : AudioLoadResultHandler {
             val scheduler = musicManager.scheduler
 
             override fun trackLoaded(track: AudioTrack?) {
@@ -204,14 +218,18 @@ object PlayerManager {
 
             }
 
-            override fun noMatches() = Unit
+            override fun noMatches() {
+                logger.error("One of the tracks of a guild playlist wasn't found.")
+            }
 
-            override fun loadFailed(exception: FriendlyException?) = Unit
+            override fun loadFailed(exception: FriendlyException?) {
+                logger.error("Something went wrong while loading a track\n${exception?.localizedMessage}")
+            }
         })
 
     }
 
-    suspend fun retrieveGuildMusicQueue(guild: Guild) = GuildsDAO.getMusicQueue(guild)?.split(',')?.forEach { musicURI ->
+    suspend fun retrieveGuildMusicQueue(guild: Guild) = GuildDAO.getMusicQueue(guild)?.split(',')?.forEach { musicURI ->
         if (musicURI.isBlank()) return@forEach
         loadAndPlay(guild, musicURI)
     }

@@ -17,7 +17,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 
 import michi.bot.commands.music.guildSkipPoll
-import michi.bot.database.dao.GuildsDAO
+import michi.bot.database.dao.GuildDAO
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText
 import michi.bot.util.ReplyUtils.getYML
@@ -74,8 +74,8 @@ class Scheduler(player: AudioPlayer, guild: Guild): AudioEventAdapter() {
 
         CoroutineScope(IO).launch {
             track?.info?.uri?.let {
-                GuildsDAO.getMusicQueue(schedulerGuild)?.replace("$it,", "")?.let { newTrackQueue ->
-                    GuildsDAO.setMusicQueue(schedulerGuild, newTrackQueue)
+                GuildDAO.getMusicQueue(schedulerGuild)?.replace("$it,", "")?.let { newTrackQueue ->
+                    GuildDAO.setMusicQueue(schedulerGuild, newTrackQueue)
                 }
             }
         }

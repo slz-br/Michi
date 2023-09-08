@@ -53,7 +53,7 @@ object ClearInbox: MichiCommand("clear-inbox", GLOBAL_SCOPE) {
         val sender = context.user
         val guild = context.guild
 
-        val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+        val err: YamlMap = getYML(sender).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val mailErr: YamlMap = err["mail"]!!
 

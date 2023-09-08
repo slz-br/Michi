@@ -6,7 +6,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import michi.bot.commands.CommandScope.GUILD_SCOPE
 import michi.bot.commands.MichiArgument
 import michi.bot.commands.MichiCommand
-import michi.bot.database.dao.GuildsDAO
+import michi.bot.database.dao.GuildDAO
 import michi.bot.lavaplayer.PlayerManager
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText
@@ -65,9 +65,9 @@ object QueueRemove: MichiCommand("queue-remove", GUILD_SCOPE) {
         val trackToRemove = queue.elementAt(position)
         queue -= trackToRemove
 
-        val guildMusicQueue = GuildsDAO.getMusicQueue(guild)
+        val guildMusicQueue = GuildDAO.getMusicQueue(guild)
         guildMusicQueue?.replace(trackToRemove.info.uri, "")?.let {
-            GuildsDAO.setMusicQueue(guild, it)
+            GuildDAO.setMusicQueue(guild, it)
         }
 
         val success: YamlMap = getYML(context).yamlMap["success_messages"]!!

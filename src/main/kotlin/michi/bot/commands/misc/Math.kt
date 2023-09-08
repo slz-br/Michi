@@ -201,7 +201,6 @@ class MathProblemManager(problem: MathProblem, event: SlashCommandInteractionEve
     suspend fun checkAnswer(event: MessageReceivedEvent, mathLogicInstance: MathProblemManager) {
         val channel = event.channel
         val answer = event.message.contentRaw.toInt()
-        val user = event.author.asMention
         val user = event.author
 
         val success = getYML(user).yamlMap

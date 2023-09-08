@@ -6,7 +6,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import michi.bot.commands.music.Skip
 import michi.bot.commands.music.guildSkipPoll
-import michi.bot.database.dao.GuildsDAO
+import michi.bot.database.dao.GuildDAO
 import michi.bot.lavaplayer.PlayerManager
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText

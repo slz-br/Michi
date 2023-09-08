@@ -4,7 +4,7 @@ import com.charleskorn.kaml.YamlMap
 import com.charleskorn.kaml.yamlMap
 import michi.bot.commands.CommandScope.GUILD_SCOPE
 import michi.bot.commands.MichiCommand
-import michi.bot.database.dao.GuildsDAO
+import michi.bot.database.dao.GuildDAO
 import michi.bot.lavaplayer.PlayerManager
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText
@@ -55,8 +55,8 @@ object Skip: MichiCommand("skip", GUILD_SCOPE) {
         if (isSkippable(guild)) {
             poll.clear()
 
-            GuildsDAO.getMusicQueue(guild)?.replace(playingTrack.info.uri, "")?.let {
-                GuildsDAO.setMusicQueue(guild, it)
+            GuildDAO.getMusicQueue(guild)?.replace(playingTrack.info.uri, "")?.let {
+                GuildDAO.setMusicQueue(guild, it)
             }
 
             context.channel.sendMessage(String.format(musicSuccess.getText("skip"), playingTrack.info.title, Emoji.michiThumbsUp))

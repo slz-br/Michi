@@ -52,11 +52,8 @@ object Help: MichiCommand("help", GLOBAL_SCOPE) {
 
     suspend fun execute(context: UserContextInteractionEvent) {
         val sender = context.user
-        val guild = context.guild
 
-        val language = if (guild != null) GuildsDAO.getLanguage(guild) else Language.EN_US
-
-        val success: YamlMap = getYML(language).yamlMap["success_messages"]!!
+        val success: YamlMap = getYML(sender).yamlMap["success_messages"]!!
         val utilSuccess: YamlMap = success["util"]!!
 
         val helpMessage = utilSuccess.getText("help_message").split('\n')
@@ -89,7 +86,7 @@ object Help: MichiCommand("help", GLOBAL_SCOPE) {
         guild?.let {
             val bot = guild.selfMember
 
-            val err: YamlMap = getYML(context).yamlMap["error_messages"]!!
+            val err: YamlMap = getYML(context.user).yamlMap["error_messages"]!!
             val genericErr: YamlMap = err["generic"]!!
 
             if (!bot.permissions.containsAll(botPermissions)) {
