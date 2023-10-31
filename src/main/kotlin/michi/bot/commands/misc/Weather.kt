@@ -131,8 +131,8 @@ object Weather: MichiCommand("weather", GLOBAL_SCOPE) {
                 addField(
                     miscSuccess.getText("weather_wind_info").split("\n")[0],
                     String.format(
-                        "${miscSuccess.getText("weather_feels_like_info").split('\n')[1]}\n" +
-                        miscSuccess.getText("weather_feels_like_info").split('\n')[2],
+                        "${miscSuccess.getText("weather_wind_info").split('\n')[1]}\n" +
+                        miscSuccess.getText("weather_wind_info").split('\n')[2],
                         wind["kilometer"].toString(),
                         wind["mile"].toString()
                     ),
