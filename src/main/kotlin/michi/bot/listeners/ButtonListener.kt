@@ -5,15 +5,15 @@ import com.charleskorn.kaml.yamlMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import michi.bot.commands.mail.Mail.inboxMap
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.awt.Color
 import java.util.concurrent.TimeUnit
 
-import michi.bot.commands.mail.inboxMap
 import michi.bot.config
-import michi.bot.database.dao.GuildDAO
+import michi.bot.database.dao.GuildDao
 import michi.bot.lavaplayer.PlayerManager
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText
@@ -98,7 +98,7 @@ object ButtonListener: ListenerAdapter() {
 
                     trackQueue.clear()
 
-                    GuildDAO.setMusicQueue(guild, "")
+                    GuildDao.setMusicQueue(guild, "")
 
                     event.reply(String.format(musicDJSuccessEphemeral.getText("clear_queue_ephemeral_message"), Emoji.michiThumbsUp))
                         .setEphemeral(true)

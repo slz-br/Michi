@@ -38,7 +38,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.14.2")
     implementation("org.apache.maven.plugins:maven-failsafe-plugin:3.0.0")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.20")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.5.0") // get access to kotlin coroutines
     implementation("io.github.cdimascio:dotenv-java:2.3.1") // api to get configs
     implementation("net.dv8tion:JDA:5.0.0-beta.12") // wrapper for discord api

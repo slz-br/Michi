@@ -5,8 +5,8 @@ import com.charleskorn.kaml.yamlMap
 import michi.bot.commands.CommandScope.GLOBAL_SCOPE
 import michi.bot.commands.MichiArgument
 import michi.bot.commands.MichiCommand
-import michi.bot.database.dao.GuildDAO
-import michi.bot.database.dao.UserDAO
+import michi.bot.database.dao.GuildDao
+import michi.bot.database.dao.UserDao
 import michi.bot.util.Emoji
 import michi.bot.util.Language
 import michi.bot.util.ReplyUtils.getText
@@ -51,7 +51,7 @@ object SetLanguage: MichiCommand("language", GLOBAL_SCOPE) {
         val langName = context.getOption("language-name")!!.asString
 
         context.guild?.let { guild ->
-            GuildDAO.setLanguage(guild, Language.valueOfOrNull(langName) ?: Language.EN_US)
+            GuildDao.setLanguage(guild, Language.valueOfOrNull(langName) ?: Language.EN_US)
             updateGuildCommands(guild)
             val success: YamlMap = getYML(guild).yamlMap["success_messages"]!!
             val adminSuccess: YamlMap = success["admin"]!!
@@ -61,7 +61,7 @@ object SetLanguage: MichiCommand("language", GLOBAL_SCOPE) {
 
         val sender = context.user
 
-        UserDAO.postIfAbsent(sender).let {
+        UserDao.postIfAbsent(sender).let {
             transaction {
                 it.preferredLanguage = langName
             }
@@ -88,7 +88,7 @@ object SetLanguage: MichiCommand("language", GLOBAL_SCOPE) {
 
         guild?.let {
             val senderAsMember = context.member!!
-            val currentLang = GuildDAO.getLanguage(guild)
+            val currentLang = GuildDao.getLanguage(guild)
             val errInGuildLanguage: YamlMap = getYML(guild).yamlMap["error_messages"]!!
             val adminErrInGuildLanguage: YamlMap = errInGuildLanguage["admin"]!!
 
@@ -105,7 +105,7 @@ object SetLanguage: MichiCommand("language", GLOBAL_SCOPE) {
             return true
         }
 
-        val currentLang = UserDAO.postIfAbsent(sender).preferredLanguage
+        val currentLang = UserDao.postIfAbsent(sender).preferredLanguage
         val adminErr: YamlMap = err["admin"]!!
 
         if (langName == currentLang) {

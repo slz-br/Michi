@@ -4,6 +4,7 @@ import com.charleskorn.kaml.YamlMap
 import com.charleskorn.kaml.yamlMap
 import michi.bot.commands.CommandScope.GLOBAL_SCOPE
 import michi.bot.commands.MichiCommand
+import michi.bot.commands.mail.Mail.inboxMap
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText
 import michi.bot.util.ReplyUtils.getYML

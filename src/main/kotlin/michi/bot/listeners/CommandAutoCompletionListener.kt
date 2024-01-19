@@ -24,7 +24,7 @@ object CommandAutoCompletionListener: ListenerAdapter() {
         "30s", "1m", "5m", "10m", "15m", "30m", "1h", "2h", "6h", "1d", "7d"
     )
 
-    val languageAutoCompletion = listOf(
+    private val languageAutoCompletion = listOf(
         Language.EN_US.value, Language.PT_BR.value
     )
 

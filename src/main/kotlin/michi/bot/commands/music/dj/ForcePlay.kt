@@ -6,6 +6,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import michi.bot.commands.CommandScope.GUILD_SCOPE
 import michi.bot.commands.MichiArgument
 import michi.bot.commands.MichiCommand
+import michi.bot.commands.music.dj.SetDJ.GuildDJMap
 import michi.bot.lavaplayer.PlayerManager
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText
@@ -15,11 +16,12 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
-import java.net.URL
 import java.util.concurrent.TimeUnit
 
 @Suppress("Unused")
 object ForcePlay: MichiCommand("fplay", GUILD_SCOPE) {
+
+    private val urlRegex = Regex("/https?://(?:www\\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b[-a-zA-Z0-9()@:%_+.~#?&/=]*/")
 
     override val descriptionLocalization: Map<DiscordLocale, String>
         get() = mapOf(
@@ -137,6 +139,6 @@ object ForcePlay: MichiCommand("fplay", GUILD_SCOPE) {
         return true
     }
 
-    private fun isURL(possibleURL: String): Boolean = try { URL(possibleURL); true } catch (e: Exception) { false }
+    private fun isURL(possibleURL: String): Boolean = possibleURL.matches(urlRegex)
 
 }

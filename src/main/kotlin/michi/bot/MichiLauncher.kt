@@ -1,5 +1,6 @@
 package michi.bot
 
+import au.com.origma.perspectiveapi.v1alpha1.PerspectiveAPI
 import ch.qos.logback.core.status.Status
 import io.github.cdimascio.dotenv.Dotenv
 import net.dv8tion.jda.api.utils.cache.CacheFlag
@@ -29,16 +30,10 @@ import michi.bot.commands.MichiCommand
  */
 val config: Dotenv = Dotenv.configure().load()
 
-// todo: migrate to LavaLink.kt -> do after release
-// todo: support for auto registering context commands -> do after release
-// todo: document every command in each language. Do this by creating a md file for every language and update it with the info gathered from the commands.
-
-// do asap
-// todo: store mail inbox in the database
-// todo: store the guild type racer leaderboard, so Michi doesn't have to search the whole db again everytime.
-
 private val currentTime: LocalDateTime
     get() = LocalDateTime.now()
+
+val perspectiveAPI: PerspectiveAPI = PerspectiveAPI.create(config["PERSPECTIVE_API_TOKEN"])
 
 /**
  * Function that wakes up Michi
@@ -111,16 +106,14 @@ class Michi {
                         .dropLast(6)
                         .replace('\\', '.')
 
-                    val commandClass = Class.forName(qualifiedName)
+                    val commandObjectInstance = Class.forName(qualifiedName).kotlin.objectInstance
 
                     if (
-                        !MichiCommand::class.java.isAssignableFrom(commandClass)
-                        || commandClass.isAnnotationPresent(CommandDeactivated::class.java)
+                        commandObjectInstance !is MichiCommand
+                        || commandObjectInstance::class.annotations.contains(CommandDeactivated())
                     ) return@fileLoop
 
-                    val cmdConstructor = commandClass.asSubclass(MichiCommand::class.java).getDeclaredConstructor()
-                    cmdConstructor.isAccessible = true
-                    commandList += cmdConstructor.newInstance()
+                    commandList += commandObjectInstance
                 }
             }
             logger.info("Commands loaded | Amount: ${commandList.size}")

@@ -4,7 +4,8 @@ import com.charleskorn.kaml.YamlMap
 import com.charleskorn.kaml.yamlMap
 import michi.bot.commands.CommandScope.GUILD_SCOPE
 import michi.bot.commands.MichiCommand
-import michi.bot.database.dao.GuildDAO
+import michi.bot.commands.music.dj.SetDJ.GuildDJMap
+import michi.bot.database.dao.GuildDao
 import michi.bot.lavaplayer.PlayerManager
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText
@@ -46,8 +47,8 @@ object ForceSkip: MichiCommand("fskip", GUILD_SCOPE) {
         val playingTrack = musicManager.playingTrack
 
         playingTrack?.let {
-            GuildDAO.getMusicQueue(guild)?.replace(playingTrack.info.uri, "")?.let {
-                GuildDAO.setMusicQueue(guild, it)
+            GuildDao.getMusicQueue(guild)?.replace(playingTrack.info.uri, "")?.let {
+                GuildDao.setMusicQueue(guild, it)
             }
         }
 

@@ -15,10 +15,9 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
-val GuildDJMap = mutableMapOf<Guild, MutableSet<Member>>()
-
 @Suppress("Unused")
 object SetDJ: MichiCommand("set-dj", GUILD_SCOPE) {
+    val GuildDJMap = mutableMapOf<Guild, MutableSet<Member>>()
 
     override val descriptionLocalization: Map<DiscordLocale, String>
         get() = mapOf(

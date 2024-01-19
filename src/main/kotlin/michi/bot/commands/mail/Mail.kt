@@ -18,8 +18,6 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
-val inboxMap = HashMap<User, MutableList<MailMessage>>()
-
 /**
  * Object for the mail command, a command that sends a mail to an inbox(check [inboxMap]) of another
  * user.
@@ -28,6 +26,8 @@ val inboxMap = HashMap<User, MutableList<MailMessage>>()
 @Suppress("Unused")
 object Mail: MichiCommand("mail", GLOBAL_SCOPE) {
     private val inMailCooldown = mutableSetOf<User>()
+    val inboxMap = HashMap<User, MutableList<MailMessage>>()
+
     override val descriptionLocalization: Map<DiscordLocale, String>
         get() = mapOf(
             DiscordLocale.ENGLISH_US to "Sends an anonymous message to someone",

@@ -2,8 +2,8 @@ package michi.bot.listeners
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
-import michi.bot.database.dao.BlacklistDAO
-import michi.bot.database.dao.GuildDAO
+import michi.bot.database.dao.BlacklistDao
+import michi.bot.database.dao.GuildDao
 import michi.bot.lavaplayer.PlayerManager
 import michi.bot.util.updateGuildCommands
 import net.dv8tion.jda.api.entities.Guild
@@ -26,7 +26,7 @@ object OnGuildReadyListener: ListenerAdapter() {
 
             // if the guild is tagged as nsfw, then leave.
             if (guild.nsfwLevel == Guild.NSFWLevel.EXPLICIT || guild.nsfwLevel == Guild.NSFWLevel.AGE_RESTRICTED) {
-                BlacklistDAO.post(guild = guild, reason = "Discord tagged server as NSFW.")
+                BlacklistDao.post(guild = guild, reason = "Discord tagged server as NSFW.")
                 guild.leave().queue()
                 return@launch
             }
@@ -38,7 +38,7 @@ object OnGuildReadyListener: ListenerAdapter() {
             updateGuildCommands(guild)
 
             // add the guild to the database if it isn't already in the database.
-            GuildDAO.post(guild)
+            GuildDao.post(guild)
 
         }
     }

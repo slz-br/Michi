@@ -2,8 +2,8 @@ package michi.bot.util
 
 import com.charleskorn.kaml.*
 
-import michi.bot.database.dao.GuildDAO
-import michi.bot.database.dao.UserDAO
+import michi.bot.database.dao.GuildDao
+import michi.bot.database.dao.UserDao
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.User
@@ -28,7 +28,7 @@ object ReplyUtils {
      */
     suspend fun getYML(context: SlashCommandInteractionEvent): YamlNode {
         val guild = context.guild ?: return Yaml.default.parseToYamlNode(javaClass.classLoader.getResource("langs/en-us.yml")!!.readText())
-        val lang = GuildDAO.getLanguage(guild).value
+        val lang = GuildDao.getLanguage(guild).value
         val yamlAsString = javaClass.classLoader.getResource("langs/$lang.yml")!!.readText()
 
         return Yaml.default.parseToYamlNode(yamlAsString)
@@ -49,7 +49,7 @@ object ReplyUtils {
     suspend fun getYML(context: MessageReceivedEvent): YamlNode {
         if (!context.isFromGuild) return Yaml.default.parseToYamlNode(javaClass.classLoader.getResource("langs/en-us.yml")!!.readText())
         val guild = context.guild
-        val lang = GuildDAO.getLanguage(guild).value
+        val lang = GuildDao.getLanguage(guild).value
         val yamlAsString = javaClass.classLoader.getResource("langs/$lang.yml")!!.readText()
 
         return Yaml.default.parseToYamlNode(yamlAsString)
@@ -65,7 +65,7 @@ object ReplyUtils {
      */
     suspend fun getYML(context: ButtonInteractionEvent): YamlNode {
         val guild = context.guild ?: return Yaml.default.parseToYamlNode(javaClass.classLoader.getResource("langs/en-us.yml")!!.readText())
-        val lang = GuildDAO.getLanguage(guild).value
+        val lang = GuildDao.getLanguage(guild).value
         val yamlAsString = javaClass.classLoader.getResource("langs/$lang.yml")!!.readText()
 
         return Yaml.default.parseToYamlNode(yamlAsString)
@@ -80,14 +80,14 @@ object ReplyUtils {
      * @author Slz
      */
     suspend fun getYML(guild: Guild): YamlNode {
-        val lang = GuildDAO.getLanguage(guild).value
+        val lang = GuildDao.getLanguage(guild).value
         val yamlAsString = javaClass.classLoader.getResource("langs/$lang.yml")!!.readText()
 
         return Yaml.default.parseToYamlNode(yamlAsString)
     }
 
     suspend fun getYML(user: User): YamlNode {
-        val lang = UserDAO.postIfAbsent(user).preferredLanguage
+        val lang = UserDao.postIfAbsent(user).preferredLanguage
         val yamlAsString = javaClass.classLoader.getResource("langs/$lang.yml")!!.readText()
 
         return Yaml.default.parseToYamlNode(yamlAsString)

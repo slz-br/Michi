@@ -8,8 +8,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 import michi.bot.Michi.Companion.commandList
-import michi.bot.database.dao.BlacklistDAO
-import michi.bot.database.dao.GuildDAO
+import michi.bot.database.dao.BlacklistDao
+import michi.bot.database.dao.GuildDao
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText
 import michi.bot.util.ReplyUtils.getYML
@@ -49,13 +49,13 @@ object CommandListener: ListenerAdapter() {
             val genericErr: YamlMap = errMsg["generic"]!!
 
             // Checks if the user or guild is blacklisted
-            if (BlacklistDAO.find(sender) || BlacklistDAO.find(guild)) {
+            if (BlacklistDao.find(sender) || BlacklistDao.find(guild)) {
                 event.michiReply(String.format(genericErr.getText("user_blacklisted"), Emoji.michiTroll))
                 return@launch
             }
 
             // If the guild somehow isn't in the database, put it in the database
-            if (GuildDAO.get(event.guild) == null) guild?.let { GuildDAO.post(it) }
+            if (GuildDao.get(event.guild) == null) guild?.let { GuildDao.post(it) }
 
             guild?.let {
 

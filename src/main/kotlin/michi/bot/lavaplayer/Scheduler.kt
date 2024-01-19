@@ -15,9 +15,9 @@ import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
+import michi.bot.commands.music.Skip.guildSkipPoll
 
-import michi.bot.commands.music.guildSkipPoll
-import michi.bot.database.dao.GuildDAO
+import michi.bot.database.dao.GuildDao
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText
 import michi.bot.util.ReplyUtils.getYML
@@ -74,8 +74,8 @@ class Scheduler(player: AudioPlayer, guild: Guild): AudioEventAdapter() {
 
         CoroutineScope(IO).launch {
             track?.info?.uri?.let {
-                GuildDAO.getMusicQueue(schedulerGuild)?.replace("$it,", "")?.let { newTrackQueue ->
-                    GuildDAO.setMusicQueue(schedulerGuild, newTrackQueue)
+                GuildDao.getMusicQueue(schedulerGuild)?.replace("$it,", "")?.let { newTrackQueue ->
+                    GuildDao.setMusicQueue(schedulerGuild, newTrackQueue)
                 }
             }
         }

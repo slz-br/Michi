@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object UserDAO {
+object UserDao {
 
     suspend fun remove(user: User) {
         get(user) ?: return

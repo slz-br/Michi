@@ -5,10 +5,10 @@ import com.charleskorn.kaml.yamlMap
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import michi.bot.commands.misc.MathProblemManager
+import michi.bot.commands.misc.Math
 import michi.bot.commands.misc.TypeRacer
 import michi.bot.config
-import michi.bot.database.dao.TypeRacerDAO
+import michi.bot.database.dao.TypeRacerDao
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText
 import michi.bot.util.ReplyUtils.getYML
@@ -52,7 +52,7 @@ object MessageListener: ListenerAdapter() {
             val genericWarn: YamlMap = warn["generic"]!!
 
             // math
-            MathProblemManager.instances.forEach { instance ->
+            Math.MathProblemManager.instances.forEach { instance ->
                 if (sender == instance.problemInstance.user && event.channel == instance.context.channel) {
                     try {
                         msg.toInt()
@@ -93,10 +93,10 @@ object MessageListener: ListenerAdapter() {
 
                 val wordsPerMinutesAsFloat = (counter / timeInMiliss) * 60000
 
-                TypeRacerDAO.putLatest(sender, wordsPerMinutesAsFloat)
+                TypeRacerDao.putLatest(sender, wordsPerMinutesAsFloat)
 
-                if (wordsPerMinutesAsFloat > TypeRacerDAO.getScoresMap(sender)["pb"]!!) {
-                    TypeRacerDAO.putPersonalBest(sender, wordsPerMinutesAsFloat)
+                if (wordsPerMinutesAsFloat > TypeRacerDao.getScoresMap(sender)["pb"]!!) {
+                    TypeRacerDao.putPersonalBest(sender, wordsPerMinutesAsFloat)
                 }
             }
             mutex.withLock { cooldownManager(event.author) }

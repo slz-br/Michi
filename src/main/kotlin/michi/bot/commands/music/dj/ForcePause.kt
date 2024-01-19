@@ -5,6 +5,7 @@ import com.charleskorn.kaml.yamlMap
 import kotlinx.coroutines.delay
 import michi.bot.commands.CommandScope.GUILD_SCOPE
 import michi.bot.commands.MichiCommand
+import michi.bot.commands.music.dj.SetDJ.GuildDJMap
 import michi.bot.lavaplayer.PlayerManager
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText

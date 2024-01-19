@@ -5,10 +5,10 @@ import michi.bot.database.rows.TypeRacerRow
 import net.dv8tion.jda.api.entities.User
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object TypeRacerDAO {
+object TypeRacerDao {
 
     private suspend fun post(user: User): TypeRacerRow {
-        val entity = UserDAO.postIfAbsent(user)
+        val entity = UserDao.postIfAbsent(user)
 
         return get(user) ?: transaction {
             TypeRacerRow.new {

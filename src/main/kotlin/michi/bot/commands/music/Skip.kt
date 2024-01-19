@@ -4,7 +4,7 @@ import com.charleskorn.kaml.YamlMap
 import com.charleskorn.kaml.yamlMap
 import michi.bot.commands.CommandScope.GUILD_SCOPE
 import michi.bot.commands.MichiCommand
-import michi.bot.database.dao.GuildDAO
+import michi.bot.database.dao.GuildDao
 import michi.bot.lavaplayer.PlayerManager
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText
@@ -17,9 +17,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.awt.Color
 
-val guildSkipPoll = HashMap<Guild, MutableSet<User>>()
-
 object Skip: MichiCommand("skip", GUILD_SCOPE) {
+    val guildSkipPoll = HashMap<Guild, MutableSet<User>>()
 
     override val descriptionLocalization: Map<DiscordLocale, String>
         get() = mapOf(
@@ -55,8 +54,8 @@ object Skip: MichiCommand("skip", GUILD_SCOPE) {
         if (isSkippable(guild)) {
             poll.clear()
 
-            GuildDAO.getMusicQueue(guild)?.replace(playingTrack.info.uri, "")?.let {
-                GuildDAO.setMusicQueue(guild, it)
+            GuildDao.getMusicQueue(guild)?.replace(playingTrack.info.uri, "")?.let {
+                GuildDao.setMusicQueue(guild, it)
             }
 
             context.channel.sendMessage(String.format(musicSuccess.getText("skip"), playingTrack.info.title, Emoji.michiThumbsUp))

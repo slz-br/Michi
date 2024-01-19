@@ -12,7 +12,7 @@ import michi.bot.database.DataBaseFactory
 import michi.bot.database.rows.BlacklistRow
 import michi.bot.database.tables.BlacklistTable
 
-object BlacklistDAO {
+object BlacklistDao {
 
     suspend fun post(guild: Guild, reason: String?) = withContext(IO) {
         Database.connect(config["DB_URL"], config["DB_DRIVER"], config["DB_USER"], config["DB_PASSWORD"])

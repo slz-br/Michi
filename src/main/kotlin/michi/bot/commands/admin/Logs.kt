@@ -5,7 +5,7 @@ import com.charleskorn.kaml.yamlMap
 import michi.bot.commands.CommandScope.GUILD_SCOPE
 import michi.bot.commands.MichiArgument
 import michi.bot.commands.MichiCommand
-import michi.bot.database.dao.GuildDAO
+import michi.bot.database.dao.GuildDao
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText
 import michi.bot.util.ReplyUtils.getYML
@@ -53,7 +53,7 @@ object Logs: MichiCommand("logs", GUILD_SCOPE) {
 
         val logChannel = context.getOption("channel")?.asChannel?.asGuildMessageChannel()
 
-        GuildDAO.setLogChannel(guild, logChannel)
+        GuildDao.setLogChannel(guild, logChannel)
 
         val success: YamlMap = getYML(context.user).yamlMap["success_messages"]!!
         val adminSuccess: YamlMap = success["admin"]!!

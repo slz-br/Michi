@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import java.awt.Color
 import java.util.concurrent.TimeUnit
 
-import michi.bot.database.dao.GuildDAO
+import michi.bot.database.dao.GuildDao
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText
 import michi.bot.util.ReplyUtils.getYML
@@ -89,8 +89,8 @@ object PlayerManager {
                 val scheduler = musicManager.scheduler
 
                 CoroutineScope(IO).launch {
-                    GuildDAO.getMusicQueue(guild)?.plus("${track.info.uri},")?.let {
-                        GuildDAO.setMusicQueue(guild, it)
+                    GuildDao.getMusicQueue(guild)?.plus("${track.info.uri},")?.let {
+                        GuildDao.setMusicQueue(guild, it)
                     }
                 }
 
@@ -133,8 +133,8 @@ object PlayerManager {
                     musicManager.scheduler.queue(firstTrack)
 
                     CoroutineScope(IO).launch {
-                        GuildDAO.getMusicQueue(guild)?.plus("${firstTrack.info.uri},")?.let {
-                            GuildDAO.setMusicQueue(guild, it)
+                        GuildDao.getMusicQueue(guild)?.plus("${firstTrack.info.uri},")?.let {
+                            GuildDao.setMusicQueue(guild, it)
                         }
                     }
 
@@ -158,10 +158,10 @@ object PlayerManager {
                 playlist.tracks.forEach { track ->
                     musicManager.scheduler.queue(track)
                     CoroutineScope(IO).launch {
-                        GuildDAO.getMusicQueue(guild)
+                        GuildDao.getMusicQueue(guild)
                             ?.plus("${track.info.uri},")
                             ?.let {
-                                GuildDAO.setMusicQueue(guild, it)
+                                GuildDao.setMusicQueue(guild, it)
                             }
                     }
                 }
@@ -229,7 +229,7 @@ object PlayerManager {
 
     }
 
-    suspend fun retrieveGuildMusicQueue(guild: Guild) = GuildDAO.getMusicQueue(guild)?.split(',')?.forEach { musicURI ->
+    suspend fun retrieveGuildMusicQueue(guild: Guild) = GuildDao.getMusicQueue(guild)?.split(',')?.forEach { musicURI ->
         if (musicURI.isBlank()) return@forEach
         loadAndPlay(guild, musicURI)
     }
