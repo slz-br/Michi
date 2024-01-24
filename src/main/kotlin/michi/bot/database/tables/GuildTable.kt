@@ -9,7 +9,7 @@ object GuildTable: IntIdTable("guilds", "row_id") {
     val ownerID = long("owner_id")
     val logsChannelID = long("logs_channel_id").nullable()
     val language = varchar("language", 6)
-    val djs = text("djs").nullable()
-    val musicQueue = largeText("music_queue")
+    val djs = text("djs").default("")
+    val musicQueue = largeText("music_queue").default("")
 
 }

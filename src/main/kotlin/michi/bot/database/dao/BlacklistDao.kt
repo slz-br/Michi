@@ -15,7 +15,7 @@ import michi.bot.database.tables.BlacklistTable
 object BlacklistDao {
 
     suspend fun post(guild: Guild, reason: String?) = withContext(IO) {
-        Database.connect(config["DB_URL"], config["DB_DRIVER"], config["DB_USER"], config["DB_PASSWORD"])
+        Database.connect("jdbc:postgresql:${config["DB_NAME"]}", config["DB_DRIVER"], config["DB_USER"], config["DB_PASSWORD"])
 
         if (find(guild)) return@withContext
 
@@ -31,7 +31,7 @@ object BlacklistDao {
 
     @Suppress("Unused")
     suspend fun post(user: User, reason: String?) = withContext(IO) {
-        Database.connect(config["DB_URL"], config["DB_DRIVER"], config["DB_USER"], config["DB_PASSWORD"])
+        Database.connect("jdbc:postgresql:${config["DB_NAME"]}", config["DB_DRIVER"], config["DB_USER"], config["DB_PASSWORD"])
 
         transaction {
             if (BlacklistRow.find { BlacklistTable.entityID eq user.idLong }.any()) return@transaction
@@ -46,7 +46,7 @@ object BlacklistDao {
 
     @Suppress("Unused")
     suspend fun remove(user: User) = withContext(IO) {
-        Database.connect(config["DB_URL"], config["DB_DRIVER"], config["DB_USER"], config["DB_PASSWORD"])
+        Database.connect("jdbc:postgresql:${config["DB_NAME"]}", config["DB_DRIVER"], config["DB_USER"], config["DB_PASSWORD"])
         transaction {
             BlacklistRow.find { BlacklistTable.entityID eq user.idLong }.singleOrNull()?.let(BlacklistRow::delete)
         }
@@ -54,7 +54,7 @@ object BlacklistDao {
 
     @Suppress("Unused")
     suspend fun remove(guild: Guild) = withContext(IO) {
-        Database.connect(config["DB_URL"], config["DB_DRIVER"], config["DB_USER"], config["DB_PASSWORD"])
+        Database.connect("jdbc:postgresql:${config["DB_NAME"]}", config["DB_DRIVER"], config["DB_USER"], config["DB_PASSWORD"])
         transaction {
             BlacklistRow.find { BlacklistTable.entityID eq guild.idLong }.singleOrNull()?.let(BlacklistRow::delete)
         }

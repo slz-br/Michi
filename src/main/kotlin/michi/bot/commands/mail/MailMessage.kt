@@ -6,15 +6,12 @@ import au.com.origma.perspectiveapi.v1alpha1.models.AttributeType
 import au.com.origma.perspectiveapi.v1alpha1.models.ContentType
 import au.com.origma.perspectiveapi.v1alpha1.models.Entry
 import michi.bot.perspectiveAPI
-import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.UserSnowflake
 import java.net.MalformedURLException
 import java.net.URL
 
-class MailMessage(title: String, message: String, sender: User) {
+class MailMessage(val title: String,val message: String,val sender: UserSnowflake) {
 
-    val title: String
-    var message: String
-    val sender: User
     var isSafe: Boolean = false
         private set
 
@@ -25,13 +22,10 @@ class MailMessage(title: String, message: String, sender: User) {
         private set
 
     init {
-        this.title = title
-        this.message = message
-        this.sender = sender
 
         if (this.message.split(" ").any { isURL(it) }) containsLink = true
 
-        val request: AnalyzeCommentResponse? = perspectiveAPI.analyze(
+        val request: AnalyzeCommentResponse? = perspectiveAPI!!.analyze(
             AnalyzeCommentRequest.Builder()
             .addRequestedAttribute(AttributeType.SEVERE_TOXICITY, null)
             .addRequestedAttribute(AttributeType.IDENTITY_ATTACK, null)

@@ -7,7 +7,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import michi.bot.commands.misc.Math
 import michi.bot.commands.misc.TypeRacer
-import michi.bot.config
 import michi.bot.database.dao.TypeRacerDao
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText
@@ -64,7 +63,7 @@ object MessageListener: ListenerAdapter() {
             }
 
             // help
-            if (msg == "<@${config["BOT_ID"]}>") {
+            if (msg == "<@${event.jda.selfUser.id}>") {
                 if (event.author in cooldownList) {
                     event.message.reply(String.format(genericErr.getText("user_in_command_cooldown"), Emoji.michiSip))
                         .queue()

@@ -6,6 +6,7 @@ import michi.bot.commands.CommandScope.GLOBAL_SCOPE
 import michi.bot.commands.MichiArgument
 import michi.bot.commands.MichiCommand
 import michi.bot.commands.mail.Mail.inboxMap
+import michi.bot.config
 import michi.bot.util.Emoji
 import michi.bot.util.ReplyUtils.getText
 import michi.bot.util.ReplyUtils.getYML
@@ -93,6 +94,14 @@ object Read: MichiCommand("read", GLOBAL_SCOPE) {
         val err: YamlMap = getYML(sender).yamlMap["error_messages"]!!
         val genericErr: YamlMap = err["generic"]!!
         val mailErr: YamlMap = err["mail"]!!
+
+        if (context.jda.getGuildById(config["BOT_GUILD_ID"])?.getTextChannelById(config["MAIL_REPORT_CHANNEL"])?.canTalk() == null) {
+            logger.warn("The mail commands are being unregistered. This is due to one of these reasons:\n-You don't filled the mail section in the .env file properly\n-The guild or channel don't exist anymore\n-The bot isn't in the guild\n-The bot can't send messages in the channel.")
+            val mailCommands = arrayOf(Mail, ClearInbox, Inbox, Read, RemoveMail, ReportMail).map { it.name }
+            context.michiReply(mailErr.getText("mail_commands_disabled"))
+            context.jda.retrieveCommands().complete().forEach { if (it.name in mailCommands) it.delete().queue() }
+            return false
+        }
 
         if (inbox.isEmpty()) {
             context.michiReply(String.format(mailErr.getText("empty_inbox"), Emoji.michiSad))

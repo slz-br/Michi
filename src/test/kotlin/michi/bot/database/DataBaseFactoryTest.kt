@@ -15,7 +15,7 @@ class DataBaseFactoryTest {
     fun `database connected successfully`() {
         assertDoesNotThrow {
             Database.connect(
-                url      = config["DB_URL"],
+                url      = "jdbc:postgresql:${config["DB_NAME"]}",
                 driver   = config["DB_DRIVER"],
                 user     = config["DB_USER"],
                 password = config["DB_PASSWORD"]

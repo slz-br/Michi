@@ -1,7 +1,6 @@
 package michi.bot
 
 import au.com.origma.perspectiveapi.v1alpha1.PerspectiveAPI
-import ch.qos.logback.core.status.Status
 import io.github.cdimascio.dotenv.Dotenv
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.dv8tion.jda.api.utils.MemberCachePolicy
@@ -10,7 +9,6 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import org.slf4j.*
 import java.io.File
-import kotlin.system.exitProcess
 import java.util.concurrent.LinkedBlockingDeque
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -33,7 +31,7 @@ val config: Dotenv = Dotenv.configure().load()
 private val currentTime: LocalDateTime
     get() = LocalDateTime.now()
 
-val perspectiveAPI: PerspectiveAPI = PerspectiveAPI.create(config["PERSPECTIVE_API_TOKEN"])
+val perspectiveAPI: PerspectiveAPI? = PerspectiveAPI.create(config["PERSPECTIVE_API_TOKEN"])
 
 /**
  * Function that wakes up Michi
@@ -96,8 +94,8 @@ class Michi {
             val commandsDir = File("${System.getProperty("user.dir")}\\build\\classes\\kotlin\\main\\michi\\bot\\commands")
             val allCommandsDir = searchCommandDirectories(commandsDir)
 
-            allCommandsDir.forEach { currentDir -> // loop entre todas as pastas de comandos
-                currentDir.listFiles()?.forEach fileLoop@{ file -> // loop entre todos os arquivos da pasta de comandos
+            allCommandsDir.forEach { currentDir ->
+                currentDir.listFiles()?.forEach fileLoop@{ file ->
                     if (!file.exists() || !file.name.endsWith(".class") || file.name.contains('$')) return@fileLoop
 
                     val packageName = currentDir.canonicalPath.split("main\\")[1]
@@ -147,18 +145,12 @@ class Michi {
 
     init {
 
-        // ideas from:
-        // https://github.com/MrGaabriel/Ayla/blob/master/src/main/kotlin/com/github/mrgaabriel/ayla/AylaLauncher.kt <3
-        val configFile = File(".env")
-
-        if (!configFile.exists()) {
-            configFile.createNewFile()
-            logger.warn("Looks like you are trying to boot Michi for the first time.\nYou must configure her in the file \".env\"\nFollow the example in the file \"example.env\"")
-            exitProcess(Status.INFO)
-        }
-
         logger.info("Configuration file loaded")
         val token = config["TOKEN"]
+
+        if (perspectiveAPI == null) {
+            logger.warn("The perspective api key is null or invalid. This means that the mail commands won't work.\nFor more details read the .env.example file.")
+        }
 
         // Initializing connection with Discord
         DefaultShardManagerBuilder.createDefault(token).apply {

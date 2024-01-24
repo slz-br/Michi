@@ -21,7 +21,7 @@ object GuildDao {
      * @author Slz
      */
     suspend fun post(guild: Guild): Boolean = DataBaseFactory.query {
-        Database.connect(config["DB_URL"], config["DB_DRIVER"], config["DB_USER"], config["DB_PASSWORD"])
+        Database.connect("jdbc:postgresql:${config["DB_NAME"]}", config["DB_DRIVER"], config["DB_USER"], config["DB_PASSWORD"])
 
         transaction {
             if (!GuildRow.find { GuildTable.guildID eq guild.idLong }.empty()) return@transaction false
@@ -30,13 +30,10 @@ object GuildDao {
                 guildID = guild.idLong
                 name = guild.name
                 ownerID = guild.ownerIdLong
-                logsChannelID = null
                 language = when (guild.locale) {
                     DiscordLocale.PORTUGUESE_BRAZILIAN -> "pt-br"
                     else -> "en-us"
                 }
-                djs = ""
-                musicQueue = ""
             }
             return@transaction true
         }
@@ -48,7 +45,7 @@ object GuildDao {
      * @author Slz
      */
     suspend fun delete(guild: Guild) = DataBaseFactory.query {
-        Database.connect(config["DB_URL"], config["DB_DRIVER"], config["DB_USER"], config["DB_PASSWORD"])
+        Database.connect("jdbc:postgresql:${config["DB_NAME"]}", config["DB_DRIVER"], config["DB_USER"], config["DB_PASSWORD"])
 
         transaction {
             GuildRow.find { GuildTable.guildID eq guild.idLong }.singleOrNull()?.let(GuildRow::delete)

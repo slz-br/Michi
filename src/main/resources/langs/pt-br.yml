@@ -40,6 +40,7 @@ error_messages:
     invalid_message_length: "A mensagem deve ter pelo menos 10 dígitos"
     blank_mail: "Nem o título nem a mensagem podem ser apenas formadas apenas de espaços."
     in_mail_cooldown: "Você tá cooldown de enviar cartas. Você pode enviar uma carta a cada 4 horas."
+    mail_commands_disabled: "Os comandos de carta estão desabilitados como uma medida de segurança. To learn more contact @<858866079756713995>"
 
   misc:
     user_already_has_math_problem: "Resolva um problema antes de pedir outro %s"

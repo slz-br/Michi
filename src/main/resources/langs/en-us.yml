@@ -40,6 +40,7 @@ error_messages:
      invalid_message_length: "The message must have at least 10 characters."
      blank_mail: "Neither the title nor the message can be formed only by whitespaces."
      in_mail_cooldown: "You're in mail cooldown. You can mail people every 4 hours."
+     mail_commands_disabled: "The mail commands are disabled as a security measure. To learn more contact @<858866079756713995>"
 
   misc:
      user_already_has_math_problem: "Solve one problem before calling another %s"

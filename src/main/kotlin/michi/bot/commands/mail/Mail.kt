@@ -128,12 +128,20 @@ object Mail: MichiCommand("mail", GLOBAL_SCOPE) {
         val err: YamlMap = getYML(sender).yamlMap["error_messages"]!!
         val mailErr: YamlMap = err["mail"]!!
 
+        if (context.jda.getGuildById(config["BOT_GUILD_ID"])?.getTextChannelById(config["MAIL_REPORT_CHANNEL"])?.canTalk() == null) {
+            logger.warn("The mail commands are being unregistered. This is due to one of these reasons:\n-You don't filled the mail section in the .env file properly\n-The guild or channel don't exist anymore\n-The bot isn't in the guild\n-The bot can't send messages in the channel.")
+            val mailCommands = arrayOf(Mail, ClearInbox, Inbox, Read, RemoveMail, ReportMail).map { it.name }
+            context.michiReply(mailErr.getText("mail_commands_disabled"))
+            context.jda.retrieveCommands().complete().forEach { if (it.name in mailCommands) it.delete().complete() }
+            return false
+        }
+
         if (sender == receiver) {
             context.michiReply(String.format(mailErr.getText("trying_selfmail"), Emoji.michiHuh))
             return false
         }
 
-        if (receiver.id == config["BOT_ID"]) {
+        if (receiver.id == context.jda.selfUser.id) {
             context.michiReply(String.format(mailErr.getText("trying_to_mail_michi"), Emoji.michiShrug))
             return false
         }

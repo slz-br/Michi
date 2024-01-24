@@ -5,7 +5,6 @@ import com.charleskorn.kaml.yamlMap
 import michi.bot.commands.CommandScope.GUILD_SCOPE
 import michi.bot.commands.MichiArgument
 import michi.bot.commands.MichiCommand
-import michi.bot.config
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import michi.bot.util.Emoji
@@ -136,7 +135,7 @@ object Ban: MichiCommand("ban", GUILD_SCOPE) {
         }
 
         // checks if the agent is devil and is trying to ban michi >:(
-        if (subject.id == config["BOT_ID"]) {
+        if (subject.id == bot.id) {
             context.michiReply(String.format(adminErr.getText("trying_to_ban_michi"), Emoji.michiUnimpressed))
             return false
         }

@@ -4,11 +4,18 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import michi.bot.Michi
 import michi.bot.commands.CommandScope
+import michi.bot.commands.mail.*
+import michi.bot.commands.misc.Weather
+import michi.bot.config
+import michi.bot.perspectiveAPI
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
+import org.slf4j.LoggerFactory
+
+private val logger = LoggerFactory.getLogger("updateCommands")
 
 suspend fun updateGuildCommands(guild: Guild) {
 
@@ -66,6 +73,18 @@ fun updateCommands(event: ReadyEvent) {
         }
 
         commandData += command
+    }
+
+    val isMailReportSystemUp = event.jda.getGuildById(config["BOT_SERVER_ID"])?.getTextChannelById(config["MAIL_REPORT_CHANNEL_ID"])?.canTalk() != null || perspectiveAPI == null
+
+    if (!isMailReportSystemUp) {
+        val mailCommands = arrayOf(Mail, ClearInbox, Inbox, Read, RemoveMail, ReportMail).map { it.name }
+        commandData.removeIf { mailCommands.any { command -> command == it.name } }
+    }
+
+    if (config["WEATHER_API_KEY"].isNullOrBlank()) {
+        logger.warn("The WEATHER_API_KEY in the .env file is empty. Unregistering the Wheater command")
+        commandData.removeIf { it.name == Weather.name }
     }
 
     event.jda.updateCommands().addCommands(commandData).queue()
