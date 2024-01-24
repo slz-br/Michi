@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 group = "com.github.slz_br"
 version = "0.0.1"
-description = "Michi a multipurpose Kotlin Discord bot that uses the JDA API."
+description = "Michi, a multipurpose Kotlin Discord bot that uses the JDA API."
 
 val ktorVersion = "2.3.2"
 
@@ -38,9 +38,6 @@ dependencies {
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("org.apache.maven.plugins:maven-compiler-plugin:3.11.0")
-    implementation("com.fasterxml.jackson.core:jackson-core:2.14.2")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:2.14.2")
     implementation("org.apache.maven.plugins:maven-failsafe-plugin:3.0.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.5.0") // get access to kotlin coroutines
@@ -48,7 +45,6 @@ dependencies {
     implementation("net.dv8tion:JDA:5.0.0-beta.12") // wrapper for discord api
     implementation("com.github.origma:Google-PerspectiveAPI-Java-Client:0.0.5")
     implementation("com.github.walkyst:lavaplayer-fork:1.4.1")
-    implementation("org.yaml:snakeyaml:2.0")
     implementation("ch.qos.logback:logback-classic:1.4.6") // implementation to embellish logs
     testImplementation("org.apache.maven.plugins:maven-surefire-plugin:3.0.0")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:1.7.20")
